@@ -798,54 +798,120 @@
 
   </div>
 
+<!-- CHAT SCREEN -->
 
-  <!-- =========================
-       CHAT SCREEN
-  ========================== -->
+<div id="chatScreen" class="card hidden">
 
-  <div
-    id="chatScreen"
-    class="card hidden"
-  >
+  <div class="chat-header">
 
-    <div class="top-row">
+    <button
+      class="back-button"
+      onclick="showFriendProfile()"
+    >
+      ←
+    </button>
 
-      <button
-        class="back-button"
-        onclick="showFriendProfile()"
-      >
-        ← Back
-      </button>
+    <div class="chat-user">
 
-      <div
-        id="chatTitle"
-        class="screen-title"
-      >
-        Chat
+      <div class="chat-avatar">
+        👤
       </div>
 
-      <div style="width:55px;"></div>
+      <div>
+
+        <div
+          id="chatTitle"
+          class="chat-username"
+        >
+          @friend
+        </div>
+
+        <div
+          id="chatStatus"
+          class="chat-status"
+        >
+          Offline
+        </div>
+
+      </div>
 
     </div>
 
+    <div style="width:40px;"></div>
 
-    <div class="coming-soon">
+  </div>
+
+
+  <!-- MESSAGES -->
+
+  <div
+    id="messagesContainer"
+    class="messages-container"
+  >
+
+    <div class="chat-empty">
 
       💬
 
-      <br><br>
+      <div>
+        Start your conversation.
+      </div>
 
-      Private Chat
-
-      <br><br>
-
-      Text, photos, videos and reactions
-      will live here.
+      <span>
+        Your messages will appear here.
+      </span>
 
     </div>
 
   </div>
 
+
+  <!-- TYPING -->
+
+  <div
+    id="typingIndicator"
+    class="typing-indicator hidden"
+  >
+    typing...
+  </div>
+
+
+  <!-- MESSAGE INPUT -->
+
+  <div class="chat-input-area">
+
+    <button
+      class="chat-tool"
+      onclick="showMessage('Photo/video sharing will be added next.')"
+    >
+      📎
+    </button>
+
+    <input
+      id="messageInput"
+      type="text"
+      placeholder="Type a message..."
+      autocomplete="off"
+    >
+
+    <button
+      class="chat-tool"
+      onclick="showMessage('Reactions will be added next.')"
+    >
+      😊
+    </button>
+
+    <button
+      id="sendMessageButton"
+      class="send-button"
+      onclick="sendMessage()"
+    >
+      ➤
+    </button>
+
+  </div>
+
+</div>
 
   <!-- =========================
        GAMES SCREEN
