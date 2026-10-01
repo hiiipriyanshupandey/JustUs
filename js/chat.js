@@ -2037,8 +2037,6 @@ async function startChat() {
 
   setupInput();
 
-  setupMediaPicker();
-
   createChatChannel();
 
 }
