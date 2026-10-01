@@ -6,7 +6,6 @@
 
   <title>JustUs</title>
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -33,8 +32,8 @@
 
     .logo {
       text-align: center;
-      margin-top: 70px;
-      margin-bottom: 40px;
+      margin-top: 60px;
+      margin-bottom: 35px;
     }
 
     .logo h1 {
@@ -75,8 +74,8 @@
     }
 
     .tab.active {
-      background: #ffffff;
-      color: #111111;
+      background: white;
+      color: #111;
       font-weight: 600;
     }
 
@@ -129,18 +128,24 @@
       cursor: not-allowed;
     }
 
+    .secondary-button {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid #303039;
+      background: transparent;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
     .forgot {
       display: block;
       text-align: center;
       margin-top: 18px;
       color: #92929d;
       font-size: 12px;
-      text-decoration: none;
       cursor: pointer;
-    }
-
-    .forgot:hover {
-      color: white;
     }
 
     .message {
@@ -170,7 +175,6 @@
 
     .logged-in {
       display: none;
-      text-align: center;
     }
 
     .logged-in.active {
@@ -178,15 +182,79 @@
     }
 
     .welcome {
-      font-size: 20px;
+      text-align: center;
+      font-size: 21px;
       margin-bottom: 8px;
     }
 
     .welcome-text {
+      text-align: center;
       color: #92929d;
       font-size: 13px;
-      margin-bottom: 25px;
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .section-text {
+      color: #92929d;
+      font-size: 12px;
       line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #666670;
+      font-size: 12px;
+      margin: 24px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      height: 1px;
+      background: #292931;
+      flex: 1;
+    }
+
+    .room-code-box {
+      display: none;
+      text-align: center;
+      margin-top: 22px;
+      padding: 18px;
+      background: #0f0f14;
+      border: 1px solid #292931;
+      border-radius: 14px;
+    }
+
+    .room-code-box.show {
+      display: block;
+    }
+
+    .room-code-label {
+      color: #92929d;
+      font-size: 12px;
+      margin-bottom: 9px;
+    }
+
+    .room-code {
+      font-size: 30px;
+      letter-spacing: 6px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .room-status {
+      color: #92929d;
+      font-size: 12px;
+      margin-top: 12px;
     }
 
     .logout-button {
@@ -198,13 +266,7 @@
       color: #f5f5f5;
       cursor: pointer;
       font-size: 14px;
-    }
-
-    .note {
-      text-align: center;
-      margin-top: 25px;
-      color: #666670;
-      font-size: 11px;
+      margin-top: 24px;
     }
 
     .loading {
@@ -219,14 +281,21 @@
       display: block;
     }
 
+    .note {
+      text-align: center;
+      margin-top: 25px;
+      color: #666670;
+      font-size: 11px;
+    }
+
     @media (max-width: 480px) {
       body {
         padding: 20px 15px;
       }
 
       .logo {
-        margin-top: 50px;
-        margin-bottom: 30px;
+        margin-top: 40px;
+        margin-bottom: 25px;
       }
 
       .card {
@@ -238,522 +307,607 @@
 
 <body>
 
-  <main class="app">
+<main class="app">
 
-    <!-- LOGO -->
-
-    <div class="logo">
-      <h1>JustUs</h1>
-      <p>A private space for two.</p>
-    </div>
+  <div class="logo">
+    <h1>JustUs</h1>
+    <p>A private space for two.</p>
+  </div>
 
 
-    <!-- AUTH CARD -->
+  <!-- ========================= -->
+  <!-- AUTH CARD -->
+  <!-- ========================= -->
 
-    <div class="card" id="authCard">
+  <div class="card" id="authCard">
 
-      <div class="tabs">
-
-        <button
-          class="tab active"
-          id="loginTab"
-          onclick="showForm('login')"
-        >
-          Log In
-        </button>
-
-        <button
-          class="tab"
-          id="signupTab"
-          onclick="showForm('signup')"
-        >
-          Create Account
-        </button>
-
-      </div>
-
-
-      <!-- MESSAGE -->
-
-      <div id="message" class="message"></div>
-
-
-      <!-- LOGIN -->
-
-      <div id="login" class="form active">
-
-        <label for="loginEmail">
-          Email
-        </label>
-
-        <input
-          id="loginEmail"
-          type="email"
-          placeholder="you@example.com"
-          autocomplete="email"
-        >
-
-
-        <label for="loginPassword">
-          Password
-        </label>
-
-        <input
-          id="loginPassword"
-          type="password"
-          placeholder="Your password"
-          autocomplete="current-password"
-        >
-
-
-        <button
-          class="button"
-          id="loginButton"
-          onclick="login()"
-        >
-          Log In
-        </button>
-
-
-        <a
-          class="forgot"
-          onclick="resetPassword()"
-        >
-          Forgot password?
-        </a>
-
-      </div>
-
-
-      <!-- SIGN UP -->
-
-      <div id="signup" class="form">
-
-        <label for="signupUsername">
-          Username
-        </label>
-
-        <input
-          id="signupUsername"
-          type="text"
-          placeholder="@yourusername"
-          autocomplete="username"
-          maxlength="20"
-        >
-
-
-        <label for="signupEmail">
-          Email
-        </label>
-
-        <input
-          id="signupEmail"
-          type="email"
-          placeholder="you@example.com"
-          autocomplete="email"
-        >
-
-
-        <label for="signupPassword">
-          Password
-        </label>
-
-        <input
-          id="signupPassword"
-          type="password"
-          placeholder="Create a password"
-          autocomplete="new-password"
-        >
-
-
-        <button
-          class="button"
-          id="signupButton"
-          onclick="signUp()"
-        >
-          Create Account
-        </button>
-
-      </div>
-
-
-      <div
-        id="loading"
-        class="loading"
-      >
-        Please wait...
-      </div>
-
-    </div>
-
-
-    <!-- LOGGED IN SCREEN -->
-
-    <div
-      class="card logged-in"
-      id="loggedInCard"
-    >
-
-      <div class="welcome">
-        Welcome to JustUs
-      </div>
-
-      <div
-        class="welcome-text"
-        id="welcomeText"
-      >
-        Your private space is ready.
-      </div>
+    <div class="tabs">
 
       <button
-        class="logout-button"
-        onclick="logout()"
-      >
-        Log Out
+        class="tab active"
+        id="loginTab"
+        onclick="showForm('login')">
+        Log In
+      </button>
+
+      <button
+        class="tab"
+        id="signupTab"
+        onclick="showForm('signup')">
+        Create Account
       </button>
 
     </div>
 
 
-    <p class="note">
-      Private • Simple • JustUs
-    </p>
-
-  </main>
+    <div id="message" class="message"></div>
 
 
-  <script>
+    <!-- LOGIN -->
 
-    /*
-      ============================================
-      SUPABASE CONFIGURATION
-      ============================================
-    */
+    <div id="login" class="form active">
 
-    const SUPABASE_URL =
-      "https://rfcvoeeydeamyytzfxbd.supabase.co";
+      <label>Email</label>
 
-    const SUPABASE_PUBLISHABLE_KEY =
-      "sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
-
-
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-      );
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+      >
 
 
-    /*
-      ============================================
-      FORM SWITCHING
-      ============================================
-    */
+      <label>Password</label>
 
-    function showForm(formName) {
-
-      document
-        .getElementById("login")
-        .classList.remove("active");
-
-      document
-        .getElementById("signup")
-        .classList.remove("active");
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="Your password"
+        autocomplete="current-password"
+      >
 
 
-      document
-        .getElementById(formName)
-        .classList.add("active");
+      <button
+        class="button"
+        id="loginButton"
+        onclick="login()">
+        Log In
+      </button>
 
+
+      <a
+        class="forgot"
+        onclick="resetPassword()">
+        Forgot password?
+      </a>
+
+    </div>
+
+
+    <!-- SIGNUP -->
+
+    <div id="signup" class="form">
+
+      <label>Username</label>
+
+      <input
+        id="signupUsername"
+        type="text"
+        placeholder="@yourusername"
+        autocomplete="username"
+        maxlength="20"
+      >
+
+
+      <label>Email</label>
+
+      <input
+        id="signupEmail"
+        type="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+      >
+
+
+      <label>Password</label>
+
+      <input
+        id="signupPassword"
+        type="password"
+        placeholder="Create a password"
+        autocomplete="new-password"
+      >
+
+
+      <button
+        class="button"
+        id="signupButton"
+        onclick="signUp()">
+        Create Account
+      </button>
+
+    </div>
+
+
+    <div id="loading" class="loading">
+      Please wait...
+    </div>
+
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- ROOM CARD -->
+  <!-- ========================= -->
+
+  <div
+    class="card logged-in"
+    id="loggedInCard">
+
+    <div class="welcome">
+      Welcome to JustUs
+    </div>
+
+    <div
+      class="welcome-text"
+      id="welcomeText">
+      Your private space is ready.
+    </div>
+
+
+    <!-- CREATE ROOM -->
+
+    <div class="section-title">
+      Create a Room
+    </div>
+
+    <div class="section-text">
+      Create a private room and share the code with someone.
+    </div>
+
+    <button
+      class="button"
+      id="createRoomButton"
+      onclick="createRoom()">
+      Create Room
+    </button>
+
+
+    <div class="divider">
+      OR
+    </div>
+
+
+    <!-- JOIN ROOM -->
+
+    <div class="section-title">
+      Join a Room
+    </div>
+
+    <div class="section-text">
+      Enter a room code shared with you.
+    </div>
+
+    <input
+      id="roomCodeInput"
+      type="text"
+      placeholder="6-character code"
+      maxlength="6"
+      autocomplete="off"
+      style="text-transform:uppercase;"
+    >
+
+    <button
+      class="button"
+      id="joinRoomButton"
+      onclick="joinRoom()">
+      Join Room
+    </button>
+
+
+    <!-- ROOM CODE -->
+
+    <div
+      class="room-code-box"
+      id="roomCodeBox">
+
+      <div class="room-code-label">
+        Your Room Code
+      </div>
+
+      <div
+        class="room-code"
+        id="roomCode">
+        ------
+      </div>
+
+      <button
+        class="secondary-button"
+        onclick="copyRoomCode()">
+        Copy Code
+      </button>
+
+      <div
+        class="room-status"
+        id="roomStatus">
+        Waiting for someone to join...
+      </div>
+
+    </div>
+
+
+    <button
+      class="logout-button"
+      onclick="logout()">
+      Log Out
+    </button>
+
+  </div>
+
+
+  <p class="note">
+    Private • Simple • JustUs
+  </p>
+
+</main>
+
+
+<script>
+
+  /* ==========================================
+     SUPABASE
+  ========================================== */
+
+  const SUPABASE_URL =
+    "https://rfcvoeeydeamyytzfxbd.supabase.co";
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+  /* ==========================================
+     FORM SWITCHING
+  ========================================== */
+
+  function showForm(formName) {
+
+    document
+      .getElementById("login")
+      .classList.remove("active");
+
+    document
+      .getElementById("signup")
+      .classList.remove("active");
+
+    document
+      .getElementById(formName)
+      .classList.add("active");
+
+
+    document
+      .getElementById("loginTab")
+      .classList.remove("active");
+
+    document
+      .getElementById("signupTab")
+      .classList.remove("active");
+
+
+    if (formName === "login") {
 
       document
         .getElementById("loginTab")
-        .classList.remove("active");
+        .classList.add("active");
+
+    } else {
 
       document
         .getElementById("signupTab")
-        .classList.remove("active");
-
-
-      if (formName === "login") {
-
-        document
-          .getElementById("loginTab")
-          .classList.add("active");
-
-      } else {
-
-        document
-          .getElementById("signupTab")
-          .classList.add("active");
-
-      }
-
-
-      clearMessage();
+        .classList.add("active");
 
     }
 
+    clearMessage();
 
-    /*
-      ============================================
-      MESSAGE SYSTEM
-      ============================================
-    */
+  }
 
-    function showMessage(message, type = "error") {
 
-      const box =
-        document.getElementById("message");
+  /* ==========================================
+     MESSAGE
+  ========================================== */
 
-      box.textContent = message;
+  function showMessage(
+    message,
+    type = "error"
+  ) {
 
-      box.className =
-        "message show " + type;
+    const box =
+      document.getElementById("message");
+
+    box.textContent = message;
+
+    box.className =
+      "message show " + type;
+
+  }
+
+
+  function clearMessage() {
+
+    const box =
+      document.getElementById("message");
+
+    box.textContent = "";
+
+    box.className = "message";
+
+  }
+
+
+  /* ==========================================
+     LOADING
+  ========================================== */
+
+  function setLoading(isLoading) {
+
+    const loading =
+      document.getElementById("loading");
+
+    const loginButton =
+      document.getElementById("loginButton");
+
+    const signupButton =
+      document.getElementById("signupButton");
+
+
+    if (isLoading) {
+
+      loading.classList.add("show");
+
+      loginButton.disabled = true;
+
+      signupButton.disabled = true;
+
+    } else {
+
+      loading.classList.remove("show");
+
+      loginButton.disabled = false;
+
+      signupButton.disabled = false;
 
     }
 
+  }
 
-    function clearMessage() {
 
-      const box =
-        document.getElementById("message");
+  /* ==========================================
+     SIGN UP
+  ========================================== */
 
-      box.textContent = "";
+  async function signUp() {
 
-      box.className = "message";
+    clearMessage();
 
+    const username =
+      document
+        .getElementById("signupUsername")
+        .value
+        .trim()
+        .replace(/^@/, "")
+        .toLowerCase();
+
+    const email =
+      document
+        .getElementById("signupEmail")
+        .value
+        .trim();
+
+    const password =
+      document
+        .getElementById("signupPassword")
+        .value;
+
+
+    if (!username || !email || !password) {
+
+      showMessage(
+        "Please fill all fields."
+      );
+
+      return;
     }
 
 
-    /*
-      ============================================
-      LOADING
-      ============================================
-    */
+    if (username.length < 3) {
 
-    function setLoading(isLoading) {
+      showMessage(
+        "Username must be at least 3 characters."
+      );
 
-      const loading =
-        document.getElementById("loading");
-
-      const loginButton =
-        document.getElementById("loginButton");
-
-      const signupButton =
-        document.getElementById("signupButton");
-
-
-      if (isLoading) {
-
-        loading.classList.add("show");
-
-        loginButton.disabled = true;
-
-        signupButton.disabled = true;
-
-      } else {
-
-        loading.classList.remove("show");
-
-        loginButton.disabled = false;
-
-        signupButton.disabled = false;
-
-      }
-
+      return;
     }
 
 
-    /*
-      ============================================
-      SIGN UP
-      ============================================
-    */
+    if (!/^[a-z0-9_]+$/.test(username)) {
 
-    async function signUp() {
+      showMessage(
+        "Username can contain only letters, numbers and underscore."
+      );
 
-      clearMessage();
-
-      const username =
-        document
-          .getElementById("signupUsername")
-          .value
-          .trim()
-          .replace(/^@/, "")
-          .toLowerCase();
+      return;
+    }
 
 
-      const email =
-        document
-          .getElementById("signupEmail")
-          .value
-          .trim();
+    if (password.length < 6) {
+
+      showMessage(
+        "Password must be at least 6 characters."
+      );
+
+      return;
+    }
 
 
-      const password =
-        document
-          .getElementById("signupPassword")
-          .value;
+    setLoading(true);
 
 
-      if (!username || !email || !password) {
+    try {
+
+      /*
+        Check username before signup.
+      */
+
+      const {
+        data: existingProfile,
+        error: usernameError
+      } =
+        await supabaseClient
+          .from("profiles")
+          .select("id")
+          .eq("username", username)
+          .maybeSingle();
+
+
+      if (
+        usernameError &&
+        usernameError.code !== "PGRST116"
+      ) {
 
         showMessage(
-          "Please fill all fields."
+          "Unable to check username."
         );
 
         return;
-
       }
 
 
-      if (username.length < 3) {
+      if (existingProfile) {
 
         showMessage(
-          "Username must be at least 3 characters."
+          "That username is already taken."
         );
 
         return;
-
       }
 
 
-      if (password.length < 6) {
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.signUp({
 
-        showMessage(
-          "Password must be at least 6 characters."
-        );
+          email: email,
 
-        return;
+          password: password,
 
-      }
+          options: {
 
-
-      setLoading(true);
-
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient.auth.signUp({
-
-            email: email,
-
-            password: password,
-
-            options: {
-
-              data: {
-                username: username
-              }
-
+            data: {
+              username: username
             }
 
-          });
+          }
+
+        });
 
 
-        if (error) {
-
-          showMessage(
-            error.message
-          );
-
-          return;
-
-        }
-
-
-        /*
-          Supabase may require email confirmation.
-        */
-
-        if (
-          data.user &&
-          !data.session
-        ) {
-
-          showMessage(
-            "Account created. Please check your email and confirm your account.",
-            "success"
-          );
-
-          document
-            .getElementById("signupPassword")
-            .value = "";
-
-        } else {
-
-          showMessage(
-            "Account created successfully!",
-            "success"
-          );
-
-        }
-
-      } catch (error) {
+      if (error) {
 
         showMessage(
-          "Something went wrong. Please try again."
-        );
-
-      } finally {
-
-        setLoading(false);
-
-      }
-
-    }
-
-
-    /*
-      ============================================
-      LOGIN
-      ============================================
-    */
-
-    async function login() {
-
-      clearMessage();
-
-
-      const email =
-        document
-          .getElementById("loginEmail")
-          .value
-          .trim();
-
-
-      const password =
-        document
-          .getElementById("loginPassword")
-          .value;
-
-
-      if (!email || !password) {
-
-        showMessage(
-          "Please enter your email and password."
+          error.message
         );
 
         return;
-
       }
 
 
-      setLoading(true);
+      if (
+        data.user &&
+        !data.session
+      ) {
+
+        showMessage(
+          "Account created. Check your email and confirm your account.",
+          "success"
+        );
+
+        document
+          .getElementById("signupPassword")
+          .value = "";
+
+      } else {
+
+        showMessage(
+          "Account created successfully!",
+          "success"
+        );
+
+      }
+
+    } catch (error) {
+
+      showMessage(
+        "Something went wrong. Please try again."
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  }
 
 
-      try {
+  /* ==========================================
+     LOGIN
+  ========================================== */
 
-        const {
-          data,
-          error
-        } =
-          await supabaseClient.auth.signInWithPassword({
+  async function login() {
+
+    clearMessage();
+
+    const email =
+      document
+        .getElementById("loginEmail")
+        .value
+        .trim();
+
+    const password =
+      document
+        .getElementById("loginPassword")
+        .value;
+
+
+    if (!email || !password) {
+
+      showMessage(
+        "Please enter your email and password."
+      );
+
+      return;
+    }
+
+
+    setLoading(true);
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth
+          .signInWithPassword({
 
             email: email,
 
@@ -762,242 +916,541 @@
           });
 
 
-        if (error) {
-
-          showMessage(
-            error.message
-          );
-
-          return;
-
-        }
-
-
-        showLoggedIn(
-          data.user
-        );
-
-      } catch (error) {
+      if (error) {
 
         showMessage(
-          "Something went wrong. Please try again."
-        );
-
-      } finally {
-
-        setLoading(false);
-
-      }
-
-    }
-
-
-    /*
-      ============================================
-      FORGOT PASSWORD
-      ============================================
-    */
-
-    async function resetPassword() {
-
-      clearMessage();
-
-
-      const email =
-        document
-          .getElementById("loginEmail")
-          .value
-          .trim();
-
-
-      if (!email) {
-
-        showMessage(
-          "Enter your email first, then tap Forgot password."
+          error.message
         );
 
         return;
-
       }
 
 
-      setLoading(true);
+      await showLoggedIn(
+        data.user
+      );
 
+    } catch (error) {
 
-      try {
+      showMessage(
+        "Something went wrong. Please try again."
+      );
 
-        const {
-          error
-        } =
-          await supabaseClient.auth
-            .resetPasswordForEmail(
-              email,
-              {
-                redirectTo:
-                  window.location.origin +
-                  window.location.pathname
-              }
-            );
+    } finally {
 
-
-        if (error) {
-
-          showMessage(
-            error.message
-          );
-
-          return;
-
-        }
-
-
-        showMessage(
-          "Password reset email sent. Check your inbox.",
-          "success"
-        );
-
-      } catch (error) {
-
-        showMessage(
-          "Unable to send reset email."
-        );
-
-      } finally {
-
-        setLoading(false);
-
-      }
+      setLoading(false);
 
     }
 
+  }
 
-    /*
-      ============================================
-      SHOW LOGGED-IN SCREEN
-      ============================================
-    */
 
-    function showLoggedIn(user) {
+  /* ==========================================
+     FORGOT PASSWORD
+  ========================================== */
 
+  async function resetPassword() {
+
+    clearMessage();
+
+    const email =
       document
-        .getElementById("authCard")
-        .style.display = "none";
+        .getElementById("loginEmail")
+        .value
+        .trim();
 
 
-      document
-        .getElementById("loggedInCard")
-        .classList.add("active");
+    if (!email) {
 
+      showMessage(
+        "Enter your email first, then tap Forgot password."
+      );
 
-      const username =
-        user?.user_metadata?.username;
-
-
-      const welcomeText =
-        document.getElementById(
-          "welcomeText"
-        );
-
-
-      if (username) {
-
-        welcomeText.textContent =
-          "Logged in as @" + username;
-
-      } else {
-
-        welcomeText.textContent =
-          "Your private space is ready.";
-
-      }
-
+      return;
     }
 
 
-    /*
-      ============================================
-      LOGOUT
-      ============================================
-    */
-
-    async function logout() {
-
-      await supabaseClient.auth.signOut();
+    setLoading(true);
 
 
-      document
-        .getElementById("loggedInCard")
-        .classList.remove("active");
-
-
-      document
-        .getElementById("authCard")
-        .style.display = "block";
-
-
-      showForm("login");
-
-    }
-
-
-    /*
-      ============================================
-      CHECK EXISTING SESSION
-      ============================================
-    */
-
-    async function checkSession() {
+    try {
 
       const {
-        data
+        error
       } =
-        await supabaseClient.auth.getSession();
+        await supabaseClient.auth
+          .resetPasswordForEmail(
+            email,
+            {
+              redirectTo:
+                window.location.origin +
+                window.location.pathname
+            }
+          );
 
 
-      if (data.session) {
+      if (error) {
 
-        showLoggedIn(
-          data.session.user
+        showMessage(
+          error.message
+        );
+
+        return;
+      }
+
+
+      showMessage(
+        "Password reset email sent. Check your inbox.",
+        "success"
+      );
+
+    } catch (error) {
+
+      showMessage(
+        "Unable to send reset email."
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  }
+
+
+  /* ==========================================
+     SHOW LOGGED-IN ROOM SCREEN
+  ========================================== */
+
+  async function showLoggedIn(user) {
+
+    document
+      .getElementById("authCard")
+      .style.display = "none";
+
+
+    document
+      .getElementById("loggedInCard")
+      .classList.add("active");
+
+
+    const username =
+      user?.user_metadata?.username;
+
+
+    document
+      .getElementById("welcomeText")
+      .textContent =
+        username
+          ? "Logged in as @" + username
+          : "Your private space is ready.";
+
+
+    /*
+      Check whether user already belongs
+      to a room.
+    */
+
+    await loadExistingRoom();
+
+  }
+
+
+  /* ==========================================
+     CREATE ROOM
+  ========================================== */
+
+  async function createRoom() {
+
+    clearMessage();
+
+    const button =
+      document.getElementById(
+        "createRoomButton"
+      );
+
+    button.disabled = true;
+
+    button.textContent = "Creating...";
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .rpc("create_justus_room");
+
+
+      if (error) {
+
+        showMessage(
+          error.message
+        );
+
+        return;
+      }
+
+
+      if (
+        !data ||
+        !data.length
+      ) {
+
+        showMessage(
+          "Room could not be created."
+        );
+
+        return;
+      }
+
+
+      const room =
+        data[0];
+
+
+      displayRoom(
+        room.room_code
+      );
+
+
+      showMessage(
+        "Room created successfully.",
+        "success"
+      );
+
+    } catch (error) {
+
+      showMessage(
+        "Unable to create room."
+      );
+
+    } finally {
+
+      button.disabled = false;
+
+      button.textContent =
+        "Create Room";
+
+    }
+
+  }
+
+
+  /* ==========================================
+     JOIN ROOM
+  ========================================== */
+
+  async function joinRoom() {
+
+    clearMessage();
+
+    const input =
+      document.getElementById(
+        "roomCodeInput"
+      );
+
+    const code =
+      input.value
+        .trim()
+        .toUpperCase();
+
+
+    if (code.length !== 6) {
+
+      showMessage(
+        "Enter a valid 6-character room code."
+      );
+
+      return;
+    }
+
+
+    const button =
+      document.getElementById(
+        "joinRoomButton"
+      );
+
+    button.disabled = true;
+
+    button.textContent = "Joining...";
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .rpc(
+            "join_justus_room",
+            {
+              p_room_code: code
+            }
+          );
+
+
+      if (error) {
+
+        showMessage(
+          error.message
+        );
+
+        return;
+      }
+
+
+      if (
+        !data ||
+        !data.length
+      ) {
+
+        showMessage(
+          "Unable to join this room."
+        );
+
+        return;
+      }
+
+
+      displayRoom(
+        data[0].room_code
+      );
+
+
+      input.value = "";
+
+
+      showMessage(
+        "You joined the room successfully.",
+        "success"
+      );
+
+    } catch (error) {
+
+      showMessage(
+        "Unable to join room."
+      );
+
+    } finally {
+
+      button.disabled = false;
+
+      button.textContent =
+        "Join Room";
+
+    }
+
+  }
+
+
+    /* ==========================================
+     DISPLAY ROOM
+  ========================================== */
+
+  function displayRoom(code) {
+
+    const box =
+      document.getElementById("roomCodeBox");
+
+    const codeElement =
+      document.getElementById("roomCode");
+
+    codeElement.textContent = code;
+
+    box.classList.add("show");
+
+    document
+      .getElementById("roomStatus")
+      .textContent =
+        "Room is ready. Share this code with someone.";
+
+    document
+      .getElementById("createRoomButton")
+      .disabled = true;
+  }
+
+
+  /* ==========================================
+     LOAD EXISTING ROOM
+  ========================================== */
+
+  async function loadExistingRoom() {
+
+    try {
+
+      const {
+        data: userData
+      } =
+        await supabaseClient.auth.getUser();
+
+      const user = userData?.user;
+
+      if (!user) {
+        return;
+      }
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("room_members")
+          .select(`
+            room_id,
+            rooms (
+              room_code
+            )
+          `)
+          .eq("user_id", user.id)
+          .limit(1)
+          .maybeSingle();
+
+      if (error || !data) {
+        return;
+      }
+
+      if (
+        data.rooms &&
+        data.rooms.room_code
+      ) {
+
+        displayRoom(
+          data.rooms.room_code
+        );
+
+      }
+
+    } catch (error) {
+
+      console.log(
+        "No existing room found."
+      );
+
+    }
+
+  }
+
+
+  /* ==========================================
+     COPY ROOM CODE
+  ========================================== */
+
+  async function copyRoomCode() {
+
+    const code =
+      document
+        .getElementById("roomCode")
+        .textContent;
+
+    try {
+
+      await navigator.clipboard.writeText(code);
+
+      showMessage(
+        "Room code copied.",
+        "success"
+      );
+
+    } catch (error) {
+
+      showMessage(
+        "Copy failed. Please copy the code manually."
+      );
+
+    }
+
+  }
+
+
+  /* ==========================================
+     LOGOUT
+  ========================================== */
+
+  async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    document
+      .getElementById("loggedInCard")
+      .classList.remove("active");
+
+    document
+      .getElementById("authCard")
+      .style.display = "block";
+
+    document
+      .getElementById("roomCodeBox")
+      .classList.remove("show");
+
+    document
+      .getElementById("roomCode")
+      .textContent = "------";
+
+    document
+      .getElementById("createRoomButton")
+      .disabled = false;
+
+    showForm("login");
+
+  }
+
+
+  /* ==========================================
+     CHECK SESSION
+  ========================================== */
+
+  async function checkSession() {
+
+    const {
+      data
+    } =
+      await supabaseClient.auth.getSession();
+
+    if (data.session) {
+
+      await showLoggedIn(
+        data.session.user
+      );
+
+    }
+
+  }
+
+
+  /* ==========================================
+     AUTH STATE
+  ========================================== */
+
+  supabaseClient.auth.onAuthStateChange(
+    async (event, session) => {
+
+      if (
+        event === "SIGNED_IN" &&
+        session
+      ) {
+
+        await showLoggedIn(
+          session.user
         );
 
       }
 
     }
+  );
 
 
-    /*
-      ============================================
-      AUTH STATE LISTENER
-      ============================================
-    */
+  /* ==========================================
+     START APP
+  ========================================== */
 
-    supabaseClient.auth.onAuthStateChange(
-      (event, session) => {
+  checkSession();
 
-        if (
-          event === "SIGNED_IN" &&
-          session
-        ) {
-
-          showLoggedIn(
-            session.user
-          );
-
-        }
-
-      }
-    );
-
-
-    /*
-      ============================================
-      START APP
-      ============================================
-    */
-
-    checkSession();
-
-  </script>
+</script>
 
 </body>
 </html>
