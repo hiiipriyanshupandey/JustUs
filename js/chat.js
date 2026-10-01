@@ -15,12 +15,12 @@ let currentUser = null;
 let friend = null;
 let chatChannel = null;
 
-let typingTimer = null;
-let isTyping = false;
+let typingTimeout = null;
+let currentlyTyping = false;
 
 
 /* =========================
-   GET FRIEND ID
+   FRIEND ID
 ========================= */
 
 function getFriendId() {
@@ -61,14 +61,12 @@ async function loadCurrentUser() {
   } =
     await supabaseClient.auth.getSession();
 
-
   if (error) {
 
     console.error(error);
 
     return false;
   }
-
 
   if (!data.session) {
 
@@ -78,10 +76,8 @@ async function loadCurrentUser() {
     return false;
   }
 
-
   currentUser =
     data.session.user;
-
 
   return true;
 }
@@ -96,16 +92,14 @@ async function loadFriend() {
   const friendId =
     getFriendId();
 
-
   if (!friendId) {
 
     showError(
       "No friend selected."
     );
 
-    return;
+    return false;
   }
-
 
   const {
     data,
@@ -117,7 +111,6 @@ async function loadFriend() {
       .eq("id", friendId)
       .maybeSingle();
 
-
   if (error) {
 
     console.error(error);
@@ -126,9 +119,8 @@ async function loadFriend() {
       error.message
     );
 
-    return;
+    return false;
   }
-
 
   if (!data) {
 
@@ -136,18 +128,20 @@ async function loadFriend() {
       "Friend not found."
     );
 
-    return;
+    return false;
   }
 
-
   friend = data;
-
 
   document.getElementById(
     "friendName"
   ).textContent =
     "@" + friend.username;
 
+  document.getElementById(
+    "friendStatus"
+  ).textContent =
+    "Connecting...";
 
   document.getElementById(
     "emptyText"
@@ -156,8 +150,9 @@ async function loadFriend() {
     friend.username +
     " 👋";
 
-
   await loadMessages();
+
+  return true;
 }
 
 
@@ -174,12 +169,10 @@ async function loadMessages() {
     return;
   }
 
-
   const container =
     document.getElementById(
       "messages"
     );
-
 
   const {
     data,
@@ -200,7 +193,6 @@ async function loadMessages() {
         }
       );
 
-
   if (error) {
 
     console.error(error);
@@ -212,7 +204,6 @@ async function loadMessages() {
     return;
   }
 
-
   if (
     !data ||
     data.length === 0
@@ -223,9 +214,7 @@ async function loadMessages() {
     return;
   }
 
-
   let html = "";
-
 
   data.forEach(
     function(item) {
@@ -233,7 +222,6 @@ async function loadMessages() {
       const mine =
         item.sender_id ===
         currentUser.id;
-
 
       const time =
         new Date(
@@ -245,7 +233,6 @@ async function loadMessages() {
             minute: "2-digit"
           }
         );
-
 
       html += `
 
@@ -283,10 +270,8 @@ async function loadMessages() {
     }
   );
 
-
   container.innerHTML =
     html;
-
 
   scrollToBottom();
 }
@@ -303,12 +288,10 @@ function showEmptyChat() {
       "messages"
     );
 
-
   const username =
     friend
       ? friend.username
       : "your friend";
-
 
   container.innerHTML = `
 
@@ -350,34 +333,27 @@ async function sendMessage() {
     return;
   }
 
-
   const input =
     document.getElementById(
       "messageInput"
     );
-
 
   const button =
     document.getElementById(
       "sendButton"
     );
 
-
   const message =
     input.value.trim();
-
 
   if (!message) {
     return;
   }
 
-
   stopTyping();
-
 
   button.disabled =
     true;
-
 
   const {
     error
@@ -397,10 +373,8 @@ async function sendMessage() {
 
       });
 
-
   button.disabled =
     false;
-
 
   if (error) {
 
@@ -413,17 +387,269 @@ async function sendMessage() {
     return;
   }
 
-
   input.value = "";
-
-  await loadMessages();
 
   input.focus();
 }
 
 
 /* =========================
-   TYPING INDICATOR
+   CREATE CHAT CHANNEL
+========================= */
+
+function createChatChannel() {
+
+  if (
+    !currentUser ||
+    !friend
+  ) {
+    return;
+  }
+
+  const ids = [
+    currentUser.id,
+    friend.id
+  ].sort();
+
+  const channelName =
+    "justus-chat-" +
+    ids[0] +
+    "-" +
+    ids[1];
+
+  chatChannel =
+    supabaseClient.channel(
+      channelName,
+      {
+        config: {
+          presence: {
+            key: currentUser.id
+          }
+        }
+      }
+    );
+
+
+  /* =========================
+     REALTIME MESSAGES
+  ========================== */
+
+  chatChannel.on(
+    "postgres_changes",
+    {
+      event: "INSERT",
+      schema: "public",
+      table: "messages"
+    },
+    function(payload) {
+
+      const message =
+        payload.new;
+
+      const belongsToChat =
+        (
+          message.sender_id ===
+            currentUser.id &&
+          message.receiver_id ===
+            friend.id
+        )
+        ||
+        (
+          message.sender_id ===
+            friend.id &&
+          message.receiver_id ===
+            currentUser.id
+        );
+
+      if (
+        belongsToChat
+      ) {
+
+        loadMessages();
+
+      }
+
+    }
+  );
+
+
+  /* =========================
+     TYPING
+  ========================== */
+
+  chatChannel.on(
+    "broadcast",
+    {
+      event: "typing"
+    },
+    function(payload) {
+
+      const data =
+        payload.payload;
+
+      if (
+        !data ||
+        data.user_id !==
+          friend.id
+      ) {
+        return;
+      }
+
+      if (data.typing) {
+
+        showTyping();
+
+      } else {
+
+        hideTyping();
+
+      }
+
+    }
+  );
+
+
+  /* =========================
+     PRESENCE
+  ========================== */
+
+  chatChannel.on(
+    "presence",
+    {
+      event: "sync"
+    },
+    function() {
+
+      updateFriendPresence();
+
+    }
+  );
+
+
+  chatChannel.on(
+    "presence",
+    {
+      event: "join"
+    },
+    function() {
+
+      updateFriendPresence();
+
+    }
+  );
+
+
+  chatChannel.on(
+    "presence",
+    {
+      event: "leave"
+    },
+    function() {
+
+      updateFriendPresence();
+
+    }
+  );
+
+
+  /* =========================
+     SUBSCRIBE
+  ========================== */
+
+  chatChannel.subscribe(
+    async function(status) {
+
+      console.log(
+        "JustUs Realtime:",
+        status
+      );
+
+      if (
+        status ===
+        "SUBSCRIBED"
+      ) {
+
+        await chatChannel.track({
+
+          user_id:
+            currentUser.id,
+
+          username:
+            currentUser.user_metadata
+              ?.username || "",
+
+          online_at:
+            new Date().toISOString()
+
+        });
+
+        updateFriendPresence();
+
+      }
+
+    }
+  );
+}
+
+
+/* =========================
+   FRIEND ONLINE STATUS
+========================= */
+
+function updateFriendPresence() {
+
+  if (
+    !chatChannel ||
+    !friend
+  ) {
+    return;
+  }
+
+  const state =
+    chatChannel.presenceState();
+
+  const friendOnline =
+    Object.prototype.hasOwnProperty
+      .call(
+        state,
+        friend.id
+      );
+
+  const status =
+    document.getElementById(
+      "friendStatus"
+    );
+
+  if (!status) {
+    return;
+  }
+
+  if (currentlyTyping) {
+    return;
+  }
+
+  if (friendOnline) {
+
+    status.textContent =
+      "Online";
+
+    status.style.color =
+      "#7cff9b";
+
+  } else {
+
+    status.textContent =
+      "Offline";
+
+    status.style.color =
+      "#777";
+
+  }
+}
+
+
+/* =========================
+   START TYPING
 ========================= */
 
 function startTyping() {
@@ -436,11 +662,12 @@ function startTyping() {
     return;
   }
 
+  if (
+    !currentlyTyping
+  ) {
 
-  if (!isTyping) {
-
-    isTyping = true;
-
+    currentlyTyping =
+      true;
 
     chatChannel.send({
 
@@ -449,23 +676,24 @@ function startTyping() {
       event: "typing",
 
       payload: {
+
         user_id:
           currentUser.id,
 
-        typing: true
+        typing:
+          true
+
       }
 
     });
 
   }
 
-
   clearTimeout(
-    typingTimer
+    typingTimeout
   );
 
-
-  typingTimer =
+  typingTimeout =
     setTimeout(
       stopTyping,
       1500
@@ -473,24 +701,26 @@ function startTyping() {
 }
 
 
+/* =========================
+   STOP TYPING
+========================= */
+
 function stopTyping() {
 
   if (
     !chatChannel ||
     !currentUser ||
-    !isTyping
+    !currentlyTyping
   ) {
     return;
   }
 
-
-  isTyping = false;
-
+  currentlyTyping =
+    false;
 
   clearTimeout(
-    typingTimer
+    typingTimeout
   );
-
 
   chatChannel.send({
 
@@ -499,14 +729,18 @@ function stopTyping() {
     event: "typing",
 
     payload: {
+
       user_id:
         currentUser.id,
 
-      typing: false
+      typing:
+        false
+
     }
 
   });
 
+  updateFriendPresence();
 }
 
 
@@ -521,11 +755,9 @@ function showTyping() {
       "friendStatus"
     );
 
-
   if (!status) {
     return;
   }
-
 
   status.textContent =
     "typing...";
@@ -535,6 +767,10 @@ function showTyping() {
 }
 
 
+/* =========================
+   HIDE TYPING
+========================= */
+
 function hideTyping() {
 
   const status =
@@ -542,140 +778,19 @@ function hideTyping() {
       "friendStatus"
     );
 
-
   if (!status) {
     return;
   }
 
+  currentlyTyping =
+    false;
 
-  status.textContent =
-    "Offline";
-
-  status.style.color =
-    "#777";
+  updateFriendPresence();
 }
 
 
 /* =========================
-   REALTIME CHAT
-========================= */
-
-function setupRealtime() {
-
-  if (
-    !currentUser ||
-    !friend
-  ) {
-    return;
-  }
-
-
-  const ids = [
-    currentUser.id,
-    friend.id
-  ].sort();
-
-
-  chatChannel =
-    supabaseClient.channel(
-      "justus-chat-" +
-      ids[0] +
-      "-" +
-      ids[1]
-    );
-
-
-  chatChannel
-    .on(
-      "postgres_changes",
-      {
-        event: "INSERT",
-        schema: "public",
-        table: "messages"
-      },
-      function(payload) {
-
-        const message =
-          payload.new;
-
-
-        const belongsToChat =
-          (
-            message.sender_id ===
-              currentUser.id &&
-            message.receiver_id ===
-              friend.id
-          )
-          ||
-          (
-            message.sender_id ===
-              friend.id &&
-            message.receiver_id ===
-              currentUser.id
-          );
-
-
-        if (
-          belongsToChat
-        ) {
-
-          loadMessages();
-
-        }
-
-      }
-    )
-
-
-    .on(
-      "broadcast",
-      {
-        event: "typing"
-      },
-      function(payload) {
-
-        const data =
-          payload.payload;
-
-
-        if (
-          !data ||
-          data.user_id !==
-            friend.id
-        ) {
-          return;
-        }
-
-
-        if (data.typing) {
-
-          showTyping();
-
-        } else {
-
-          hideTyping();
-
-        }
-
-      }
-    )
-
-
-    .subscribe(
-      function(status) {
-
-        console.log(
-          "Realtime:",
-          status
-        );
-
-      }
-    );
-}
-
-
-/* =========================
-   INPUT EVENTS
+   INPUT
 ========================= */
 
 function setupInput() {
@@ -685,11 +800,9 @@ function setupInput() {
       "messageInput"
     );
 
-
   if (!input) {
     return;
   }
-
 
   input.addEventListener(
     "input",
@@ -745,13 +858,14 @@ function setupInput() {
    ERROR
 ========================= */
 
-function showError(message) {
+function showError(
+  message
+) {
 
   const container =
     document.getElementById(
       "messages"
     );
-
 
   container.innerHTML = `
 
@@ -774,11 +888,9 @@ function scrollToBottom() {
       "messages"
     );
 
-
   if (!container) {
     return;
   }
-
 
   container.scrollTop =
     container.scrollHeight;
@@ -797,7 +909,7 @@ function goBack() {
 
 
 /* =========================
-   TEMP BUTTONS
+   MEDIA
 ========================= */
 
 function showMediaMessage() {
@@ -808,6 +920,10 @@ function showMediaMessage() {
 }
 
 
+/* =========================
+   REACTIONS
+========================= */
+
 function showReactionMessage() {
 
   alert(
@@ -816,12 +932,38 @@ function showReactionMessage() {
 }
 
 
+/* =========================
+   MORE
+========================= */
+
 function showMoreOptions() {
 
   alert(
     "More chat options will be added later."
   );
 }
+
+
+/* =========================
+   CLEANUP
+========================= */
+
+window.addEventListener(
+  "beforeunload",
+  function() {
+
+    if (chatChannel) {
+
+      chatChannel.untrack();
+
+      supabaseClient.removeChannel(
+        chatChannel
+      );
+
+    }
+
+  }
+);
 
 
 /* =========================
@@ -833,19 +975,20 @@ async function startChat() {
   const loggedIn =
     await loadCurrentUser();
 
-
   if (!loggedIn) {
     return;
   }
 
+  const friendLoaded =
+    await loadFriend();
 
-  await loadFriend();
-
+  if (!friendLoaded) {
+    return;
+  }
 
   setupInput();
 
-
-  setupRealtime();
+  createChatChannel();
 }
 
 
