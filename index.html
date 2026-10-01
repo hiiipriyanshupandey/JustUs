@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>JustUs</title>
 
@@ -17,110 +21,100 @@
 
     body {
       min-height: 100vh;
-      background: #0b0b0f;
+      background: #090909;
       color: #f5f5f5;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      padding: 30px 20px;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      padding: 20px;
     }
 
     .app {
       width: 100%;
-      max-width: 420px;
+      max-width: 520px;
+      margin: 0 auto;
     }
 
     .logo {
       text-align: center;
-      margin-top: 60px;
-      margin-bottom: 35px;
-    }
-
-    .logo h1 {
-      font-size: 34px;
-      margin-bottom: 10px;
+      font-size: 30px;
+      font-weight: 700;
       letter-spacing: -1px;
+      margin-top: 30px;
+      margin-bottom: 8px;
     }
 
-    .logo p {
-      color: #92929d;
+    .tagline {
+      text-align: center;
+      color: #888;
       font-size: 14px;
+      margin-bottom: 30px;
     }
 
     .card {
-      background: #15151b;
-      border: 1px solid #292931;
-      border-radius: 18px;
-      padding: 24px;
+      background: #111;
+      border: 1px solid #242424;
+      border-radius: 20px;
+      padding: 22px;
     }
 
-    .tabs {
-      display: flex;
-      background: #0f0f14;
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 24px;
+    .hidden {
+      display: none !important;
     }
 
-    .tab {
-      width: 50%;
-      padding: 11px;
-      border: none;
-      border-radius: 8px;
-      background: transparent;
-      color: #888894;
+    .welcome {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .welcome-text {
+      color: #888;
       font-size: 14px;
-      cursor: pointer;
+      margin-bottom: 26px;
     }
 
-    .tab.active {
-      background: white;
-      color: #111;
-      font-weight: 600;
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 10px;
     }
 
-    .form {
-      display: none;
-    }
-
-    .form.active {
-      display: block;
-    }
-
-    label {
-      display: block;
+    .section-text {
+      color: #888;
       font-size: 13px;
-      color: #b0b0ba;
-      margin-bottom: 7px;
+      line-height: 1.5;
+      margin-bottom: 14px;
     }
 
     input {
       width: 100%;
-      padding: 13px;
-      margin-bottom: 17px;
-      border-radius: 10px;
-      border: 1px solid #303039;
-      background: #0e0e13;
-      color: white;
+      background: #0b0b0b;
+      color: #fff;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 13px 14px;
       outline: none;
-      font-size: 14px;
+      font-size: 15px;
+      margin-bottom: 12px;
     }
 
     input:focus {
-      border-color: #777783;
+      border-color: #555;
     }
 
     .button {
       width: 100%;
-      padding: 14px;
       border: none;
-      border-radius: 10px;
-      background: white;
-      color: #111;
-      font-size: 14px;
-      font-weight: 600;
+      border-radius: 12px;
+      padding: 13px;
+      background: #fff;
+      color: #000;
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
-      margin-top: 4px;
     }
 
     .button:disabled {
@@ -130,1327 +124,1257 @@
 
     .secondary-button {
       width: 100%;
-      padding: 13px;
-      border-radius: 10px;
-      border: 1px solid #303039;
-      background: transparent;
-      color: white;
+      border: 1px solid #303030;
+      border-radius: 12px;
+      padding: 11px;
+      background: #161616;
+      color: #fff;
       font-size: 14px;
       cursor: pointer;
     }
 
-    .forgot {
-      display: block;
+    .danger-button {
+      border: 1px solid #452020;
+      background: #1b0d0d;
+      color: #ffb4b4;
+    }
+
+    .auth-switch {
       text-align: center;
+      color: #888;
+      font-size: 13px;
       margin-top: 18px;
-      color: #92929d;
+    }
+
+    .auth-switch span {
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .forgot {
+      text-align: right;
+      color: #999;
       font-size: 12px;
+      margin-top: -4px;
+      margin-bottom: 15px;
       cursor: pointer;
     }
 
     .message {
       display: none;
+      margin-bottom: 15px;
       padding: 11px 12px;
-      margin-bottom: 18px;
-      border-radius: 9px;
-      font-size: 12px;
+      border-radius: 10px;
+      font-size: 13px;
       line-height: 1.4;
+      background: #191919;
+      border: 1px solid #2b2b2b;
+      color: #ddd;
     }
 
     .message.show {
       display: block;
     }
 
-    .message.error {
-      background: #2a1518;
-      border: 1px solid #54242a;
-      color: #ffb8bf;
-    }
-
     .message.success {
-      background: #142319;
-      border: 1px solid #294b31;
-      color: #b9efc2;
+      border-color: #25452f;
+      color: #a8e6b8;
     }
 
-    .logged-in {
-      display: none;
-    }
-
-    .logged-in.active {
-      display: block;
-    }
-
-    .welcome {
-      text-align: center;
-      font-size: 21px;
-      margin-bottom: 8px;
-    }
-
-    .welcome-text {
-      text-align: center;
-      color: #92929d;
-      font-size: 13px;
-      margin-bottom: 28px;
-    }
-
-    .section-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .section-text {
-      color: #92929d;
-      font-size: 12px;
-      line-height: 1.5;
-      margin-bottom: 15px;
+    .message.error {
+      border-color: #4a2525;
+      color: #ffb1b1;
     }
 
     .divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #666670;
-      font-size: 12px;
-      margin: 24px 0;
-    }
-
-    .divider::before,
-    .divider::after {
-      content: "";
       height: 1px;
-      background: #292931;
-      flex: 1;
+      background: #222;
+      margin: 25px 0;
     }
 
-    .room-code-box {
-      display: none;
-      text-align: center;
-      margin-top: 22px;
-      padding: 18px;
-      background: #0f0f14;
-      border: 1px solid #292931;
-      border-radius: 14px;
-    }
-
-    .room-code-box.show {
-      display: block;
-    }
-
-    .room-code-label {
-      color: #92929d;
-      font-size: 12px;
-      margin-bottom: 9px;
-    }
-
-    .room-code {
-      font-size: 30px;
-      letter-spacing: 6px;
-      font-weight: 700;
+    .search-row {
+      display: flex;
+      gap: 8px;
       margin-bottom: 15px;
     }
 
-    .room-status {
-      color: #92929d;
+    .search-row input {
+      margin: 0;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .search-row .button {
+      width: 105px;
+      flex-shrink: 0;
+    }
+
+    .result-card,
+    .request-card,
+    .friend-card {
+      background: #0d0d0d;
+      border: 1px solid #252525;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .username {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .muted {
+      color: #777;
       font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .request-actions,
+    .friend-actions {
+      display: flex;
+      gap: 8px;
       margin-top: 12px;
+    }
+
+    .request-actions button,
+    .friend-actions button {
+      flex: 1;
+    }
+
+    .small-button {
+      border: 1px solid #303030;
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: #151515;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .small-button.primary {
+      background: #fff;
+      color: #000;
+      border-color: #fff;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      background: #0d0d0d;
+      border: 1px dashed #292929;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .online-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: #5dd879;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .offline-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: #666;
+      border-radius: 50%;
+      margin-right: 5px;
     }
 
     .logout-button {
       width: 100%;
-      padding: 13px;
-      border-radius: 10px;
-      border: 1px solid #303039;
+      margin-top: 25px;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      padding: 12px;
       background: transparent;
-      color: #f5f5f5;
-      cursor: pointer;
+      color: #aaa;
       font-size: 14px;
-      margin-top: 24px;
+      cursor: pointer;
     }
 
     .loading {
-      display: none;
       text-align: center;
-      color: #92929d;
+      color: #777;
+      padding: 12px;
       font-size: 13px;
-      margin-top: 15px;
     }
 
-    .loading.show {
-      display: block;
-    }
-
-    .note {
+    .footer {
       text-align: center;
-      margin-top: 25px;
-      color: #666670;
+      color: #555;
       font-size: 11px;
-    }
-
-    @media (max-width: 480px) {
-      body {
-        padding: 20px 15px;
-      }
-
-      .logo {
-        margin-top: 40px;
-        margin-bottom: 25px;
-      }
-
-      .card {
-        padding: 20px;
-      }
+      margin-top: 20px;
     }
   </style>
 </head>
 
 <body>
 
-<main class="app">
+  <div class="app">
 
-  <div class="logo">
-    <h1>JustUs</h1>
-    <p>A private space for two.</p>
-  </div>
+    <div class="logo">JustUs</div>
 
-
-  <!-- ========================= -->
-  <!-- AUTH CARD -->
-  <!-- ========================= -->
-
-  <div class="card" id="authCard">
-
-    <div class="tabs">
-
-      <button
-        class="tab active"
-        id="loginTab"
-        onclick="showForm('login')">
-        Log In
-      </button>
-
-      <button
-        class="tab"
-        id="signupTab"
-        onclick="showForm('signup')">
-        Create Account
-      </button>
-
+    <div class="tagline">
+      A private space for two.
     </div>
 
-
-    <div id="message" class="message"></div>
-
-
-    <!-- LOGIN -->
-
-    <div id="login" class="form active">
-
-      <label>Email</label>
-
-      <input
-        id="loginEmail"
-        type="email"
-        placeholder="you@example.com"
-        autocomplete="email"
-      >
+    <!-- MESSAGE -->
+    <div
+      class="message"
+      id="message"
+    ></div>
 
 
-      <label>Password</label>
-
-      <input
-        id="loginPassword"
-        type="password"
-        placeholder="Your password"
-        autocomplete="current-password"
-      >
-
-
-      <button
-        class="button"
-        id="loginButton"
-        onclick="login()">
-        Log In
-      </button>
-
-
-      <a
-        class="forgot"
-        onclick="resetPassword()">
-        Forgot password?
-      </a>
-
-    </div>
-
-
-    <!-- SIGNUP -->
-
-    <div id="signup" class="form">
-
-      <label>Username</label>
-
-      <input
-        id="signupUsername"
-        type="text"
-        placeholder="@yourusername"
-        autocomplete="username"
-        maxlength="20"
-      >
-
-
-      <label>Email</label>
-
-      <input
-        id="signupEmail"
-        type="email"
-        placeholder="you@example.com"
-        autocomplete="email"
-      >
-
-
-      <label>Password</label>
-
-      <input
-        id="signupPassword"
-        type="password"
-        placeholder="Create a password"
-        autocomplete="new-password"
-      >
-
-
-      <button
-        class="button"
-        id="signupButton"
-        onclick="signUp()">
-        Create Account
-      </button>
-
-    </div>
-
-
-    <div id="loading" class="loading">
-      Please wait...
-    </div>
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- ROOM CARD -->
-  <!-- ========================= -->
-
-  <div
-    class="card logged-in"
-    id="loggedInCard">
-
-    <div class="welcome">
-      Welcome to JustUs
-    </div>
+    <!-- ========================= -->
+    <!-- AUTH CARD -->
+    <!-- ========================= -->
 
     <div
-      class="welcome-text"
-      id="welcomeText">
-      Your private space is ready.
-    </div>
-
-
-    <!-- CREATE ROOM -->
-
-    <div class="section-title">
-      Create a Room
-    </div>
-
-    <div class="section-text">
-      Create a private room and share the code with someone.
-    </div>
-
-    <button
-      class="button"
-      id="createRoomButton"
-      onclick="createRoom()">
-      Create Room
-    </button>
-
-
-    <div class="divider">
-      OR
-    </div>
-
-
-    <!-- JOIN ROOM -->
-
-    <div class="section-title">
-      Join a Room
-    </div>
-
-    <div class="section-text">
-      Enter a room code shared with you.
-    </div>
-
-    <input
-      id="roomCodeInput"
-      type="text"
-      placeholder="6-character code"
-      maxlength="6"
-      autocomplete="off"
-      style="text-transform:uppercase;"
+      class="card"
+      id="authCard"
     >
 
-    <button
-      class="button"
-      id="joinRoomButton"
-      onclick="joinRoom()">
-      Join Room
-    </button>
+      <!-- LOGIN -->
 
+      <div id="loginSection">
 
-    <!-- ROOM CODE -->
+        <div class="welcome">
+          Welcome back
+        </div>
 
-    <div
-      class="room-code-box"
-      id="roomCodeBox">
+        <div class="welcome-text">
+          Log in to your private space.
+        </div>
 
-      <div class="room-code-label">
-        Your Room Code
+        <input
+          id="loginEmail"
+          type="email"
+          placeholder="Email"
+          autocomplete="email"
+        >
+
+        <input
+          id="loginPassword"
+          type="password"
+          placeholder="Password"
+          autocomplete="current-password"
+        >
+
+        <div
+          class="forgot"
+          onclick="forgotPassword()"
+        >
+          Forgot password?
+        </div>
+
+        <button
+          class="button"
+          id="loginButton"
+          onclick="login()"
+        >
+          Log In
+        </button>
+
+        <div class="auth-switch">
+          Don't have an account?
+          <span onclick="showSignup()">
+            Sign up
+          </span>
+        </div>
+
       </div>
 
-      <div
-        class="room-code"
-        id="roomCode">
-        ------
-      </div>
 
-      <button
-        class="secondary-button"
-        onclick="copyRoomCode()">
-        Copy Code
-      </button>
+      <!-- SIGNUP -->
 
       <div
-        class="room-status"
-        id="roomStatus">
-        Waiting for someone to join...
+        id="signupSection"
+        class="hidden"
+      >
+
+        <div class="welcome">
+          Create account
+        </div>
+
+        <div class="welcome-text">
+          Choose your unique JustUs username.
+        </div>
+
+        <input
+          id="signupUsername"
+          type="text"
+          placeholder="Username"
+          autocomplete="username"
+        >
+
+        <input
+          id="signupEmail"
+          type="email"
+          placeholder="Email"
+          autocomplete="email"
+        >
+
+        <input
+          id="signupPassword"
+          type="password"
+          placeholder="Password"
+          autocomplete="new-password"
+        >
+
+        <button
+          class="button"
+          id="signupButton"
+          onclick="signup()"
+        >
+          Create Account
+        </button>
+
+        <div class="auth-switch">
+          Already have an account?
+          <span onclick="showLogin()">
+            Log in
+          </span>
+        </div>
+
       </div>
 
     </div>
 
 
-    <button
-      class="logout-button"
-      onclick="logout()">
-      Log Out
-    </button>
+    <!-- ========================= -->
+    <!-- MAIN APP -->
+    <!-- ========================= -->
+
+    <div
+      class="card hidden"
+      id="loggedInCard"
+    >
+
+      <div
+        class="welcome"
+        id="welcomeText"
+      >
+        Welcome to JustUs
+      </div>
+
+      <div class="welcome-text">
+        Find your friend and start your private space.
+      </div>
+
+
+      <!-- SEARCH FRIEND -->
+
+      <div class="section-title">
+        👥 Friends
+      </div>
+
+      <div class="section-text">
+        Search someone using their unique username.
+      </div>
+
+      <div class="search-row">
+
+        <input
+          id="friendUsernameInput"
+          type="text"
+          placeholder="Search username..."
+          autocomplete="off"
+        >
+
+        <button
+          class="button"
+          id="searchFriendButton"
+          onclick="searchFriend()"
+        >
+          Search
+        </button>
+
+      </div>
+
+      <div id="searchResult"></div>
+
+
+      <div class="divider"></div>
+
+
+      <!-- FRIEND REQUESTS -->
+
+      <div class="section-title">
+        Friend Requests
+      </div>
+
+      <div id="friendRequests">
+
+        <div class="empty-state">
+          No pending requests.
+        </div>
+
+      </div>
+
+
+      <div class="divider"></div>
+
+
+      <!-- FRIENDS -->
+
+      <div class="section-title">
+        Your Friends
+      </div>
+
+      <div id="friendsList">
+
+        <div class="empty-state">
+          No friends yet.
+        </div>
+
+      </div>
+
+
+      <button
+        class="logout-button"
+        onclick="logout()"
+      >
+        Log Out
+      </button>
+
+    </div>
+
+
+    <div class="footer">
+      JustUs • Private by design
+    </div>
 
   </div>
 
 
-  <p class="note">
-    Private • Simple • JustUs
-  </p>
+  <script>
 
-</main>
+    /* =========================================
+       SUPABASE
+    ========================================= */
 
+    const SUPABASE_URL =
+      "https://rfcvoeeydeamyytzfxbd.supabase.co";
 
-<script>
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
 
-  /* ==========================================
-     SUPABASE
-  ========================================== */
-
-  const SUPABASE_URL =
-    "https://rfcvoeeydeamyytzfxbd.supabase.co";
-
-  const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
-
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
-
-
-  /* ==========================================
-     FORM SWITCHING
-  ========================================== */
-
-  function showForm(formName) {
-
-    document
-      .getElementById("login")
-      .classList.remove("active");
-
-    document
-      .getElementById("signup")
-      .classList.remove("active");
-
-    document
-      .getElementById(formName)
-      .classList.add("active");
-
-
-    document
-      .getElementById("loginTab")
-      .classList.remove("active");
-
-    document
-      .getElementById("signupTab")
-      .classList.remove("active");
-
-
-    if (formName === "login") {
-
-      document
-        .getElementById("loginTab")
-        .classList.add("active");
-
-    } else {
-
-      document
-        .getElementById("signupTab")
-        .classList.add("active");
-
-    }
-
-    clearMessage();
-
-  }
-
-
-  /* ==========================================
-     MESSAGE
-  ========================================== */
-
-  function showMessage(
-    message,
-    type = "error"
-  ) {
-
-    const box =
-      document.getElementById("message");
-
-    box.textContent = message;
-
-    box.className =
-      "message show " + type;
-
-  }
-
-
-  function clearMessage() {
-
-    const box =
-      document.getElementById("message");
-
-    box.textContent = "";
-
-    box.className = "message";
-
-  }
-
-
-  /* ==========================================
-     LOADING
-  ========================================== */
-
-  function setLoading(isLoading) {
-
-    const loading =
-      document.getElementById("loading");
-
-    const loginButton =
-      document.getElementById("loginButton");
-
-    const signupButton =
-      document.getElementById("signupButton");
-
-
-    if (isLoading) {
-
-      loading.classList.add("show");
-
-      loginButton.disabled = true;
-
-      signupButton.disabled = true;
-
-    } else {
-
-      loading.classList.remove("show");
-
-      loginButton.disabled = false;
-
-      signupButton.disabled = false;
-
-    }
-
-  }
-
-
-  /* ==========================================
-     SIGN UP
-  ========================================== */
-
-  async function signUp() {
-
-    clearMessage();
-
-    const username =
-      document
-        .getElementById("signupUsername")
-        .value
-        .trim()
-        .replace(/^@/, "")
-        .toLowerCase();
-
-    const email =
-      document
-        .getElementById("signupEmail")
-        .value
-        .trim();
-
-    const password =
-      document
-        .getElementById("signupPassword")
-        .value;
-
-
-    if (!username || !email || !password) {
-
-      showMessage(
-        "Please fill all fields."
+    const supabaseClient =
+      supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
       );
 
-      return;
+
+    /* =========================================
+       HELPERS
+    ========================================= */
+
+    function showMessage(
+      text,
+      type = "error"
+    ) {
+
+      const message =
+        document.getElementById("message");
+
+      message.textContent = text;
+
+      message.className =
+        "message show " + type;
+
     }
 
 
-    if (username.length < 3) {
+    function clearMessage() {
 
-      showMessage(
-        "Username must be at least 3 characters."
-      );
+      const message =
+        document.getElementById("message");
 
-      return;
+      message.textContent = "";
+
+      message.className =
+        "message";
+
     }
 
 
-    if (!/^[a-z0-9_]+$/.test(username)) {
+    function showLogin() {
 
-      showMessage(
-        "Username can contain only letters, numbers and underscore."
-      );
+      document
+        .getElementById("loginSection")
+        .classList.remove("hidden");
 
-      return;
+      document
+        .getElementById("signupSection")
+        .classList.add("hidden");
+
+      clearMessage();
+
     }
 
 
-    if (password.length < 6) {
+    function showSignup() {
 
-      showMessage(
-        "Password must be at least 6 characters."
-      );
+      document
+        .getElementById("loginSection")
+        .classList.add("hidden");
 
-      return;
+      document
+        .getElementById("signupSection")
+        .classList.remove("hidden");
+
+      clearMessage();
+
     }
 
 
-    setLoading(true);
+    /* =========================================
+       AUTH
+    ========================================= */
 
+    async function login() {
 
-    try {
+      clearMessage();
 
-      /*
-        Check username before signup.
-      */
+      const email =
+        document
+          .getElementById("loginEmail")
+          .value
+          .trim();
 
-      const {
-        data: existingProfile,
-        error: usernameError
-      } =
-        await supabaseClient
-          .from("profiles")
-          .select("id")
-          .eq("username", username)
-          .maybeSingle();
+      const password =
+        document
+          .getElementById("loginPassword")
+          .value;
 
-
-      if (
-        usernameError &&
-        usernameError.code !== "PGRST116"
-      ) {
+      if (!email || !password) {
 
         showMessage(
-          "Unable to check username."
+          "Enter your email and password."
         );
 
         return;
       }
 
 
-      if (existingProfile) {
-
-        showMessage(
-          "That username is already taken."
+      const button =
+        document.getElementById(
+          "loginButton"
         );
 
-        return;
-      }
+      button.disabled = true;
+      button.textContent = "Logging in...";
 
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.auth.signUp({
+      try {
 
-          email: email,
-
-          password: password,
-
-          options: {
-
-            data: {
-              username: username
-            }
-
-          }
-
-        });
+        const {
+          error
+        } =
+          await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+          });
 
 
-      if (error) {
+        if (error) {
+
+          showMessage(error.message);
+
+          return;
+        }
+
 
         showMessage(
-          error.message
-        );
-
-        return;
-      }
-
-
-      if (
-        data.user &&
-        !data.session
-      ) {
-
-        showMessage(
-          "Account created. Check your email and confirm your account.",
+          "Logged in successfully.",
           "success"
         );
+
+
+      } catch (error) {
+
+        showMessage(
+          "Unable to log in."
+        );
+
+      } finally {
+
+        button.disabled = false;
+        button.textContent = "Log In";
+
+      }
+
+    }
+
+
+    async function signup() {
+
+      clearMessage();
+
+      const username =
+        document
+          .getElementById("signupUsername")
+          .value
+          .trim()
+          .toLowerCase();
+
+      const email =
+        document
+          .getElementById("signupEmail")
+          .value
+          .trim();
+
+      const password =
+        document
+          .getElementById("signupPassword")
+          .value;
+
+
+      if (username.length < 3) {
+
+        showMessage(
+          "Username must be at least 3 characters."
+        );
+
+        return;
+      }
+
+
+      if (!email) {
+
+        showMessage(
+          "Enter your email."
+        );
+
+        return;
+      }
+
+
+      if (password.length < 6) {
+
+        showMessage(
+          "Password must be at least 6 characters."
+        );
+
+        return;
+      }
+
+
+      const button =
+        document.getElementById(
+          "signupButton"
+        );
+
+      button.disabled = true;
+      button.textContent = "Creating...";
+
+
+      try {
+
+        /* Check username */
+
+        const {
+          data: existingUser,
+          error: usernameError
+        } =
+          await supabaseClient
+            .from("profiles")
+            .select("id")
+            .eq("username", username)
+            .maybeSingle();
+
+
+        if (usernameError) {
+
+          showMessage(
+            usernameError.message
+          );
+
+          return;
+        }
+
+
+        if (existingUser) {
+
+          showMessage(
+            "This username is already taken."
+          );
+
+          return;
+        }
+
+
+        /* Create account */
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth.signUp({
+
+            email,
+
+            password,
+
+            options: {
+              data: {
+                username
+              }
+            }
+
+          });
+
+
+        if (error) {
+
+          showMessage(error.message);
+
+          return;
+        }
+
+
+        if (
+          data.user &&
+          !data.session
+        ) {
+
+          showMessage(
+            "Account created. Check your email to confirm your account.",
+            "success"
+          );
+
+        } else {
+
+          showMessage(
+            "Account created successfully.",
+            "success"
+          );
+
+        }
+
+
+        document
+          .getElementById("signupUsername")
+          .value = "";
+
+        document
+          .getElementById("signupEmail")
+          .value = "";
 
         document
           .getElementById("signupPassword")
           .value = "";
 
-      } else {
+
+      } catch (error) {
 
         showMessage(
-          "Account created successfully!",
+          "Unable to create account."
+        );
+
+      } finally {
+
+        button.disabled = false;
+        button.textContent = "Create Account";
+
+      }
+
+    }
+
+
+    async function forgotPassword() {
+
+      clearMessage();
+
+      const email =
+        document
+          .getElementById("loginEmail")
+          .value
+          .trim();
+
+
+      if (!email) {
+
+        showMessage(
+          "Enter your email first."
+        );
+
+        return;
+      }
+
+
+      try {
+
+        const {
+          error
+        } =
+          await supabaseClient.auth
+            .resetPasswordForEmail(
+              email,
+              {
+                redirectTo:
+                  "https://hiiipriyanshupandey.github.io/JustUs/"
+              }
+            );
+
+
+        if (error) {
+
+          showMessage(error.message);
+
+          return;
+        }
+
+
+        showMessage(
+          "Password reset email sent.",
           "success"
         );
 
+
+      } catch (error) {
+
+        showMessage(
+          "Unable to send reset email."
+        );
+
       }
-
-    } catch (error) {
-
-      showMessage(
-        "Something went wrong. Please try again."
-      );
-
-    } finally {
-
-      setLoading(false);
 
     }
 
-  }
 
+    async function logout() {
 
-  /* ==========================================
-     LOGIN
-  ========================================== */
+      await supabaseClient.auth.signOut();
 
-  async function login() {
-
-    clearMessage();
-
-    const email =
       document
-        .getElementById("loginEmail")
-        .value
-        .trim();
+        .getElementById("loggedInCard")
+        .classList.add("hidden");
 
-    const password =
       document
-        .getElementById("loginPassword")
-        .value;
+        .getElementById("authCard")
+        .classList.remove("hidden");
 
+      showLogin();
 
-    if (!email || !password) {
+      clearMessage();
 
-      showMessage(
-        "Please enter your email and password."
-      );
-
-      return;
     }
 
 
-    setLoading(true);
+    /* =========================================
+       LOAD USER
+    ========================================= */
 
-
-    try {
+    async function loadUser() {
 
       const {
-        data,
-        error
-      } =
-        await supabaseClient.auth
-          .signInWithPassword({
-
-            email: email,
-
-            password: password
-
-          });
-
-
-      if (error) {
-
-        showMessage(
-          error.message
-        );
-
-        return;
-      }
-
-
-      await showLoggedIn(
-        data.user
-      );
-
-    } catch (error) {
-
-      showMessage(
-        "Something went wrong. Please try again."
-      );
-
-    } finally {
-
-      setLoading(false);
-
-    }
-
-  }
-
-
-  /* ==========================================
-     FORGOT PASSWORD
-  ========================================== */
-
-  async function resetPassword() {
-
-    clearMessage();
-
-    const email =
-      document
-        .getElementById("loginEmail")
-        .value
-        .trim();
-
-
-    if (!email) {
-
-      showMessage(
-        "Enter your email first, then tap Forgot password."
-      );
-
-      return;
-    }
-
-
-    setLoading(true);
-
-
-    try {
-
-      const {
-        error
-      } =
-        await supabaseClient.auth
-          .resetPasswordForEmail(
-            email,
-            {
-              redirectTo:
-                window.location.origin +
-                window.location.pathname
-            }
-          );
-
-
-      if (error) {
-
-        showMessage(
-          error.message
-        );
-
-        return;
-      }
-
-
-      showMessage(
-        "Password reset email sent. Check your inbox.",
-        "success"
-      );
-
-    } catch (error) {
-
-      showMessage(
-        "Unable to send reset email."
-      );
-
-    } finally {
-
-      setLoading(false);
-
-    }
-
-  }
-
-
-  /* ==========================================
-     SHOW LOGGED-IN ROOM SCREEN
-  ========================================== */
-
-  async function showLoggedIn(user) {
-
-    document
-      .getElementById("authCard")
-      .style.display = "none";
-
-
-    document
-      .getElementById("loggedInCard")
-      .classList.add("active");
-
-
-    const username =
-      user?.user_metadata?.username;
-
-
-    document
-      .getElementById("welcomeText")
-      .textContent =
-        username
-          ? "Logged in as @" + username
-          : "Your private space is ready.";
-
-
-    /*
-      Check whether user already belongs
-      to a room.
-    */
-
-    await loadExistingRoom();
-
-  }
-
-
-  /* ==========================================
-     CREATE ROOM
-  ========================================== */
-
-  async function createRoom() {
-
-    clearMessage();
-
-    const button =
-      document.getElementById(
-        "createRoomButton"
-      );
-
-    button.disabled = true;
-
-    button.textContent = "Creating...";
-
-
-    try {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .rpc("create_justus_room");
-
-
-      if (error) {
-
-        showMessage(
-          error.message
-        );
-
-        return;
-      }
-
-
-      if (
-        !data ||
-        !data.length
-      ) {
-
-        showMessage(
-          "Room could not be created."
-        );
-
-        return;
-      }
-
-
-      const room =
-        data[0];
-
-
-      displayRoom(
-        room.room_code
-      );
-
-
-      showMessage(
-        "Room created successfully.",
-        "success"
-      );
-
-    } catch (error) {
-
-      showMessage(
-        "Unable to create room."
-      );
-
-    } finally {
-
-      button.disabled = false;
-
-      button.textContent =
-        "Create Room";
-
-    }
-
-  }
-
-
-  /* ==========================================
-     JOIN ROOM
-  ========================================== */
-
-  async function joinRoom() {
-
-    clearMessage();
-
-    const input =
-      document.getElementById(
-        "roomCodeInput"
-      );
-
-    const code =
-      input.value
-        .trim()
-        .toUpperCase();
-
-
-    if (code.length !== 6) {
-
-      showMessage(
-        "Enter a valid 6-character room code."
-      );
-
-      return;
-    }
-
-
-    const button =
-      document.getElementById(
-        "joinRoomButton"
-      );
-
-    button.disabled = true;
-
-    button.textContent = "Joining...";
-
-
-    try {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .rpc(
-            "join_justus_room",
-            {
-              p_room_code: code
-            }
-          );
-
-
-      if (error) {
-
-        showMessage(
-          error.message
-        );
-
-        return;
-      }
-
-
-      if (
-        !data ||
-        !data.length
-      ) {
-
-        showMessage(
-          "Unable to join this room."
-        );
-
-        return;
-      }
-
-
-      displayRoom(
-        data[0].room_code
-      );
-
-
-      input.value = "";
-
-
-      showMessage(
-        "You joined the room successfully.",
-        "success"
-      );
-
-    } catch (error) {
-
-      showMessage(
-        "Unable to join room."
-      );
-
-    } finally {
-
-      button.disabled = false;
-
-      button.textContent =
-        "Join Room";
-
-    }
-
-  }
-
-
-    /* ==========================================
-     DISPLAY ROOM
-  ========================================== */
-
-  function displayRoom(code) {
-
-    const box =
-      document.getElementById("roomCodeBox");
-
-    const codeElement =
-      document.getElementById("roomCode");
-
-    codeElement.textContent = code;
-
-    box.classList.add("show");
-
-    document
-      .getElementById("roomStatus")
-      .textContent =
-        "Room is ready. Share this code with someone.";
-
-    document
-      .getElementById("createRoomButton")
-      .disabled = true;
-  }
-
-
-  /* ==========================================
-     LOAD EXISTING ROOM
-  ========================================== */
-
-  async function loadExistingRoom() {
-
-    try {
-
-      const {
-        data: userData
+        data
       } =
         await supabaseClient.auth.getUser();
 
-      const user = userData?.user;
+      const user = data?.user;
 
       if (!user) {
+
+        document
+          .getElementById("loggedInCard")
+          .classList.add("hidden");
+
+        document
+          .getElementById("authCard")
+          .classList.remove("hidden");
+
         return;
       }
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("room_members")
-          .select(`
-            room_id,
-            rooms (
-              room_code
-            )
-          `)
-          .eq("user_id", user.id)
-          .limit(1)
-          .maybeSingle();
 
-      if (error || !data) {
-        return;
-      }
-
-      if (
-        data.rooms &&
-        data.rooms.room_code
-      ) {
-
-        displayRoom(
-          data.rooms.room_code
-        );
-
-      }
-
-    } catch (error) {
-
-      console.log(
-        "No existing room found."
-      );
-
-    }
-
-  }
-
-
-  /* ==========================================
-     COPY ROOM CODE
-  ========================================== */
-
-  async function copyRoomCode() {
-
-    const code =
       document
-        .getElementById("roomCode")
-        .textContent;
+        .getElementById("authCard")
+        .classList.add("hidden");
 
-    try {
-
-      await navigator.clipboard.writeText(code);
-
-      showMessage(
-        "Room code copied.",
-        "success"
-      );
-
-    } catch (error) {
-
-      showMessage(
-        "Copy failed. Please copy the code manually."
-      );
-
-    }
-
-  }
+      document
+        .getElementById("loggedInCard")
+        .classList.remove("hidden");
 
 
-  /* ==========================================
-     LOGOUT
-  ========================================== */
-
-  async function logout() {
-
-    await supabaseClient.auth.signOut();
-
-    document
-      .getElementById("loggedInCard")
-      .classList.remove("active");
-
-    document
-      .getElementById("authCard")
-      .style.display = "block";
-
-    document
-      .getElementById("roomCodeBox")
-      .classList.remove("show");
-
-    document
-      .getElementById("roomCode")
-      .textContent = "------";
-
-    document
-      .getElementById("createRoomButton")
-      .disabled = false;
-
-    showForm("login");
-
-  }
+      let username =
+        user.user_metadata?.username;
 
 
-  /* ==========================================
-     CHECK SESSION
-  ========================================== */
+      if (!username) {
 
-  async function checkSession() {
+        const {
+          data: profile
+        } =
+          await supabaseClient
+            .from("profiles")
+            .select("username")
+            .eq("id", user.id)
+            .maybeSingle();
 
-    const {
-      data
-    } =
-      await supabaseClient.auth.getSession();
-
-    if (data.session) {
-
-      await showLoggedIn(
-        data.session.user
-      );
-
-    }
-
-  }
-
-
-  /* ==========================================
-     AUTH STATE
-  ========================================== */
-
-  supabaseClient.auth.onAuthStateChange(
-    async (event, session) => {
-
-      if (
-        event === "SIGNED_IN" &&
-        session
-      ) {
-
-        await showLoggedIn(
-          session.user
-        );
+        username =
+          profile?.username;
 
       }
 
+
+      document
+        .getElementById("welcomeText")
+        .textContent =
+          username
+            ? "Welcome, @" + username
+            : "Welcome to JustUs";
+
+
+      await loadFriendRequests();
+
+      await loadFriends();
+
     }
+
+
+    /* =========================================
+       SEARCH USER
+    ========================================= */
+
+    async function searchFriend() {
+
+      clearMessage();
+
+      const input =
+        document.getElementById(
+          "friendUsernameInput"
+        );
+
+      const username =
+        input.value
+          .trim()
+          .toLowerCase();
+
+
+      const result =
+        document.getElementById(
+          "searchResult"
+        );
+
+
+      if (username.length < 3) {
+
+        result.innerHTML = `
+          <div class="empty-state">
+            Enter at least 3 characters.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      const button =
+        document.getElementById(
+          "searchFriendButton"
+        );
+
+      button.disabled = true;
+      button.textContent = "Searching...";
+
+
+      try {
+
+        const {
+          data: userData
+        } =
+          await supabaseClient.auth.getUser();
+
+        const currentUser =
+          userData?.user;
+
+
+        if (!currentUser) {
+
+          showMessage(
+            "Please log in again."
+          );
+
+          return;
+        }
+
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .from("profiles")
+            .select("id, username")
+            .eq("username", username)
+            .maybeSingle();
+
+
+        if (error) {
+
+          result.innerHTML = `
+            <div class="empty-state">
+              ${escapeHtml(error.message)}
+            </div>
+          `;
+
+          return;
+        }
+
+
+        if (!data) {
+
+          result.innerHTML = `
+            <div class="empty-state">
+              No user found with @${escapeHtml(username)}
+            </div>
+          `;
+
+          return;
+        }
+
+
+        if (data.id === currentUser.id) {
+
+          result.innerHTML = `
+            <div class="empty-state">
+              That's your own username.
+            </div>
+          `;
+
+          return;
+        }
+
+
+        /* Check existing friendship */
+
+const {
+  data: friendship,
+  error: friendshipError
+} =
+  await supabaseClient
+    .from("friendships")
+    .select("id")
+    .or(
+      `and(user_id.eq.${currentUser.id},friend_id.eq.${data.id}),and(user_id.eq.${data.id},friend_id.eq.${currentUser.id})`
+    )
+    .limit(1);
+
+
+if (friendshipError) {
+
+  console.log(
+    "Friendship check error:",
+    friendshipError
   );
 
+  result.innerHTML = `
+    <div class="empty-state">
+      Unable to check friendship status.
+    </div>
+  `;
 
-  /* ==========================================
-     START APP
-  ========================================== */
+  return;
+}
 
-  checkSession();
 
-</script>
+if (
+  friendship &&
+  friendship.length > 0
+) {
 
-</body>
-</html>
+  result.innerHTML = `
+    <div class="result-card">
+
+      <div class="username">
+        @${escapeHtml(data.username)}
+      </div>
+
+      <div class="muted">
+        ✓ Already your friend
+      </div>
+
+    </div>
+  `;
+
+  return;
+}
+
+
+/* =========================================
+   CHECK EXISTING FRIEND REQUEST
+========================================= */
+
+const {
+  data: requests,
+  error: requestCheckError
+} =
+  await supabaseClient
+    .from("friend_requests")
+    .select(
+      "id, sender_id, receiver_id, status"
+    )
+    .or(
+      `and(sender_id.eq.${currentUser.id},receiver_id.eq.${data.id}),and(sender_id.eq.${data.id},receiver_id.eq.${currentUser.id})`
+    )
+    .eq(
+      "status",
+      "pending"
+    );
+
+
+if (requestCheckError) {
+
+  console.log(
+    "Request check error:",
+    requestCheckError
+  );
+
+  result.innerHTML = `
+    <div class="empty-state">
+      Unable to check request status.
+    </div>
+  `;
+
+  return;
+}
+
+
+/* =========================================
+   REQUEST ALREADY EXISTS
+========================================= */
+
+if (
+  requests &&
+  requests.length > 0
+) {
+
+  const request =
+    requests[0];
+
+
+  /* I already sent request */
+
+  if (
+    request.sender_id ===
+    currentUser.id
+  ) {
+
+    result.innerHTML = `
+      <div class="result-card">
+
+        <div class="username">
+          @${escapeHtml(data.username)}
+        </div>
+
+        <div class="muted">
+          ⏳ Friend request already sent.
+        </div>
+
+      </div>
+    `;
+
+  }
+
+  /* They already sent me request */
+
+  else {
+
+    result.innerHTML = `
+      <div class="result-card">
+
+        <div class="username">
+          @${escapeHtml(data.username)}
+        </div>
+
+        <div class="muted">
+          This user has already sent you a request.
+        </div>
+
+        <div class="friend-actions">
+
+          <button
+            class="small-button primary"
+            onclick="acceptFriendRequest('${request.id}')"
+          >
+            Accept
+          </button>
+
+          <button
+            class="small-button"
+            onclick="declineFriendRequest('${request.id}')"
+          >
+            Decline
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+  }
+
+  return;
+}
+
+
+/* =========================================
+   SHOW SEND REQUEST
+========================================= */
+
+result.innerHTML = `
+  <div class="result-card">
+
+    <div class="username">
+      @${escapeHtml(data.username)}
+    </div>
+
+    <div class="muted">
+      User found
+    </div>
+
+    <div class="friend-actions">
+
+      <button
+        class="small-button primary"
+        onclick="sendFriendRequest('${data.id}')"
+      >
+        Send Friend Request
+      </button>
+
+    </div>
+
+  </div>
+`;
+
+
+} catch (error) {
+
+  console.log(
+    "Search error:",
+    error
+  );
+
+  result.innerHTML = `
+    <div class="empty-state">
+      Something went wrong while searching.
+    </div>
+  `;
+
+} finally {
+
+  button.disabled = false;
+  button.textContent = "Search";
+
+      }
