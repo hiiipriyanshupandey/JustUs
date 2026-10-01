@@ -23,6 +23,17 @@ let friendTypingTimeout = null;
 
 
 /* =========================
+   CONSTANTS
+========================= */
+
+const MEDIA_BUCKET =
+  "justus-media";
+
+const MAX_FILE_SIZE =
+  50 * 1024 * 1024;
+
+
+/* =========================
    FRIEND ID
 ========================= */
 
@@ -195,7 +206,7 @@ async function loadMessages() {
     await supabaseClient
       .from("messages")
       .select(
-        "id, sender_id, receiver_id, message, created_at"
+        "id, sender_id, receiver_id, message, message_type, media_url, media_name, media_type, created_at"
       )
       .or(
         `and(sender_id.eq.${currentUser.id},receiver_id.eq.${friend.id}),and(sender_id.eq.${friend.id},receiver_id.eq.${currentUser.id})`
@@ -231,9 +242,78 @@ async function loadMessages() {
     return;
   }
 
+
+  /*
+    Create signed URLs for private
+    media files.
+  */
+
+  const messages =
+    await Promise.all(
+      data.map(
+        async function(item) {
+
+          if (
+            item.message_type ===
+              "image" ||
+            item.message_type ===
+              "video"
+          ) {
+
+            if (
+              item.media_url
+            ) {
+
+              const {
+                data:
+                  signedData,
+                error:
+                  signedError
+              } =
+                await supabaseClient
+                  .storage
+                  .from(
+                    MEDIA_BUCKET
+                  )
+                  .createSignedUrl(
+                    item.media_url,
+                    3600
+                  );
+
+              if (
+                signedError
+              ) {
+
+                console.error(
+                  "Signed URL error:",
+                  signedError
+                );
+
+              }
+
+              return {
+                ...item,
+                signedUrl:
+                  signedData
+                    ?.signedUrl ||
+                  null
+              };
+
+            }
+
+          }
+
+          return item;
+
+        }
+      )
+    );
+
+
   let html = "";
 
-  data.forEach(
+
+  messages.forEach(
     function(item) {
 
       const mine =
@@ -250,6 +330,49 @@ async function loadMessages() {
             minute: "2-digit"
           }
         );
+
+
+      /*
+        IMAGE
+      */
+
+      if (
+        item.message_type ===
+          "image"
+      ) {
+
+        html += createImageMessage(
+          item,
+          mine,
+          time
+        );
+
+        return;
+      }
+
+
+      /*
+        VIDEO
+      */
+
+      if (
+        item.message_type ===
+          "video"
+      ) {
+
+        html += createVideoMessage(
+          item,
+          mine,
+          time
+        );
+
+        return;
+      }
+
+
+      /*
+        NORMAL TEXT
+      */
 
       html += `
 
@@ -271,7 +394,7 @@ async function loadMessages() {
 
             <div class="message-text">
               ${escapeHtml(
-                item.message
+                item.message || ""
               )}
             </div>
 
@@ -284,13 +407,279 @@ async function loadMessages() {
         </div>
 
       `;
+
     }
   );
+
 
   container.innerHTML =
     html;
 
   scrollToBottom();
+}
+
+
+/* =========================
+   IMAGE MESSAGE
+========================= */
+
+function createImageMessage(
+  item,
+  mine,
+  time
+) {
+
+  const bubbleClass =
+    mine
+      ? "sent"
+      : "received";
+
+
+  if (
+    !item.signedUrl
+  ) {
+
+    return `
+
+      <div
+        class="message-row ${
+          mine
+            ? "sent"
+            : "received"
+        }"
+      >
+
+        <div
+          class="message-bubble ${
+            bubbleClass
+          }"
+        >
+
+          <div class="message-text">
+            Image unavailable
+          </div>
+
+          <div class="message-time">
+            ${time}
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  return `
+
+    <div
+      class="message-row ${
+        mine
+          ? "sent"
+          : "received"
+      }"
+    >
+
+      <div
+        class="message-bubble ${
+          bubbleClass
+        }"
+      >
+
+        <img
+          src="${escapeHtml(
+            item.signedUrl
+          )}"
+          class="media-preview message-image"
+          alt="Photo"
+          loading="lazy"
+        >
+
+        <div
+          class="media-file-name"
+        >
+          ${escapeHtml(
+            item.media_name ||
+            "Photo"
+          )}
+        </div>
+
+        <div
+          class="media-actions"
+        >
+
+          <a
+            href="${escapeHtml(
+              item.signedUrl
+            )}"
+            target="_blank"
+            rel="noopener"
+          >
+            Open
+          </a>
+
+          <a
+            href="${escapeHtml(
+              item.signedUrl
+            )}"
+            target="_blank"
+            rel="noopener"
+            download
+          >
+            Download
+          </a>
+
+        </div>
+
+        <div class="message-time">
+          ${time}
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================
+   VIDEO MESSAGE
+========================= */
+
+function createVideoMessage(
+  item,
+  mine,
+  time
+) {
+
+  const bubbleClass =
+    mine
+      ? "sent"
+      : "received";
+
+
+  if (
+    !item.signedUrl
+  ) {
+
+    return `
+
+      <div
+        class="message-row ${
+          mine
+            ? "sent"
+            : "received"
+        }"
+      >
+
+        <div
+          class="message-bubble ${
+            bubbleClass
+          }"
+        >
+
+          <div class="message-text">
+            Video unavailable
+          </div>
+
+          <div class="message-time">
+            ${time}
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  return `
+
+    <div
+      class="message-row ${
+        mine
+          ? "sent"
+          : "received"
+      }"
+    >
+
+      <div
+        class="message-bubble ${
+          bubbleClass
+        }"
+      >
+
+        <video
+          class="media-preview message-video"
+          controls
+          playsinline
+          preload="metadata"
+        >
+
+          <source
+            src="${escapeHtml(
+              item.signedUrl
+            )}"
+            type="${escapeHtml(
+              item.media_type ||
+              "video/mp4"
+            )}"
+          >
+
+        </video>
+
+        <div
+          class="media-file-name"
+        >
+          ${escapeHtml(
+            item.media_name ||
+            "Video"
+          )}
+        </div>
+
+        <div
+          class="media-actions"
+        >
+
+          <a
+            href="${escapeHtml(
+              item.signedUrl
+            )}"
+            target="_blank"
+            rel="noopener"
+          >
+            Open
+          </a>
+
+          <a
+            href="${escapeHtml(
+              item.signedUrl
+            )}"
+            target="_blank"
+            rel="noopener"
+            download
+          >
+            Download
+          </a>
+
+        </div>
+
+        <div class="message-time">
+          ${time}
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
 }
 
 
@@ -338,7 +727,7 @@ function showEmptyChat() {
 
 
 /* =========================
-   SEND MESSAGE
+   SEND TEXT MESSAGE
 ========================= */
 
 async function sendMessage() {
@@ -372,6 +761,7 @@ async function sendMessage() {
   button.disabled =
     true;
 
+
   const {
     error
   } =
@@ -386,12 +776,26 @@ async function sendMessage() {
           friend.id,
 
         message:
-          message
+          message,
+
+        message_type:
+          "text",
+
+        media_url:
+          null,
+
+        media_name:
+          null,
+
+        media_type:
+          null
 
       });
 
+
   button.disabled =
     false;
+
 
   if (error) {
 
@@ -407,9 +811,363 @@ async function sendMessage() {
     return;
   }
 
+
   input.value = "";
 
   input.focus();
+
+}
+
+
+/* =========================
+   MEDIA PICKER
+========================= */
+
+function setupMediaPicker() {
+
+  const mediaInput =
+    document.getElementById(
+      "mediaInput"
+    );
+
+  if (!mediaInput) {
+    return;
+  }
+
+
+  mediaInput.onchange =
+    async function() {
+
+      const file =
+        mediaInput.files[0];
+
+      if (!file) {
+        return;
+      }
+
+
+      /*
+        Reset picker after we have
+        captured the File object.
+      */
+
+      mediaInput.value = "";
+
+
+      await uploadMedia(
+        file
+      );
+
+    };
+
+}
+
+
+/* =========================
+   UPLOAD MEDIA
+========================= */
+
+async function uploadMedia(
+  file
+) {
+
+  if (
+    !currentUser ||
+    !friend
+  ) {
+    return;
+  }
+
+
+  /* =========================
+     VALIDATE TYPE
+  ========================== */
+
+  const isImage =
+    file.type.startsWith(
+      "image/"
+    );
+
+  const isVideo =
+    file.type.startsWith(
+      "video/"
+    );
+
+
+  if (
+    !isImage &&
+    !isVideo
+  ) {
+
+    alert(
+      "Please select an image or video."
+    );
+
+    return;
+  }
+
+
+  /* =========================
+     VALIDATE SIZE
+  ========================== */
+
+  if (
+    file.size >
+    MAX_FILE_SIZE
+  ) {
+
+    alert(
+      "File is larger than 50 MB."
+    );
+
+    return;
+  }
+
+
+  const mediaType =
+    isImage
+      ? "image"
+      : "video";
+
+
+  /* =========================
+     FILE NAME
+  ========================== */
+
+  const originalName =
+    file.name
+      .replace(
+        /[^a-zA-Z0-9._-]/g,
+        "_"
+      );
+
+
+  const uniqueName =
+    Date.now() +
+    "_" +
+    crypto.randomUUID() +
+    "_" +
+    originalName;
+
+
+  /* =========================
+     PRIVATE PATH
+  ========================== */
+
+  const ids = [
+    currentUser.id,
+    friend.id
+  ].sort();
+
+
+  const filePath =
+    ids[0] +
+    "/" +
+    ids[1] +
+    "/" +
+    uniqueName;
+
+
+  console.log(
+    "Uploading media:",
+    filePath
+  );
+
+
+  setMediaLoading(
+    true
+  );
+
+
+  try {
+
+    /* =========================
+       UPLOAD TO STORAGE
+    ========================== */
+
+    const {
+      data:
+        uploadData,
+      error:
+        uploadError
+    } =
+      await supabaseClient
+        .storage
+        .from(
+          MEDIA_BUCKET
+        )
+        .upload(
+          filePath,
+          file,
+          {
+            cacheControl:
+              "3600",
+
+            contentType:
+              file.type,
+
+            upsert:
+              false
+          }
+        );
+
+
+    if (
+      uploadError
+    ) {
+
+      console.error(
+        "Storage upload error:",
+        uploadError
+      );
+
+      alert(
+        "Upload failed: " +
+        uploadError.message
+      );
+
+      return;
+    }
+
+
+    console.log(
+      "Upload successful:",
+      uploadData
+    );
+
+
+    /* =========================
+       SAVE MESSAGE
+    ========================== */
+
+    const {
+      error:
+        messageError
+    } =
+      await supabaseClient
+        .from("messages")
+        .insert({
+
+          sender_id:
+            currentUser.id,
+
+          receiver_id:
+            friend.id,
+
+          message:
+            null,
+
+          message_type:
+            mediaType,
+
+          media_url:
+            filePath,
+
+          media_name:
+            file.name,
+
+          media_type:
+            file.type
+
+        });
+
+
+    if (
+      messageError
+    ) {
+
+      console.error(
+        "Media message error:",
+        messageError
+      );
+
+
+      /*
+        Remove orphaned storage
+        file if DB insert fails.
+      */
+
+      await supabaseClient
+        .storage
+        .from(
+          MEDIA_BUCKET
+        )
+        .remove([
+          filePath
+        ]);
+
+
+      alert(
+        "Media message could not be saved."
+      );
+
+      return;
+    }
+
+
+    console.log(
+      "Media message saved."
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Media upload exception:",
+      error
+    );
+
+    alert(
+      "Something went wrong while uploading."
+    );
+
+  } finally {
+
+    setMediaLoading(
+      false
+    );
+
+  }
+
+}
+
+
+/* =========================
+   MEDIA LOADING UI
+========================= */
+
+function setMediaLoading(
+  loading
+) {
+
+  const button =
+    document.getElementById(
+      "mediaButton"
+    );
+
+  if (!button) {
+    return;
+  }
+
+
+  if (loading) {
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "…";
+
+  } else {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "＋";
+
+  }
+
 }
 
 
@@ -426,10 +1184,12 @@ function createChatChannel() {
     return;
   }
 
+
   const ids = [
     currentUser.id,
     friend.id
   ].sort();
+
 
   const channelName =
     "justus-chat-" +
@@ -437,34 +1197,44 @@ function createChatChannel() {
     "-" +
     ids[1];
 
+
   console.log(
     "Creating channel:",
     channelName
   );
+
 
   chatChannel =
     supabaseClient.channel(
       channelName,
       {
         config: {
+
           presence: {
-            key: currentUser.id
+            key:
+              currentUser.id
           }
+
         }
       }
     );
 
 
   /* =========================
-     DATABASE MESSAGES
+     REALTIME MESSAGES
   ========================== */
 
   chatChannel.on(
     "postgres_changes",
     {
-      event: "INSERT",
-      schema: "public",
-      table: "messages"
+      event:
+        "INSERT",
+
+      schema:
+        "public",
+
+      table:
+        "messages"
     },
     function(payload) {
 
@@ -473,8 +1243,10 @@ function createChatChannel() {
         payload
       );
 
+
       const message =
         payload.new;
+
 
       const belongsToChat =
         (
@@ -491,6 +1263,7 @@ function createChatChannel() {
             currentUser.id
         );
 
+
       if (
         belongsToChat
       ) {
@@ -504,13 +1277,14 @@ function createChatChannel() {
 
 
   /* =========================
-     BROADCAST TYPING
+     TYPING
   ========================== */
 
   chatChannel.on(
     "broadcast",
     {
-      event: "typing"
+      event:
+        "typing"
     },
     function(event) {
 
@@ -519,8 +1293,10 @@ function createChatChannel() {
         event
       );
 
+
       const data =
         event.payload;
+
 
       if (
         !data ||
@@ -530,16 +1306,22 @@ function createChatChannel() {
         return;
       }
 
+
       friendTyping =
         data.typing === true;
+
 
       clearTimeout(
         friendTypingTimeout
       );
 
-      if (friendTyping) {
+
+      if (
+        friendTyping
+      ) {
 
         showTyping();
+
 
         friendTypingTimeout =
           setTimeout(
@@ -571,14 +1353,17 @@ function createChatChannel() {
   chatChannel.on(
     "presence",
     {
-      event: "sync"
+      event:
+        "sync"
     },
     function() {
 
       console.log(
         "Presence sync:",
-        chatChannel.presenceState()
+        chatChannel
+          .presenceState()
       );
+
 
       updateFriendStatus();
 
@@ -593,7 +1378,8 @@ function createChatChannel() {
   chatChannel.on(
     "presence",
     {
-      event: "join"
+      event:
+        "join"
     },
     function(event) {
 
@@ -601,6 +1387,7 @@ function createChatChannel() {
         "Presence join:",
         event
       );
+
 
       updateFriendStatus();
 
@@ -615,7 +1402,8 @@ function createChatChannel() {
   chatChannel.on(
     "presence",
     {
-      event: "leave"
+      event:
+        "leave"
     },
     function(event) {
 
@@ -623,6 +1411,7 @@ function createChatChannel() {
         "Presence leave:",
         event
       );
+
 
       updateFriendStatus();
 
@@ -634,7 +1423,7 @@ function createChatChannel() {
      SUBSCRIBE
   ========================== */
 
-  chatChannel.subscribe(
+chatChannel.subscribe(
     async function(status) {
 
       console.log(
@@ -642,10 +1431,12 @@ function createChatChannel() {
         status
       );
 
+
       const statusElement =
         document.getElementById(
           "friendStatus"
         );
+
 
       if (
         status ===
@@ -655,6 +1446,7 @@ function createChatChannel() {
         console.log(
           "Realtime channel connected."
         );
+
 
         const trackResult =
           await chatChannel.track({
@@ -673,10 +1465,12 @@ function createChatChannel() {
 
           });
 
+
         console.log(
           "Presence track result:",
           trackResult
         );
+
 
         updateFriendStatus();
 
@@ -693,7 +1487,10 @@ function createChatChannel() {
           "Realtime CHANNEL_ERROR"
         );
 
-        if (statusElement) {
+
+        if (
+          statusElement
+        ) {
 
           statusElement.textContent =
             "Connection error";
@@ -716,7 +1513,10 @@ function createChatChannel() {
           "Realtime TIMED_OUT"
         );
 
-        if (statusElement) {
+
+        if (
+          statusElement
+        ) {
 
           statusElement.textContent =
             "Connection timeout";
@@ -743,6 +1543,7 @@ function createChatChannel() {
 
     }
   );
+
 }
 
 
@@ -759,19 +1560,21 @@ function updateFriendStatus() {
     return;
   }
 
+
   const status =
     document.getElementById(
       "friendStatus"
     );
+
 
   if (!status) {
     return;
   }
 
 
-  /* FRIEND TYPING */
-
-  if (friendTyping) {
+  if (
+    friendTyping
+  ) {
 
     showTyping();
 
@@ -779,22 +1582,28 @@ function updateFriendStatus() {
   }
 
 
-  /* PRESENCE */
-
   const state =
-    chatChannel.presenceState();
+    chatChannel
+      .presenceState();
+
 
   const friendPresence =
-    state[friend.id];
+    state[
+      friend.id
+    ];
+
 
   const friendOnline =
     Array.isArray(
       friendPresence
     ) &&
-    friendPresence.length > 0;
+    friendPresence.length >
+      0;
 
 
-  if (friendOnline) {
+  if (
+    friendOnline
+  ) {
 
     status.textContent =
       "Online";
@@ -829,14 +1638,19 @@ function startTyping() {
     return;
   }
 
-  if (!myTyping) {
+
+  if (
+    !myTyping
+  ) {
 
     myTyping =
       true;
 
+
     console.log(
       "Sending typing: true"
     );
+
 
     chatChannel.send({
 
@@ -875,11 +1689,13 @@ function startTyping() {
     typingTimeout
   );
 
+
   typingTimeout =
     setTimeout(
       stopTyping,
       1500
     );
+
 }
 
 
@@ -897,16 +1713,20 @@ function stopTyping() {
     return;
   }
 
+
   myTyping =
     false;
+
 
   clearTimeout(
     typingTimeout
   );
 
+
   console.log(
     "Sending typing: false"
   );
+
 
   chatChannel.send({
 
@@ -937,6 +1757,7 @@ function stopTyping() {
 
     }
   );
+
 }
 
 
@@ -951,15 +1772,19 @@ function showTyping() {
       "friendStatus"
     );
 
+
   if (!status) {
     return;
   }
 
+
   status.textContent =
     "typing...";
 
+
   status.style.color =
     "#ffffff";
+
 }
 
 
@@ -973,6 +1798,7 @@ function setupInput() {
     document.getElementById(
       "messageInput"
     );
+
 
   if (!input) {
     return;
@@ -1004,7 +1830,8 @@ function setupInput() {
     function(event) {
 
       if (
-        event.key === "Enter" &&
+        event.key ===
+          "Enter" &&
         !event.shiftKey
       ) {
 
@@ -1043,9 +1870,11 @@ function showError(
       "messages"
     );
 
+
   if (!container) {
     return;
   }
+
 
   container.innerHTML = `
 
@@ -1054,6 +1883,7 @@ function showError(
     </div>
 
   `;
+
 }
 
 
@@ -1068,12 +1898,15 @@ function scrollToBottom() {
       "messages"
     );
 
+
   if (!container) {
     return;
   }
 
+
   container.scrollTop =
     container.scrollHeight;
+
 }
 
 
@@ -1085,18 +1918,45 @@ function goBack() {
 
   window.location.href =
     "index.html";
+
 }
 
 
 /* =========================
-   MEDIA
+   OLD MEDIA MESSAGE
 ========================= */
 
 function showMediaMessage() {
 
-  alert(
-    "Photo & video sharing will be added next."
-  );
+  openMediaPicker();
+
+}
+
+
+/* =========================
+   OPEN MEDIA PICKER
+========================= */
+
+function openMediaPicker() {
+
+  const mediaInput =
+    document.getElementById(
+      "mediaInput"
+    );
+
+
+  if (!mediaInput) {
+
+    console.error(
+      "mediaInput not found."
+    );
+
+    return;
+  }
+
+
+  mediaInput.click();
+
 }
 
 
@@ -1109,6 +1969,7 @@ function showReactionMessage() {
   alert(
     "Reactions will be added next."
   );
+
 }
 
 
@@ -1121,6 +1982,7 @@ function showMoreOptions() {
   alert(
     "More chat options will be added later."
   );
+
 }
 
 
@@ -1132,7 +1994,9 @@ window.addEventListener(
   "beforeunload",
   function() {
 
-    if (chatChannel) {
+    if (
+      chatChannel
+    ) {
 
       chatChannel.untrack();
 
@@ -1156,20 +2020,27 @@ async function startChat() {
   const loggedIn =
     await loadCurrentUser();
 
+
   if (!loggedIn) {
     return;
   }
 
+
   const friendLoaded =
     await loadFriend();
+
 
   if (!friendLoaded) {
     return;
   }
 
+
   setupInput();
 
+  setupMediaPicker();
+
   createChatChannel();
+
 }
 
 
