@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>JustUs Chat</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #08080c;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .chat-app {
+      width: 100%;
+      max-width: 520px;
+      height: 100dvh;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      background: #111116;
+    }
+
+    /* HEADER */
+
+    .chat-header {
+      height: 70px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid #25252d;
+    }
+
+    .back-button {
+      width: 38px;
+      height: 38px;
+      border: none;
+      background: transparent;
+      color: #fff;
+      font-size: 24px;
+    }
+
+    .friend-avatar {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: #1b1b22;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .friend-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .friend-name {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .friend-status {
+      color: #777;
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .more-button {
+      width: 38px;
+      height: 38px;
+      border: none;
+      background: transparent;
+      color: #aaa;
+      font-size: 22px;
+    }
+
+    /* MESSAGES */
+
+    .messages {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 16px 14px;
+    }
+
+    .empty-chat {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .empty-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #1b1b22;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin-bottom: 14px;
+    }
+
+    .empty-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ddd;
+    }
+
+    .empty-text {
+      color: #666;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .message-row {
+      display: flex;
+      margin-bottom: 8px;
+    }
+
+    .message-row.sent {
+      justify-content: flex-end;
+    }
+
+    .message-row.received {
+      justify-content: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 78%;
+      padding: 9px 11px;
+      border-radius: 15px;
+    }
+
+    .message-bubble.sent {
+      background: #fff;
+      color: #000;
+      border-bottom-right-radius: 5px;
+    }
+
+    .message-bubble.received {
+      background: #1c1c24;
+      color: #fff;
+      border-bottom-left-radius: 5px;
+    }
+
+    .message-text {
+      font-size: 14px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .message-time {
+      margin-top: 4px;
+      font-size: 9px;
+      opacity: .55;
+      text-align: right;
+    }
+
+    /* INPUT */
+
+    .composer {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px;
+      border-top: 1px solid #25252d;
+      background: #111116;
+    }
+
+    .composer-button,
+    .send-button {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      font-size: 17px;
+    }
+
+    .composer-button {
+      border: 1px solid #292932;
+      background: #15151b;
+      color: #ddd;
+    }
+
+    .send-button {
+      border: none;
+      background: #fff;
+      color: #000;
+      font-weight: 700;
+    }
+
+    #messageInput {
+      flex: 1;
+      min-width: 0;
+      height: 44px;
+      padding: 0 14px;
+      border: 1px solid #292932;
+      border-radius: 14px;
+      outline: none;
+      background: #0b0b10;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    #messageInput:focus {
+      border-color: #555560;
+    }
+
+    /* MESSAGE */
+
+    .error {
+      color: #ff7777;
+      text-align: center;
+      font-size: 12px;
+      padding: 20px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="chat-app">
+
+    <!-- HEADER -->
+
+    <div class="chat-header">
+
+      <button
+        class="back-button"
+        onclick="goBack()"
+      >
+        ←
+      </button>
+
+      <div class="friend-avatar">
+        👤
+      </div>
+
+      <div class="friend-info">
+
+        <div
+          id="friendName"
+          class="friend-name"
+        >
+          Loading...
+        </div>
+
+        <div
+          id="friendStatus"
+          class="friend-status"
+        >
+          Offline
+        </div>
+
+      </div>
+
+      <button
+        class="more-button"
+        onclick="alert('More options coming soon.')"
+      >
+        ⋮
+      </button>
+
+    </div>
+
+
+    <!-- MESSAGES -->
+
+    <div
+      id="messages"
+      class="messages"
+    >
+
+      <div
+        id="emptyChat"
+        class="empty-chat"
+      >
+
+        <div class="empty-avatar">
+          👤
+        </div>
+
+        <div class="empty-title">
+          Start your conversation
+        </div>
+
+        <div
+          id="emptyText"
+          class="empty-text"
+        >
+          Say hello 👋
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- COMPOSER -->
+
+    <div class="composer">
+
+      <button
+        class="composer-button"
+        onclick="alert('Photo and video sharing will be added next.')"
+      >
+        ＋
+      </button>
+
+      <input
+        id="messageInput"
+        type="text"
+        placeholder="Message..."
+        autocomplete="off"
+      >
+
+      <button
+        class="composer-button"
+        onclick="alert('Reactions will be added next.')"
+      >
+        😊
+      </button>
+
+      <button
+        id="sendButton"
+        class="send-button"
+        onclick="sendMessage()"
+      >
+        ➤
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    /* =========================
+       SUPABASE
+    ========================== */
+
+    const SUPABASE_URL =
+      "https://rfcvoeeydeamyytzfxbd.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
+
+    const supabaseClient =
+      supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+
+    let currentUser = null;
+    let friend = null;
+
+
+    /* =========================
+       ESCAPE HTML
+    ========================== */
+
+    function escapeHtml(value) {
+
+      return String(value)
+
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+
+        .replace(
+          /</g,
+          "&lt;"
+        )
+
+        .replace(
+          />/g,
+          "&gt;"
+        )
+
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+
+        .replace(
+          /'/g,
+          "&#039;"
+        );
+
+    }
+
+
+    /* =========================
+       GET FRIEND ID
+    ========================== */
+
+    function getFriendId() {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      return params.get(
+        "friend"
+      );
+
+    }
+
+
+    /* =========================
+       LOAD FRIEND
+    ========================== */
+
+    async function loadFriend() {
+
+      const friendId =
+        getFriendId();
+
+
+      if (!friendId) {
+
+        document.getElementById(
+          "friendName"
+        ).textContent =
+          "No friend selected";
+
+        return;
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("profiles")
+          .select(
+            "id, username"
+          )
+          .eq(
+            "id",
+            friendId
+          )
+          .maybeSingle();
+
+
+      if (error) {
+
+        showError(
+          error.message
+        );
+
+        return;
+      }
+
+
+      if (!data) {
+
+        showError(
+          "Friend not found."
+        );
+
+        return;
+      }
+
+
+      friend = data;
+
+
+      document.getElementById(
+        "friendName"
+      ).textContent =
+        "@" +
+        friend.username;
+
+
+      document.getElementById(
+        "emptyText"
+      ).textContent =
+        "Say hello to @" +
+        friend.username +
+        " 👋";
+
+
+      await loadMessages();
+
+    }
+
+
+    /* =========================
+       LOAD CURRENT USER
+    ========================== */
+
+    async function loadCurrentUser() {
+
+      const {
+        data
+      } =
+        await supabaseClient
+          .auth
+          .getSession();
+
+
+      if (!data.session) {
+
+        window.location.href =
+          "index.html";
+
+        return false;
+
+      }
+
+
+      currentUser =
+        data.session.user;
+
+      return true;
+
+    }
+
+
+    /* =========================
+       LOAD MESSAGES
+    ========================== */
+
+    async function loadMessages() {
+
+      if (
+        !currentUser ||
+        !friend
+      ) {
+        return;
+      }
+
+
+      const container =
+        document.getElementById(
+          "messages"
+        );
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("messages")
+          .select(
+            "id, sender_id, receiver_id, message, created_at"
+          )
+          .or(
+
+            `and(sender_id.eq.${currentUser.id},receiver_id.eq.${friend.id}),and(sender_id.eq.${friend.id},receiver_id.eq.${currentUser.id})`
+
+          )
+          .order(
+            "created_at",
+            {
+              ascending: true
+            }
+          );
+
+
+      if (error) {
+
+        showError(
+          error.message
+        );
+
+        return;
+      }
+
+
+      if (
+        !data ||
+        data.length === 0
+      ) {
+
+        container.innerHTML = `
+
+          <div
+            id="emptyChat"
+            class="empty-chat"
+          >
+
+            <div class="empty-avatar">
+              👤
+            </div>
+
+            <div class="empty-title">
+              Start your conversation
+            </div>
+
+            <div class="empty-text">
+              Say hello to @${escapeHtml(
+                friend.username
+              )} 👋
+            </div>
+
+          </div>
+
+        `;
+
+        return;
+
+      }
+
+
+      let html = "";
+
+
+      data.forEach(
+        function(item) {
+
+          const mine =
+            item.sender_id ===
+            currentUser.id;
+
+
+          const time =
+            new Date(
+              item.created_at
+            ).toLocaleTimeString(
+              [],
+              {
+                hour:
+                  "numeric",
+
+                minute:
+                  "2-digit"
+              }
+            );
+
+
+          html += `
+
+            <div
+              class="message-row ${
+                mine
+                  ? "sent"
+                  : "received"
+              }"
+            >
+
+              <div
+                class="message-bubble ${
+                  mine
+                    ? "sent"
+                    : "received"
+                }"
+              >
+
+                <div class="message-text">
+                  ${escapeHtml(
+                    item.message
+                  )}
+                </div>
+
+                <div class="message-time">
+                  ${time}
+                </div>
+
+              </div>
+
+            </div>
+
+          `;
+
+        }
+      );
+
+
+      container.innerHTML =
+        html;
+
+
+      container.scrollTop =
+        container.scrollHeight;
+
+    }
+
+
+    /* =========================
+       SEND MESSAGE
+    ========================== */
+
+    async function sendMessage() {
+
+      if (
+        !currentUser ||
+        !friend
+      ) {
+        return;
+      }
+
+
+      const input =
+        document.getElementById(
+          "messageInput"
+        );
+
+
+      const message =
+        input.value.trim();
+
+
+      if (!message) {
+        return;
+      }
+
+
+      const button =
+        document.getElementById(
+          "sendButton"
+        );
+
+
+      button.disabled =
+        true;
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("messages")
+          .insert({
+
+            sender_id:
+              currentUser.id,
+
+            receiver_id:
+              friend.id,
+
+            message:
+              message
+
+          });
+
+
+      button.disabled =
+        false;
+
+
+      if (error) {
+
+        showError(
+          error.message
+        );
+
+        return;
+      }
+
+
+      input.value = "";
+
+
+      await loadMessages();
+
+
+      input.focus();
+
+    }
+
+
+    /* =========================
+       ENTER TO SEND
+    ========================== */
+
+    document
+      .getElementById(
+        "messageInput"
+      )
+      .addEventListener(
+        "keydown",
+        function(event) {
+
+          if (
+            event.key === "Enter"
+          ) {
+
+            event.preventDefault();
+
+            sendMessage();
+
+          }
+
+        }
+      );
+
+
+    /* =========================
+       ERROR
+    ========================== */
+
+    function showError(
+      message
+    ) {
+
+      document.getElementById(
+        "messages"
+      ).innerHTML = `
+
+        <div class="error">
+          ${escapeHtml(message)}
+        </div>
+
+      `;
+
+    }
+
+
+    /* =========================
+       BACK
+    ========================== */
+
+    function goBack() {
+
+      window.location.href =
+        "index.html";
+
+    }
+
+
+    /* =========================
+       START
+    ========================== */
+
+    async function startChat() {
+
+      const loggedIn =
+        await loadCurrentUser();
+
+
+      if (!loggedIn) {
+        return;
+      }
+
+
+      await loadFriend();
+
+    }
+
+
+    startChat();
+
+  </script>
+
+</body>
+
+</html>
