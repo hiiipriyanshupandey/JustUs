@@ -15,8 +15,11 @@ let currentUser = null;
 let friend = null;
 let chatChannel = null;
 
+let myTyping = false;
+let friendTyping = false;
+
 let typingTimeout = null;
-let currentlyTyping = false;
+let friendTypingTimeout = null;
 
 
 /* =========================
@@ -63,7 +66,10 @@ async function loadCurrentUser() {
 
   if (error) {
 
-    console.error(error);
+    console.error(
+      "Auth error:",
+      error
+    );
 
     return false;
   }
@@ -78,6 +84,11 @@ async function loadCurrentUser() {
 
   currentUser =
     data.session.user;
+
+  console.log(
+    "Current user:",
+    currentUser.id
+  );
 
   return true;
 }
@@ -113,7 +124,10 @@ async function loadFriend() {
 
   if (error) {
 
-    console.error(error);
+    console.error(
+      "Friend error:",
+      error
+    );
 
     showError(
       error.message
@@ -195,7 +209,10 @@ async function loadMessages() {
 
   if (error) {
 
-    console.error(error);
+    console.error(
+      "Messages error:",
+      error
+    );
 
     showError(
       error.message
@@ -378,7 +395,10 @@ async function sendMessage() {
 
   if (error) {
 
-    console.error(error);
+    console.error(
+      "Send message error:",
+      error
+    );
 
     showError(
       error.message
@@ -394,7 +414,7 @@ async function sendMessage() {
 
 
 /* =========================
-   CREATE CHAT CHANNEL
+   CHAT CHANNEL
 ========================= */
 
 function createChatChannel() {
@@ -417,6 +437,11 @@ function createChatChannel() {
     "-" +
     ids[1];
 
+  console.log(
+    "Creating channel:",
+    channelName
+  );
+
   chatChannel =
     supabaseClient.channel(
       channelName,
@@ -431,7 +456,7 @@ function createChatChannel() {
 
 
   /* =========================
-     REALTIME MESSAGES
+     DATABASE MESSAGES
   ========================== */
 
   chatChannel.on(
@@ -442,6 +467,11 @@ function createChatChannel() {
       table: "messages"
     },
     function(payload) {
+
+      console.log(
+        "Realtime message:",
+        payload
+      );
 
       const message =
         payload.new;
@@ -474,7 +504,7 @@ function createChatChannel() {
 
 
   /* =========================
-     TYPING
+     BROADCAST TYPING
   ========================== */
 
   chatChannel.on(
@@ -482,10 +512,15 @@ function createChatChannel() {
     {
       event: "typing"
     },
-    function(payload) {
+    function(event) {
+
+      console.log(
+        "Typing event:",
+        event
+      );
 
       const data =
-        payload.payload;
+        event.payload;
 
       if (
         !data ||
@@ -495,13 +530,33 @@ function createChatChannel() {
         return;
       }
 
-      if (data.typing) {
+      friendTyping =
+        data.typing === true;
+
+      clearTimeout(
+        friendTypingTimeout
+      );
+
+      if (friendTyping) {
 
         showTyping();
 
+        friendTypingTimeout =
+          setTimeout(
+            function() {
+
+              friendTyping =
+                false;
+
+              updateFriendStatus();
+
+            },
+            2500
+          );
+
       } else {
 
-        hideTyping();
+        updateFriendStatus();
 
       }
 
@@ -510,7 +565,7 @@ function createChatChannel() {
 
 
   /* =========================
-     PRESENCE
+     PRESENCE SYNC
   ========================== */
 
   chatChannel.on(
@@ -520,33 +575,56 @@ function createChatChannel() {
     },
     function() {
 
-      updateFriendPresence();
+      console.log(
+        "Presence sync:",
+        chatChannel.presenceState()
+      );
+
+      updateFriendStatus();
 
     }
   );
 
+
+  /* =========================
+     PRESENCE JOIN
+  ========================== */
 
   chatChannel.on(
     "presence",
     {
       event: "join"
     },
-    function() {
+    function(event) {
 
-      updateFriendPresence();
+      console.log(
+        "Presence join:",
+        event
+      );
+
+      updateFriendStatus();
 
     }
   );
 
+
+  /* =========================
+     PRESENCE LEAVE
+  ========================== */
 
   chatChannel.on(
     "presence",
     {
       event: "leave"
     },
-    function() {
+    function(event) {
 
-      updateFriendPresence();
+      console.log(
+        "Presence leave:",
+        event
+      );
+
+      updateFriendStatus();
 
     }
   );
@@ -560,30 +638,106 @@ function createChatChannel() {
     async function(status) {
 
       console.log(
-        "JustUs Realtime:",
+        "JustUs Realtime status:",
         status
       );
+
+      const statusElement =
+        document.getElementById(
+          "friendStatus"
+        );
 
       if (
         status ===
         "SUBSCRIBED"
       ) {
 
-        await chatChannel.track({
+        console.log(
+          "Realtime channel connected."
+        );
 
-          user_id:
-            currentUser.id,
+        const trackResult =
+          await chatChannel.track({
 
-          username:
-            currentUser.user_metadata
-              ?.username || "",
+            user_id:
+              currentUser.id,
 
-          online_at:
-            new Date().toISOString()
+            username:
+              currentUser
+                .user_metadata
+                ?.username || "",
 
-        });
+            online_at:
+              new Date()
+                .toISOString()
 
-        updateFriendPresence();
+          });
+
+        console.log(
+          "Presence track result:",
+          trackResult
+        );
+
+        updateFriendStatus();
+
+        return;
+      }
+
+
+      if (
+        status ===
+        "CHANNEL_ERROR"
+      ) {
+
+        console.error(
+          "Realtime CHANNEL_ERROR"
+        );
+
+        if (statusElement) {
+
+          statusElement.textContent =
+            "Connection error";
+
+          statusElement.style.color =
+            "#ff6b6b";
+
+        }
+
+        return;
+      }
+
+
+      if (
+        status ===
+        "TIMED_OUT"
+      ) {
+
+        console.error(
+          "Realtime TIMED_OUT"
+        );
+
+        if (statusElement) {
+
+          statusElement.textContent =
+            "Connection timeout";
+
+          statusElement.style.color =
+            "#ff6b6b";
+
+        }
+
+        return;
+      }
+
+
+      if (
+        status ===
+        "CLOSED"
+      ) {
+
+        console.warn(
+          "Realtime channel closed."
+        );
 
       }
 
@@ -593,10 +747,10 @@ function createChatChannel() {
 
 
 /* =========================
-   FRIEND ONLINE STATUS
+   FRIEND STATUS
 ========================= */
 
-function updateFriendPresence() {
+function updateFriendStatus() {
 
   if (
     !chatChannel ||
@@ -604,16 +758,6 @@ function updateFriendPresence() {
   ) {
     return;
   }
-
-  const state =
-    chatChannel.presenceState();
-
-  const friendOnline =
-    Object.prototype.hasOwnProperty
-      .call(
-        state,
-        friend.id
-      );
 
   const status =
     document.getElementById(
@@ -624,9 +768,31 @@ function updateFriendPresence() {
     return;
   }
 
-  if (currentlyTyping) {
+
+  /* FRIEND TYPING */
+
+  if (friendTyping) {
+
+    showTyping();
+
     return;
   }
+
+
+  /* PRESENCE */
+
+  const state =
+    chatChannel.presenceState();
+
+  const friendPresence =
+    state[friend.id];
+
+  const friendOnline =
+    Array.isArray(
+      friendPresence
+    ) &&
+    friendPresence.length > 0;
+
 
   if (friendOnline) {
 
@@ -645,6 +811,7 @@ function updateFriendPresence() {
       "#777";
 
   }
+
 }
 
 
@@ -662,18 +829,22 @@ function startTyping() {
     return;
   }
 
-  if (
-    !currentlyTyping
-  ) {
+  if (!myTyping) {
 
-    currentlyTyping =
+    myTyping =
       true;
+
+    console.log(
+      "Sending typing: true"
+    );
 
     chatChannel.send({
 
-      type: "broadcast",
+      type:
+        "broadcast",
 
-      event: "typing",
+      event:
+        "typing",
 
       payload: {
 
@@ -685,9 +856,20 @@ function startTyping() {
 
       }
 
-    });
+    })
+    .then(
+      function(result) {
+
+        console.log(
+          "Typing broadcast result:",
+          result
+        );
+
+      }
+    );
 
   }
+
 
   clearTimeout(
     typingTimeout
@@ -710,23 +892,29 @@ function stopTyping() {
   if (
     !chatChannel ||
     !currentUser ||
-    !currentlyTyping
+    !myTyping
   ) {
     return;
   }
 
-  currentlyTyping =
+  myTyping =
     false;
 
   clearTimeout(
     typingTimeout
   );
 
+  console.log(
+    "Sending typing: false"
+  );
+
   chatChannel.send({
 
-    type: "broadcast",
+    type:
+      "broadcast",
 
-    event: "typing",
+    event:
+      "typing",
 
     payload: {
 
@@ -738,9 +926,17 @@ function stopTyping() {
 
     }
 
-  });
+  })
+  .then(
+    function(result) {
 
-  updateFriendPresence();
+      console.log(
+        "Stop typing result:",
+        result
+      );
+
+    }
+  );
 }
 
 
@@ -768,28 +964,6 @@ function showTyping() {
 
 
 /* =========================
-   HIDE TYPING
-========================= */
-
-function hideTyping() {
-
-  const status =
-    document.getElementById(
-      "friendStatus"
-    );
-
-  if (!status) {
-    return;
-  }
-
-  currentlyTyping =
-    false;
-
-  updateFriendPresence();
-}
-
-
-/* =========================
    INPUT
 ========================= */
 
@@ -803,6 +977,7 @@ function setupInput() {
   if (!input) {
     return;
   }
+
 
   input.addEventListener(
     "input",
@@ -851,6 +1026,7 @@ function setupInput() {
 
     }
   );
+
 }
 
 
@@ -866,6 +1042,10 @@ function showError(
     document.getElementById(
       "messages"
     );
+
+  if (!container) {
+    return;
+  }
 
   container.innerHTML = `
 
@@ -956,9 +1136,10 @@ window.addEventListener(
 
       chatChannel.untrack();
 
-      supabaseClient.removeChannel(
-        chatChannel
-      );
+      supabaseClient
+        .removeChannel(
+          chatChannel
+        );
 
     }
 
