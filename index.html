@@ -6,6 +6,9 @@
 
   <title>JustUs</title>
 
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -30,13 +33,14 @@
 
     .logo {
       text-align: center;
-      margin-top: 80px;
+      margin-top: 70px;
       margin-bottom: 40px;
     }
 
     .logo h1 {
-      font-size: 32px;
+      font-size: 34px;
       margin-bottom: 10px;
+      letter-spacing: -1px;
     }
 
     .logo p {
@@ -120,6 +124,11 @@
       margin-top: 4px;
     }
 
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .forgot {
       display: block;
       text-align: center;
@@ -127,6 +136,68 @@
       color: #92929d;
       font-size: 12px;
       text-decoration: none;
+      cursor: pointer;
+    }
+
+    .forgot:hover {
+      color: white;
+    }
+
+    .message {
+      display: none;
+      padding: 11px 12px;
+      margin-bottom: 18px;
+      border-radius: 9px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.error {
+      background: #2a1518;
+      border: 1px solid #54242a;
+      color: #ffb8bf;
+    }
+
+    .message.success {
+      background: #142319;
+      border: 1px solid #294b31;
+      color: #b9efc2;
+    }
+
+    .logged-in {
+      display: none;
+      text-align: center;
+    }
+
+    .logged-in.active {
+      display: block;
+    }
+
+    .welcome {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .welcome-text {
+      color: #92929d;
+      font-size: 13px;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .logout-button {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid #303039;
+      background: transparent;
+      color: #f5f5f5;
+      cursor: pointer;
+      font-size: 14px;
     }
 
     .note {
@@ -135,6 +206,33 @@
       color: #666670;
       font-size: 11px;
     }
+
+    .loading {
+      display: none;
+      text-align: center;
+      color: #92929d;
+      font-size: 13px;
+      margin-top: 15px;
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 20px 15px;
+      }
+
+      .logo {
+        margin-top: 50px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+    }
   </style>
 </head>
 
@@ -142,45 +240,85 @@
 
   <main class="app">
 
+    <!-- LOGO -->
+
     <div class="logo">
       <h1>JustUs</h1>
       <p>A private space for two.</p>
     </div>
 
-    <div class="card">
+
+    <!-- AUTH CARD -->
+
+    <div class="card" id="authCard">
 
       <div class="tabs">
-        <button class="tab active" onclick="showForm('login')">
+
+        <button
+          class="tab active"
+          id="loginTab"
+          onclick="showForm('login')"
+        >
           Log In
         </button>
 
-        <button class="tab" onclick="showForm('signup')">
+        <button
+          class="tab"
+          id="signupTab"
+          onclick="showForm('signup')"
+        >
           Create Account
         </button>
+
       </div>
+
+
+      <!-- MESSAGE -->
+
+      <div id="message" class="message"></div>
 
 
       <!-- LOGIN -->
 
       <div id="login" class="form active">
 
-        <label>Email</label>
+        <label for="loginEmail">
+          Email
+        </label>
+
         <input
+          id="loginEmail"
           type="email"
           placeholder="you@example.com"
+          autocomplete="email"
         >
 
-        <label>Password</label>
+
+        <label for="loginPassword">
+          Password
+        </label>
+
         <input
+          id="loginPassword"
           type="password"
           placeholder="Your password"
+          autocomplete="current-password"
         >
 
-        <button class="button">
+
+        <button
+          class="button"
+          id="loginButton"
+          onclick="login()"
+        >
           Log In
         </button>
 
-        <a href="#" class="forgot">
+
+        <a
+          class="forgot"
+          onclick="resetPassword()"
+        >
           Forgot password?
         </a>
 
@@ -191,31 +329,91 @@
 
       <div id="signup" class="form">
 
-        <label>Username</label>
+        <label for="signupUsername">
+          Username
+        </label>
+
         <input
+          id="signupUsername"
           type="text"
           placeholder="@yourusername"
+          autocomplete="username"
+          maxlength="20"
         >
 
-        <label>Email</label>
+
+        <label for="signupEmail">
+          Email
+        </label>
+
         <input
+          id="signupEmail"
           type="email"
           placeholder="you@example.com"
+          autocomplete="email"
         >
 
-        <label>Password</label>
+
+        <label for="signupPassword">
+          Password
+        </label>
+
         <input
+          id="signupPassword"
           type="password"
           placeholder="Create a password"
+          autocomplete="new-password"
         >
 
-        <button class="button">
+
+        <button
+          class="button"
+          id="signupButton"
+          onclick="signUp()"
+        >
           Create Account
         </button>
 
       </div>
 
+
+      <div
+        id="loading"
+        class="loading"
+      >
+        Please wait...
+      </div>
+
     </div>
+
+
+    <!-- LOGGED IN SCREEN -->
+
+    <div
+      class="card logged-in"
+      id="loggedInCard"
+    >
+
+      <div class="welcome">
+        Welcome to JustUs
+      </div>
+
+      <div
+        class="welcome-text"
+        id="welcomeText"
+      >
+        Your private space is ready.
+      </div>
+
+      <button
+        class="logout-button"
+        onclick="logout()"
+      >
+        Log Out
+      </button>
+
+    </div>
+
 
     <p class="note">
       Private • Simple • JustUs
@@ -225,6 +423,32 @@
 
 
   <script>
+
+    /*
+      ============================================
+      SUPABASE CONFIGURATION
+      ============================================
+    */
+
+    const SUPABASE_URL =
+      "https://rfcvoeeydeamyytzfxbd.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
+
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+
+    /*
+      ============================================
+      FORM SWITCHING
+      ============================================
+    */
 
     function showForm(formName) {
 
@@ -236,25 +460,542 @@
         .getElementById("signup")
         .classList.remove("active");
 
+
       document
         .getElementById(formName)
         .classList.add("active");
 
 
-      const tabs = document.querySelectorAll(".tab");
+      document
+        .getElementById("loginTab")
+        .classList.remove("active");
 
-      tabs.forEach(tab => {
-        tab.classList.remove("active");
-      });
+      document
+        .getElementById("signupTab")
+        .classList.remove("active");
 
 
       if (formName === "login") {
-        tabs[0].classList.add("active");
+
+        document
+          .getElementById("loginTab")
+          .classList.add("active");
+
       } else {
-        tabs[1].classList.add("active");
+
+        document
+          .getElementById("signupTab")
+          .classList.add("active");
+
+      }
+
+
+      clearMessage();
+
+    }
+
+
+    /*
+      ============================================
+      MESSAGE SYSTEM
+      ============================================
+    */
+
+    function showMessage(message, type = "error") {
+
+      const box =
+        document.getElementById("message");
+
+      box.textContent = message;
+
+      box.className =
+        "message show " + type;
+
+    }
+
+
+    function clearMessage() {
+
+      const box =
+        document.getElementById("message");
+
+      box.textContent = "";
+
+      box.className = "message";
+
+    }
+
+
+    /*
+      ============================================
+      LOADING
+      ============================================
+    */
+
+    function setLoading(isLoading) {
+
+      const loading =
+        document.getElementById("loading");
+
+      const loginButton =
+        document.getElementById("loginButton");
+
+      const signupButton =
+        document.getElementById("signupButton");
+
+
+      if (isLoading) {
+
+        loading.classList.add("show");
+
+        loginButton.disabled = true;
+
+        signupButton.disabled = true;
+
+      } else {
+
+        loading.classList.remove("show");
+
+        loginButton.disabled = false;
+
+        signupButton.disabled = false;
+
       }
 
     }
+
+
+    /*
+      ============================================
+      SIGN UP
+      ============================================
+    */
+
+    async function signUp() {
+
+      clearMessage();
+
+      const username =
+        document
+          .getElementById("signupUsername")
+          .value
+          .trim()
+          .replace(/^@/, "")
+          .toLowerCase();
+
+
+      const email =
+        document
+          .getElementById("signupEmail")
+          .value
+          .trim();
+
+
+      const password =
+        document
+          .getElementById("signupPassword")
+          .value;
+
+
+      if (!username || !email || !password) {
+
+        showMessage(
+          "Please fill all fields."
+        );
+
+        return;
+
+      }
+
+
+      if (username.length < 3) {
+
+        showMessage(
+          "Username must be at least 3 characters."
+        );
+
+        return;
+
+      }
+
+
+      if (password.length < 6) {
+
+        showMessage(
+          "Password must be at least 6 characters."
+        );
+
+        return;
+
+      }
+
+
+      setLoading(true);
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth.signUp({
+
+            email: email,
+
+            password: password,
+
+            options: {
+
+              data: {
+                username: username
+              }
+
+            }
+
+          });
+
+
+        if (error) {
+
+          showMessage(
+            error.message
+          );
+
+          return;
+
+        }
+
+
+        /*
+          Supabase may require email confirmation.
+        */
+
+        if (
+          data.user &&
+          !data.session
+        ) {
+
+          showMessage(
+            "Account created. Please check your email and confirm your account.",
+            "success"
+          );
+
+          document
+            .getElementById("signupPassword")
+            .value = "";
+
+        } else {
+
+          showMessage(
+            "Account created successfully!",
+            "success"
+          );
+
+        }
+
+      } catch (error) {
+
+        showMessage(
+          "Something went wrong. Please try again."
+        );
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    }
+
+
+    /*
+      ============================================
+      LOGIN
+      ============================================
+    */
+
+    async function login() {
+
+      clearMessage();
+
+
+      const email =
+        document
+          .getElementById("loginEmail")
+          .value
+          .trim();
+
+
+      const password =
+        document
+          .getElementById("loginPassword")
+          .value;
+
+
+      if (!email || !password) {
+
+        showMessage(
+          "Please enter your email and password."
+        );
+
+        return;
+
+      }
+
+
+      setLoading(true);
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth.signInWithPassword({
+
+            email: email,
+
+            password: password
+
+          });
+
+
+        if (error) {
+
+          showMessage(
+            error.message
+          );
+
+          return;
+
+        }
+
+
+        showLoggedIn(
+          data.user
+        );
+
+      } catch (error) {
+
+        showMessage(
+          "Something went wrong. Please try again."
+        );
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    }
+
+
+    /*
+      ============================================
+      FORGOT PASSWORD
+      ============================================
+    */
+
+    async function resetPassword() {
+
+      clearMessage();
+
+
+      const email =
+        document
+          .getElementById("loginEmail")
+          .value
+          .trim();
+
+
+      if (!email) {
+
+        showMessage(
+          "Enter your email first, then tap Forgot password."
+        );
+
+        return;
+
+      }
+
+
+      setLoading(true);
+
+
+      try {
+
+        const {
+          error
+        } =
+          await supabaseClient.auth
+            .resetPasswordForEmail(
+              email,
+              {
+                redirectTo:
+                  window.location.origin +
+                  window.location.pathname
+              }
+            );
+
+
+        if (error) {
+
+          showMessage(
+            error.message
+          );
+
+          return;
+
+        }
+
+
+        showMessage(
+          "Password reset email sent. Check your inbox.",
+          "success"
+        );
+
+      } catch (error) {
+
+        showMessage(
+          "Unable to send reset email."
+        );
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    }
+
+
+    /*
+      ============================================
+      SHOW LOGGED-IN SCREEN
+      ============================================
+    */
+
+    function showLoggedIn(user) {
+
+      document
+        .getElementById("authCard")
+        .style.display = "none";
+
+
+      document
+        .getElementById("loggedInCard")
+        .classList.add("active");
+
+
+      const username =
+        user?.user_metadata?.username;
+
+
+      const welcomeText =
+        document.getElementById(
+          "welcomeText"
+        );
+
+
+      if (username) {
+
+        welcomeText.textContent =
+          "Logged in as @" + username;
+
+      } else {
+
+        welcomeText.textContent =
+          "Your private space is ready.";
+
+      }
+
+    }
+
+
+    /*
+      ============================================
+      LOGOUT
+      ============================================
+    */
+
+    async function logout() {
+
+      await supabaseClient.auth.signOut();
+
+
+      document
+        .getElementById("loggedInCard")
+        .classList.remove("active");
+
+
+      document
+        .getElementById("authCard")
+        .style.display = "block";
+
+
+      showForm("login");
+
+    }
+
+
+    /*
+      ============================================
+      CHECK EXISTING SESSION
+      ============================================
+    */
+
+    async function checkSession() {
+
+      const {
+        data
+      } =
+        await supabaseClient.auth.getSession();
+
+
+      if (data.session) {
+
+        showLoggedIn(
+          data.session.user
+        );
+
+      }
+
+    }
+
+
+    /*
+      ============================================
+      AUTH STATE LISTENER
+      ============================================
+    */
+
+    supabaseClient.auth.onAuthStateChange(
+      (event, session) => {
+
+        if (
+          event === "SIGNED_IN" &&
+          session
+        ) {
+
+          showLoggedIn(
+            session.user
+          );
+
+        }
+
+      }
+    );
+
+
+    /*
+      ============================================
+      START APP
+      ============================================
+    */
+
+    checkSession();
 
   </script>
 
