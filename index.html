@@ -1147,281 +1147,134 @@
 
     async function signup() {
 
-      clearMessage();
+  clearMessage();
+
+  const username =
+    document
+      .getElementById("signupUsername")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const email =
+    document
+      .getElementById("signupEmail")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("signupPassword")
+      .value;
 
 
-      const username =
-        document
-          .getElementById(
-            "signupUsername"
-          )
-          .value
-          .trim()
-          .toLowerCase();
+  if (!username || !email || !password) {
+
+    showMessage(
+      "Please fill all fields."
+    );
+
+    return;
+  }
 
 
-      const email =
-        document
-          .getElementById(
-            "signupEmail"
-          )
-          .value
-          .trim();
+  if (username.length < 3) {
+
+    showMessage(
+      "Username must be at least 3 characters."
+    );
+
+    return;
+  }
 
 
-      const password =
-        document
-          .getElementById(
-            "signupPassword"
-          )
-          .value;
+  if (!/^[a-z0-9_]+$/.test(username)) {
+
+    showMessage(
+      "Username can contain only letters, numbers and underscore."
+    );
+
+    return;
+  }
 
 
-      if (username.length < 3) {
+  if (password.length < 6) {
 
-        showMessage(
-          "Username must be at least 3 characters."
-        );
+    showMessage(
+      "Password must be at least 6 characters."
+    );
 
-        return;
-      }
-
-
-      if (!email) {
-
-        showMessage(
-          "Please enter your email."
-        );
-
-        return;
-      }
+    return;
+  }
 
 
-      if (password.length < 6) {
-
-        showMessage(
-          "Password must be at least 6 characters."
-        );
-
-        return;
-      }
+  const button =
+    document.getElementById(
+      "signupButton"
+    );
 
 
-      const button =
-        document.getElementById(
-          "signupButton"
-        );
+  button.disabled = true;
+
+  button.textContent =
+    "Creating...";
 
 
-      button.disabled = true;
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .auth
+      .signUp({
 
-      button.textContent =
-        "Creating...";
+        email:
+          email,
 
+        password:
+          password,
 
-      try {
+        options: {
 
-        /* Check username */
+          data: {
 
-        const {
-          data: existingUser,
-          error: usernameError
-        } =
-          await supabaseClient
-            .from("profiles")
-            .select("id")
-            .eq(
-              "username",
+            username:
               username
-            )
-            .maybeSingle();
 
-
-        if (usernameError) {
-
-          showMessage(
-            usernameError.message
-          );
-
-          return;
-        }
-
-
-        if (existingUser) {
-
-          showMessage(
-            "That username is already taken."
-          );
-
-          return;
-        }
-
-
-        /* Create account */
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .auth
-            .signUp({
-
-              email: email,
-
-              password: password,
-
-              options: {
-
-                data: {
-
-                  username:
-                    username
-
-                }
-
-              }
-
-            });
-
-
-        if (error) {
-
-          showMessage(
-            error.message
-          );
-
-          return;
-        }
-
-
-        if (
-          data.user &&
-          !data.session
-        ) {
-
-          showMessage(
-            "Account created. Check your email to confirm your account."
-          );
-
-        } else {
-
-          await loadUser();
+          }
 
         }
 
-
-        document
-          .getElementById(
-            "signupUsername"
-          )
-          .value = "";
-
-        document
-          .getElementById(
-            "signupEmail"
-          )
-          .value = "";
-
-        document
-          .getElementById(
-            "signupPassword"
-          )
-          .value = "";
+      });
 
 
-      } catch (error) {
+  button.disabled = false;
 
-        showMessage(
-          error.message ||
-          "Signup failed."
-        );
+  button.textContent =
+    "Create Account";
 
 
-      } finally {
+  if (error) {
 
-        button.disabled = false;
+    showMessage(
+      error.message
+    );
 
-        button.textContent =
-          "Create Account";
-
-      }
-
-    }
+    return;
+  }
 
 
-    /* =========================
-       FORGOT PASSWORD
-    ========================== */
+  if (!data.session) {
 
-    async function forgotPassword() {
+    showMessage(
+      "Account created. Check your email to confirm your account."
+    );
 
-      clearMessage();
-
-
-      const email =
-        document
-          .getElementById(
-            "loginEmail"
-          )
-          .value
-          .trim();
+    return;
+  }
 
 
-      if (!email) {
-
-        showMessage(
-          "Enter your email first."
-        );
-
-        return;
-      }
-
-
-      try {
-
-        const {
-          error
-        } =
-          await supabaseClient
-            .auth
-            .resetPasswordForEmail(
-
-              email,
-
-              {
-
-                redirectTo:
-                  "https://hiiipriyanshupandey.github.io/JustUs/"
-
-              }
-
-            );
-
-
-        if (error) {
-
-          showMessage(
-            error.message
-          );
-
-          return;
-        }
-
-
-        showMessage(
-          "Password reset email sent."
-        );
-
-
-      } catch (error) {
-
-        showMessage(
-          error.message ||
-          "Could not send reset email."
-        );
-
-      }
+  await loadUser();
 
     }
 
