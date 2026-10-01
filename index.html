@@ -1212,8 +1212,63 @@ if (
 }
 
 
+    /* Check existing friendship */
+
+const {
+  data: friendship,
+  error: friendshipError
+} =
+  await supabaseClient
+    .from("friendships")
+    .select("id")
+    .or(
+      `and(user_id.eq.${currentUser.id},friend_id.eq.${data.id}),and(user_id.eq.${data.id},friend_id.eq.${currentUser.id})`
+    )
+    .limit(1);
+
+
+if (friendshipError) {
+
+  console.log(
+    "Friendship check error:",
+    friendshipError
+  );
+
+  result.innerHTML = `
+    <div class="empty-state">
+      Unable to check friendship status.
+    </div>
+  `;
+
+  return;
+}
+
+
+if (
+  friendship &&
+  friendship.length > 0
+) {
+
+  result.innerHTML = `
+    <div class="result-card">
+
+      <div class="username">
+        @${escapeHtml(data.username)}
+      </div>
+
+      <div class="muted">
+        ✓ Already your friend
+      </div>
+
+    </div>
+  `;
+
+  return;
+}
+
+
 /* =========================================
-   CHECK EXISTING FRIEND REQUEST
+   CHECK EXISTING REQUEST
 ========================================= */
 
 const {
@@ -1264,8 +1319,6 @@ if (
     requests[0];
 
 
-  /* I already sent request */
-
   if (
     request.sender_id ===
     currentUser.id
@@ -1285,11 +1338,7 @@ if (
       </div>
     `;
 
-  }
-
-  /* They already sent me request */
-
-  else {
+  } else {
 
     result.innerHTML = `
       <div class="result-card">
@@ -1377,4 +1426,902 @@ result.innerHTML = `
   button.disabled = false;
   button.textContent = "Search";
 
+}
+
+
+}
+
+
+/* =========================================
+   SEND FRIEND REQUEST
+========================================= */
+
+async function sendFriendRequest(
+  receiverId
+) {
+
+  clearMessage();
+
+  try {
+
+    const {
+      data
+    } =
+      await supabaseClient.auth.getUser();
+
+    const currentUser =
+      data?.user;
+
+    if (!currentUser) {
+
+      showMessage(
+        "Please log in again."
+      );
+
+      return;
+    }
+
+
+    if (
+      currentUser.id ===
+      receiverId
+    ) {
+
+      showMessage(
+        "You cannot add yourself."
+      );
+
+      return;
+    }
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("friend_requests")
+        .insert({
+
+          sender_id:
+            currentUser.id,
+
+          receiver_id:
+            receiverId,
+
+          status:
+            "pending"
+
+        });
+
+
+    if (error) {
+
+      showMessage(
+        error.message
+      );
+
+      return;
+    }
+
+
+    document
+      .getElementById("searchResult")
+      .innerHTML = `
+        <div class="result-card">
+
+          <div class="username">
+            Request Sent ✓
+          </div>
+
+          <div class="muted">
+            Your friend request has been sent.
+          </div>
+
+        </div>
+      `;
+
+
+    document
+      .getElementById(
+        "friendUsernameInput"
+      )
+      .value = "";
+
+
+    showMessage(
+      "Friend request sent.",
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.log(
+      "Send request error:",
+      error
+    );
+
+    showMessage(
+      "Unable to send friend request."
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   LOAD FRIEND REQUESTS
+========================================= */
+
+async function loadFriendRequests() {
+
+  const container =
+    document.getElementById(
+      "friendRequests"
+    );
+
+
+  try {
+
+    const {
+      data
+    } =
+      await supabaseClient.auth.getUser();
+
+    const currentUser =
+      data?.user;
+
+    if (!currentUser) return;
+
+
+    const {
+      data: requests,
+      error
+    } =
+      await supabaseClient
+        .from("friend_requests")
+        .select(
+          "id, sender_id, receiver_id, status, created_at"
+        )
+        .eq(
+          "receiver_id",
+          currentUser.id
+        )
+        .eq(
+          "status",
+          "pending"
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (error) {
+
+      console.log(
+        "Load requests error:",
+        error
+      );
+
+      container.innerHTML = `
+        <div class="empty-state">
+          Unable to load requests.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    if (
+      !requests ||
+      requests.length === 0
+    ) {
+
+      container.innerHTML = `
+        <div class="empty-state">
+          No pending requests.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    const senderIds =
+      requests.map(
+        request =>
+          request.sender_id
+      );
+
+
+    const {
+      data: profiles
+    } =
+      await supabaseClient
+        .from("profiles")
+        .select(
+          "id, username"
+        )
+        .in(
+          "id",
+          senderIds
+        );
+
+
+    const profileMap = {};
+
+
+    (profiles || []).forEach(
+      profile => {
+
+        profileMap[
+          profile.id
+        ] =
+          profile.username;
+
       }
+    );
+
+
+    container.innerHTML =
+      requests
+        .map(
+          request => {
+
+            const username =
+              profileMap[
+                request.sender_id
+              ] ||
+              "Unknown user";
+
+
+            return `
+              <div class="request-card">
+
+                <div class="username">
+                  @${escapeHtml(username)}
+                </div>
+
+                <div class="muted">
+                  Wants to be your friend
+                </div>
+
+                <div class="request-actions">
+
+                  <button
+                    class="small-button primary"
+                    onclick="acceptFriendRequest('${request.id}')"
+                  >
+                    Accept
+                  </button>
+
+                  <button
+                    class="small-button"
+                    onclick="declineFriendRequest('${request.id}')"
+                  >
+                    Decline
+                  </button>
+
+                </div>
+
+              </div>
+            `;
+
+          }
+        )
+        .join("");
+
+
+  } catch (error) {
+
+    console.log(
+      "Request loading error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   ACCEPT FRIEND REQUEST
+========================================= */
+
+async function acceptFriendRequest(
+  requestId
+) {
+
+  clearMessage();
+
+  try {
+
+    const {
+      data
+    } =
+      await supabaseClient.auth.getUser();
+
+    const currentUser =
+      data?.user;
+
+
+    if (!currentUser) {
+
+      showMessage(
+        "Please log in again."
+      );
+
+      return;
+    }
+
+
+    const {
+      data: request,
+      error: requestError
+    } =
+      await supabaseClient
+        .from("friend_requests")
+        .select(
+          "id, sender_id, receiver_id, status"
+        )
+        .eq(
+          "id",
+          requestId
+        )
+        .eq(
+          "receiver_id",
+          currentUser.id
+        )
+        .eq(
+          "status",
+          "pending"
+        )
+        .maybeSingle();
+
+
+    if (requestError) {
+
+      showMessage(
+        requestError.message
+      );
+
+      return;
+    }
+
+
+    if (!request) {
+
+      showMessage(
+        "Friend request is no longer available."
+      );
+
+      await loadFriendRequests();
+
+      return;
+    }
+
+
+    const {
+      error: updateError
+    } =
+      await supabaseClient
+        .from("friend_requests")
+        .update({
+          status: "accepted"
+        })
+        .eq(
+          "id",
+          requestId
+        )
+        .eq(
+          "receiver_id",
+          currentUser.id
+        );
+
+
+    if (updateError) {
+
+      showMessage(
+        updateError.message
+      );
+
+      return;
+    }
+
+
+    /* A → B */
+
+    await supabaseClient
+      .from("friendships")
+      .upsert(
+        {
+          user_id:
+            request.sender_id,
+
+          friend_id:
+            request.receiver_id
+        },
+        {
+          onConflict:
+            "user_id,friend_id"
+        }
+      );
+
+
+    /* B → A */
+
+    await supabaseClient
+      .from("friendships")
+      .upsert(
+        {
+          user_id:
+            request.receiver_id,
+
+          friend_id:
+            request.sender_id
+        },
+        {
+          onConflict:
+            "user_id,friend_id"
+        }
+      );
+
+
+    showMessage(
+      "Friend request accepted.",
+      "success"
+    );
+
+
+    await loadFriendRequests();
+
+    await loadFriends();
+
+
+  } catch (error) {
+
+    console.log(
+      "Accept request error:",
+      error
+    );
+
+    showMessage(
+      "Unable to accept friend request."
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   DECLINE FRIEND REQUEST
+========================================= */
+
+async function declineFriendRequest(
+  requestId
+) {
+
+  clearMessage();
+
+  try {
+
+    const {
+      data
+    } =
+      await supabaseClient.auth.getUser();
+
+    const currentUser =
+      data?.user;
+
+
+    if (!currentUser) return;
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("friend_requests")
+        .update({
+          status: "declined"
+        })
+        .eq(
+          "id",
+          requestId
+        )
+        .eq(
+          "receiver_id",
+          currentUser.id
+        );
+
+
+    if (error) {
+
+      showMessage(
+        error.message
+      );
+
+      return;
+    }
+
+
+    showMessage(
+      "Friend request declined.",
+      "success"
+    );
+
+
+    await loadFriendRequests();
+
+
+  } catch (error) {
+
+    console.log(
+      "Decline request error:",
+      error
+    );
+
+    showMessage(
+      "Unable to decline request."
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   LOAD FRIENDS
+========================================= */
+
+async function loadFriends() {
+
+  const container =
+    document.getElementById(
+      "friendsList"
+    );
+
+
+  try {
+
+    const {
+      data
+    } =
+      await supabaseClient.auth.getUser();
+
+    const currentUser =
+      data?.user;
+
+
+    if (!currentUser) return;
+
+
+    const {
+      data: friendships,
+      error
+    } =
+      await supabaseClient
+        .from("friendships")
+        .select(
+          "user_id, friend_id, created_at"
+        )
+        .or(
+          `user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (error) {
+
+      console.log(
+        "Load friends error:",
+        error
+      );
+
+      container.innerHTML = `
+        <div class="empty-state">
+          Unable to load friends.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    if (
+      !friendships ||
+      friendships.length === 0
+    ) {
+
+      container.innerHTML = `
+        <div class="empty-state">
+          No friends yet.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    const friendIds =
+      friendships.map(
+        friendship => {
+
+          return friendship.user_id ===
+            currentUser.id
+
+            ? friendship.friend_id
+
+            : friendship.user_id;
+
+        }
+      );
+
+
+    const uniqueFriendIds =
+      [...new Set(friendIds)];
+
+
+    const {
+      data: profiles
+    } =
+      await supabaseClient
+        .from("profiles")
+        .select(
+          "id, username"
+        )
+        .in(
+          "id",
+          uniqueFriendIds
+        );
+
+
+    const profileMap = {};
+
+
+    (profiles || []).forEach(
+      profile => {
+
+        profileMap[
+          profile.id
+        ] =
+          profile.username;
+
+      }
+    );
+
+
+    container.innerHTML =
+      uniqueFriendIds
+        .map(
+          friendId => {
+
+            const username =
+              profileMap[
+                friendId
+              ] ||
+              "Unknown user";
+
+
+            return `
+              <div class="friend-card">
+
+                <div class="username">
+                  @${escapeHtml(username)}
+                </div>
+
+                <div class="muted">
+                  <span class="offline-dot"></span>
+                  Offline
+                </div>
+
+                <div class="friend-actions">
+
+                  <button
+                    class="small-button primary"
+                    onclick="openChat('${friendId}')"
+                  >
+                    💬 Chat
+                  </button>
+
+                  <button
+                    class="small-button"
+                    onclick="openGames('${friendId}')"
+                  >
+                    🎮 Games
+                  </button>
+
+                </div>
+
+              </div>
+            `;
+
+          }
+        )
+        .join("");
+
+
+  } catch (error) {
+
+    console.log(
+      "Friends loading error:",
+      error
+    );
+
+    container.innerHTML = `
+      <div class="empty-state">
+        Unable to load friends.
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =========================================
+   CHAT
+========================================= */
+
+function openChat(
+  friendId
+) {
+
+  showMessage(
+    "Chat feature is coming next.",
+    "success"
+  );
+
+  console.log(
+    "Open chat with:",
+    friendId
+  );
+
+}
+
+
+/* =========================================
+   GAMES
+========================================= */
+
+function openGames(
+  friendId
+) {
+
+  showMessage(
+    "Games feature is coming next.",
+    "success"
+  );
+
+  console.log(
+    "Open games with:",
+    friendId
+  );
+
+}
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHtml(
+  text
+) {
+
+  return String(text)
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================
+   AUTH STATE
+========================================= */
+
+supabaseClient.auth
+  .onAuthStateChange(
+    async (
+      event,
+      session
+    ) => {
+
+      if (session) {
+
+        await loadUser();
+
+      } else {
+
+        document
+          .getElementById(
+            "authCard"
+          )
+          .classList.remove(
+            "hidden"
+          );
+
+        document
+          .getElementById(
+            "loggedInCard"
+          )
+          .classList.add(
+            "hidden"
+          );
+
+      }
+
+    }
+  );
+
+
+/* =========================================
+   INITIAL LOAD
+========================================= */
+
+loadUser();
+
+
+/* =========================================
+   ENTER KEY SEARCH
+========================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const input =
+      document.getElementById(
+        "friendUsernameInput"
+      );
+
+    if (input) {
+
+      input.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Enter"
+          ) {
+
+            searchFriend();
+
+          }
+
+        }
+      );
+
+    }
+
+  }
+);
