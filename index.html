@@ -800,35 +800,37 @@
 
 <!-- CHAT SCREEN -->
 
-<div id="chatScreen" class="card hidden">
+<div id="chatScreen" class="chat-page hidden">
 
-  <div class="chat-header">
+  <!-- HEADER -->
+
+  <div class="chat-topbar">
 
     <button
-      class="back-button"
+      class="chat-back"
       onclick="showFriendProfile()"
     >
       ←
     </button>
 
-    <div class="chat-user">
+    <div class="chat-person">
 
-      <div class="chat-avatar">
+      <div class="chat-person-avatar">
         👤
       </div>
 
-      <div>
+      <div class="chat-person-info">
 
         <div
           id="chatTitle"
-          class="chat-username"
+          class="chat-person-name"
         >
           @friend
         </div>
 
         <div
           id="chatStatus"
-          class="chat-status"
+          class="chat-person-status"
         >
           Offline
         </div>
@@ -837,9 +839,94 @@
 
     </div>
 
-    <div style="width:40px;"></div>
+    <button
+      class="chat-more"
+      onclick="showMessage('Chat options will be added later.')"
+    >
+      ⋮
+    </button>
 
   </div>
+
+
+  <!-- CHAT BODY -->
+
+  <div
+    id="messagesContainer"
+    class="chat-body"
+  >
+
+    <div
+      id="chatEmpty"
+      class="chat-empty-state"
+    >
+
+      <div class="chat-empty-avatar">
+        👤
+      </div>
+
+      <div class="chat-empty-title">
+        Start your conversation
+      </div>
+
+      <div class="chat-empty-text">
+        Send a message to @friend
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- TYPING -->
+
+  <div
+    id="typingIndicator"
+    class="chat-typing hidden"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+    typing...
+  </div>
+
+
+  <!-- INPUT -->
+
+  <div class="chat-composer">
+
+    <button
+      class="composer-button"
+      onclick="showMessage('Photo and video sharing will be added next.')"
+    >
+      ＋
+    </button>
+
+    <input
+      id="messageInput"
+      type="text"
+      placeholder="Message..."
+      autocomplete="off"
+    >
+
+    <button
+      class="composer-button"
+      onclick="showMessage('Reactions will be added next.')"
+    >
+      😊
+    </button>
+
+    <button
+      id="sendMessageButton"
+      class="composer-send"
+      onclick="sendMessage()"
+    >
+      ➤
+    </button>
+
+  </div>
+
+</div>
 
 
   <!-- MESSAGES -->
@@ -3207,7 +3294,199 @@ body > .card {
   border: 1px solid #292932;
 }
 
+  .chat-page {
+  width: 100%;
+  max-width: 520px;
+  height: calc(100vh - 40px);
+  min-height: 620px;
+  margin: 0 auto;
+  padding: 0 !important;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #111116;
+  border: 1px solid #25252d;
+  border-radius: 22px;
+}
+
+.chat-topbar {
+  height: 70px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #25252d;
+  background: #111116;
+}
+
+.chat-back {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+  font-size: 23px;
+}
+
+.chat-person {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-person-avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #1b1b22;
+  font-size: 19px;
+}
+
+.chat-person-info {
+  min-width: 0;
+}
+
+.chat-person-name {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-person-status {
+  color: #777;
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.chat-more {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #aaa;
+  font-size: 22px;
+}
+
+.chat-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-empty-state {
+  margin: auto;
+  text-align: center;
+}
+
+.chat-empty-avatar {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #1b1b22;
+  font-size: 30px;
+}
+
+.chat-empty-title {
+  color: #ddd;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.chat-empty-text {
+  color: #666;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.chat-typing {
+  flex-shrink: 0;
+  height: 28px;
+  padding: 4px 16px;
+  color: #777;
+  font-size: 11px;
+}
+
+.chat-typing span {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin-right: 2px;
+  border-radius: 50%;
+  background: #777;
+}
+
+.chat-composer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px;
+  border-top: 1px solid #25252d;
+  background: #111116;
+}
+
+.chat-composer input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  background: #0b0b10;
+  border: 1px solid #292932;
+}
+
+.composer-button,
+.composer-send {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  font-size: 17px;
+}
+
+.composer-button {
+  border: 1px solid #292932;
+  background: #15151b;
+  color: #ddd;
+}
+
+.composer-send {
+  border: none;
+  background: #fff;
+  color: #000;
+  font-weight: 700;
+}
+
+@media (max-height: 700px) {
+  .chat-page {
+    height: calc(100vh - 20px);
+    min-height: 560px;
+  }
+}
+
   </style>
+
   
 </body>
 
