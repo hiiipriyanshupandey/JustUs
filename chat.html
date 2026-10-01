@@ -274,6 +274,34 @@
 
 
     /* =========================
+       MEDIA PREVIEW
+    ========================== */
+
+    .media-preview {
+      max-width: 100%;
+      border-radius: 12px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+
+    .message-image {
+      width: 220px;
+      max-width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+    }
+
+
+    .message-video {
+      width: 240px;
+      max-width: 100%;
+      max-height: 320px;
+      background: #000;
+    }
+
+
+    /* =========================
        COMPOSER
     ========================== */
 
@@ -312,6 +340,11 @@
       background: #15151b;
 
       color: #ddd;
+    }
+
+
+    .composer-button:active {
+      transform: scale(.96);
     }
 
 
@@ -524,14 +557,30 @@
     <div class="composer">
 
 
+      <!-- Hidden media picker -->
+
+      <input
+        type="file"
+        id="mediaInput"
+        accept="image/*,video/*"
+        hidden
+      >
+
+
+      <!-- Media button -->
+
       <button
+        id="mediaButton"
         class="composer-button"
-        onclick="showMediaMessage()"
-        aria-label="Add media"
+        onclick="openMediaPicker()"
+        aria-label="Add photo or video"
+        type="button"
       >
         ＋
       </button>
 
+
+      <!-- Message input -->
 
       <input
         id="messageInput"
@@ -542,20 +591,26 @@
       >
 
 
+      <!-- Reaction button -->
+
       <button
         class="composer-button"
         onclick="showReactionMessage()"
         aria-label="Add reaction"
+        type="button"
       >
         😊
       </button>
 
+
+      <!-- Send button -->
 
       <button
         id="sendButton"
         class="send-button"
         onclick="sendMessage()"
         aria-label="Send message"
+        type="button"
       >
         ➤
       </button>
@@ -571,6 +626,75 @@
   ========================== -->
 
   <script src="js/chat.js?v=5"></script>
+
+
+  <!-- =========================
+       MEDIA PICKER
+  ========================== -->
+
+  <script>
+
+    function openMediaPicker() {
+
+      const mediaInput =
+        document.getElementById(
+          "mediaInput"
+        );
+
+      if (!mediaInput) {
+        return;
+      }
+
+      mediaInput.click();
+
+    }
+
+
+    const mediaInput =
+      document.getElementById(
+        "mediaInput"
+      );
+
+
+    if (mediaInput) {
+
+      mediaInput.addEventListener(
+        "change",
+        function() {
+
+          const file =
+            mediaInput.files[0];
+
+          if (!file) {
+            return;
+          }
+
+          console.log(
+            "Selected media:",
+            file.name,
+            file.type,
+            file.size
+          );
+
+          alert(
+            "Selected: " +
+            file.name
+          );
+
+          /*
+            Actual Supabase upload
+            will be connected next.
+          */
+
+          mediaInput.value = "";
+
+        }
+      );
+
+    }
+
+  </script>
+
 </body>
 
 </html>
