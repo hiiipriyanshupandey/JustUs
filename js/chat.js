@@ -4,7 +4,6 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
 
-
 const supabaseClient =
   window.supabase.createClient(
     SUPABASE_URL,
@@ -14,6 +13,10 @@ const supabaseClient =
 
 let currentUser = null;
 let friend = null;
+let chatChannel = null;
+
+let typingTimer = null;
+let isTyping = false;
 
 
 /* =========================
@@ -56,9 +59,7 @@ async function loadCurrentUser() {
     data,
     error
   } =
-    await supabaseClient
-      .auth
-      .getSession();
+    await supabaseClient.auth.getSession();
 
 
   if (error) {
@@ -112,13 +113,8 @@ async function loadFriend() {
   } =
     await supabaseClient
       .from("profiles")
-      .select(
-        "id, username"
-      )
-      .eq(
-        "id",
-        friendId
-      )
+      .select("id, username")
+      .eq("id", friendId)
       .maybeSingle();
 
 
@@ -376,6 +372,9 @@ async function sendMessage() {
   }
 
 
+  stopTyping();
+
+
   button.disabled =
     true;
 
@@ -417,68 +416,176 @@ async function sendMessage() {
 
   input.value = "";
 
-
   await loadMessages();
-
 
   input.focus();
 }
 
 
 /* =========================
-   ENTER TO SEND
+   TYPING INDICATOR
 ========================= */
 
-function setupInput() {
+function startTyping() {
 
-  const input =
-    document.getElementById(
-      "messageInput"
-    );
-
-
-  if (!input) {
+  if (
+    !chatChannel ||
+    !currentUser ||
+    !friend
+  ) {
     return;
   }
 
 
-  input.addEventListener(
-    "keydown",
-    function(event) {
+  if (!isTyping) {
 
-      if (
-        event.key === "Enter" &&
-        !event.shiftKey
-      ) {
+    isTyping = true;
 
-        event.preventDefault();
 
-        sendMessage();
+    chatChannel.send({
+
+      type: "broadcast",
+
+      event: "typing",
+
+      payload: {
+        user_id:
+          currentUser.id,
+
+        typing: true
       }
 
-    }
+    });
+
+  }
+
+
+  clearTimeout(
+    typingTimer
   );
+
+
+  typingTimer =
+    setTimeout(
+      stopTyping,
+      1500
+    );
+}
+
+
+function stopTyping() {
+
+  if (
+    !chatChannel ||
+    !currentUser ||
+    !isTyping
+  ) {
+    return;
+  }
+
+
+  isTyping = false;
+
+
+  clearTimeout(
+    typingTimer
+  );
+
+
+  chatChannel.send({
+
+    type: "broadcast",
+
+    event: "typing",
+
+    payload: {
+      user_id:
+        currentUser.id,
+
+      typing: false
+    }
+
+  });
+
 }
 
 
 /* =========================
-   REALTIME MESSAGES
+   SHOW TYPING
 ========================= */
 
-function setupRealtime() {
+function showTyping() {
 
-  if (!currentUser || !friend) {
+  const status =
+    document.getElementById(
+      "friendStatus"
+    );
+
+
+  if (!status) {
     return;
   }
 
 
-  supabaseClient
-    .channel(
-      "chat-" +
-      currentUser.id +
+  status.textContent =
+    "typing...";
+
+  status.style.color =
+    "#ffffff";
+}
+
+
+function hideTyping() {
+
+  const status =
+    document.getElementById(
+      "friendStatus"
+    );
+
+
+  if (!status) {
+    return;
+  }
+
+
+  status.textContent =
+    "Offline";
+
+  status.style.color =
+    "#777";
+}
+
+
+/* =========================
+   REALTIME CHAT
+========================= */
+
+function setupRealtime() {
+
+  if (
+    !currentUser ||
+    !friend
+  ) {
+    return;
+  }
+
+
+  const ids = [
+    currentUser.id,
+    friend.id
+  ].sort();
+
+
+  chatChannel =
+    supabaseClient.channel(
+      "justus-chat-" +
+      ids[0] +
       "-" +
-      friend.id
-    )
+      ids[1]
+    );
+
+
+  chatChannel
     .on(
       "postgres_changes",
       {
@@ -518,7 +625,119 @@ function setupRealtime() {
 
       }
     )
-    .subscribe();
+
+
+    .on(
+      "broadcast",
+      {
+        event: "typing"
+      },
+      function(payload) {
+
+        const data =
+          payload.payload;
+
+
+        if (
+          !data ||
+          data.user_id !==
+            friend.id
+        ) {
+          return;
+        }
+
+
+        if (data.typing) {
+
+          showTyping();
+
+        } else {
+
+          hideTyping();
+
+        }
+
+      }
+    )
+
+
+    .subscribe(
+      function(status) {
+
+        console.log(
+          "Realtime:",
+          status
+        );
+
+      }
+    );
+}
+
+
+/* =========================
+   INPUT EVENTS
+========================= */
+
+function setupInput() {
+
+  const input =
+    document.getElementById(
+      "messageInput"
+    );
+
+
+  if (!input) {
+    return;
+  }
+
+
+  input.addEventListener(
+    "input",
+    function() {
+
+      if (
+        input.value.trim()
+      ) {
+
+        startTyping();
+
+      } else {
+
+        stopTyping();
+
+      }
+
+    }
+  );
+
+
+  input.addEventListener(
+    "keydown",
+    function(event) {
+
+      if (
+        event.key === "Enter" &&
+        !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+        sendMessage();
+
+      }
+
+    }
+  );
+
+
+  input.addEventListener(
+    "blur",
+    function() {
+
+      stopTyping();
+
+    }
+  );
 }
 
 
@@ -526,9 +745,7 @@ function setupRealtime() {
    ERROR
 ========================= */
 
-function showError(
-  message
-) {
+function showError(message) {
 
   const container =
     document.getElementById(
@@ -608,7 +825,7 @@ function showMoreOptions() {
 
 
 /* =========================
-   START CHAT
+   START
 ========================= */
 
 async function startChat() {
