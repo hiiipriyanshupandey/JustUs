@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>JustUs</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -16,11 +22,20 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: #0b0b0f;
-      color: #f5f5f5;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #08080c;
+      color: #ffffff;
       min-height: 100vh;
-      padding: 24px 16px;
+      padding: 20px 14px;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
     }
 
     .app {
@@ -33,23 +48,23 @@
       text-align: center;
       font-size: 34px;
       font-weight: 700;
+      letter-spacing: -1px;
       margin-top: 25px;
     }
 
     .tagline {
       text-align: center;
-      color: #888;
-      font-size: 13px;
+      color: #777;
+      font-size: 12px;
       margin-top: 6px;
       margin-bottom: 25px;
     }
 
     .card {
-      background: #121218;
+      background: #111116;
       border: 1px solid #25252d;
-      border-radius: 20px;
-      padding: 22px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      border-radius: 22px;
+      padding: 20px;
     }
 
     .hidden {
@@ -59,440 +74,541 @@
     .welcome {
       font-size: 23px;
       font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .welcome-text {
-      color: #888;
-      font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 25px;
-    }
-
-    .section-title {
-      font-size: 16px;
-      font-weight: 700;
       margin-bottom: 7px;
     }
 
-    .section-text {
+    .description {
       color: #777;
       font-size: 13px;
-      margin-bottom: 14px;
       line-height: 1.5;
+      margin-bottom: 22px;
     }
 
-    .input-group {
+    .input-box {
       margin-bottom: 12px;
     }
 
     input {
       width: 100%;
       padding: 14px;
-      background: #0c0c11;
-      border: 1px solid #292933;
-      color: #fff;
       border-radius: 12px;
+      border: 1px solid #292932;
+      background: #0b0b10;
+      color: #fff;
       outline: none;
       font-size: 14px;
     }
 
     input:focus {
-      border-color: #555;
+      border-color: #555560;
     }
 
-    button {
-      border: none;
-      cursor: pointer;
-      border-radius: 12px;
-      padding: 14px;
-      font-size: 14px;
-      font-weight: 600;
+    .main-button {
       width: 100%;
-      background: #fff;
-      color: #000;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #000000;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 4px;
     }
 
-    button:disabled {
+    .main-button:disabled {
       opacity: 0.5;
-      cursor: not-allowed;
     }
 
-    .secondary-button {
-      background: #1c1c24;
-      color: #fff;
-      border: 1px solid #30303a;
+    .forgot {
+      text-align: right;
+      color: #999;
+      font-size: 12px;
+      margin: 2px 0 14px;
+      cursor: pointer;
     }
 
-    .auth-switch {
+    .switch-text {
       text-align: center;
       color: #777;
       font-size: 13px;
       margin-top: 18px;
     }
 
-    .auth-switch span {
+    .switch-text span {
       color: #fff;
-      cursor: pointer;
       font-weight: 600;
-    }
-
-    .forgot {
-      text-align: right;
-      color: #aaa;
-      font-size: 12px;
-      margin: -3px 0 14px;
       cursor: pointer;
     }
 
     .message {
-      padding: 11px 12px;
-      border-radius: 10px;
-      background: #1a1a21;
-      border: 1px solid #2c2c35;
+      background: #17171e;
+      border: 1px solid #2b2b35;
       color: #ccc;
+      padding: 11px 12px;
+      border-radius: 11px;
       font-size: 13px;
-      margin-bottom: 15px;
       line-height: 1.4;
-    }
-
-    .divider {
-      height: 1px;
-      background: #24242c;
-      margin: 25px 0;
-    }
-
-    .search-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 15px;
-    }
-
-    .search-row input {
-      flex: 1;
-    }
-
-    .search-row button {
-      width: auto;
-      min-width: 95px;
-      padding: 12px 15px;
-    }
-
-    .result-card,
-    .request-card,
-    .friend-card {
-      background: #0d0d12;
-      border: 1px solid #292933;
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 10px;
-    }
-
-    .username {
-      font-weight: 700;
-      font-size: 15px;
-    }
-
-    .muted {
-      color: #777;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    .request-actions,
-    .friend-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .small-button {
-      padding: 10px;
-      font-size: 12px;
-      flex: 1;
-    }
-
-    .empty-state {
-      color: #666;
-      font-size: 13px;
-      padding: 8px 0;
-    }
-
-    .offline-dot {
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #555;
-      margin-right: 5px;
-    }
-
-    .logout-button {
-      margin-top: 25px;
-      background: transparent;
-      color: #888;
-      border: 1px solid #292933;
+      margin-bottom: 14px;
     }
 
     .footer {
       text-align: center;
-      color: #555;
-      font-size: 11px;
-      margin-top: 20px;
+      color: #4f4f58;
+      font-size: 10px;
+      margin-top: 18px;
       margin-bottom: 20px;
     }
 
-    .friend-menu {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .friend-menu button {
-      padding: 10px;
-      font-size: 12px;
-      background: #181820;
-      color: #fff;
-      border: 1px solid #292933;
-    }
-
-    .status {
-      margin-top: 5px;
-      color: #777;
-      font-size: 11px;
-    }
-
-    .top-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .back-button {
-      width: auto;
-      padding: 9px 13px;
-      background: #191920;
-      color: #fff;
-      border: 1px solid #292933;
-      font-size: 12px;
-    }
-
-    .screen-title {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .coming-soon {
-      text-align: center;
-      padding: 45px 15px;
-      color: #777;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 400px) {
-      body {
-        padding: 16px 10px;
-      }
-
-      .card {
-        padding: 17px;
-      }
-
-      .logo {
-        font-size: 30px;
-      }
-    }
   </style>
+
 </head>
 
 <body>
 
-<div class="app">
+  <div class="app">
 
-  <div class="logo">JustUs</div>
+    <!-- BRAND -->
 
-  <div class="tagline">
-    Private space for two.
+    <div class="logo">
+      JustUs
+    </div>
+
+    <div class="tagline">
+      Your private little world.
+    </div>
+
+
+    <!-- MESSAGE -->
+
+    <div
+      id="messageBox"
+      class="message hidden"
+    ></div>
+
+
+    <!-- AUTH CARD -->
+
+    <div
+      id="authCard"
+      class="card"
+    >
+
+
+      <!-- LOGIN -->
+
+      <div id="loginSection">
+
+        <div class="welcome">
+          Welcome back.
+        </div>
+
+        <div class="description">
+          Login to enter your private space.
+        </div>
+
+
+        <div class="input-box">
+
+          <input
+            id="loginEmail"
+            type="email"
+            placeholder="Email"
+            autocomplete="email"
+          >
+
+        </div>
+
+
+        <div class="input-box">
+
+          <input
+            id="loginPassword"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+          >
+
+        </div>
+
+
+        <div
+          class="forgot"
+          onclick="forgotPassword()"
+        >
+          Forgot password?
+        </div>
+
+
+        <button
+          id="loginButton"
+          class="main-button"
+          onclick="login()"
+        >
+          Login
+        </button>
+
+
+        <div class="switch-text">
+
+          Don't have an account?
+
+          <span onclick="showSignup()">
+            Create one
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- SIGNUP -->
+
+      <div
+        id="signupSection"
+        class="hidden"
+      >
+
+        <div class="welcome">
+          Create your JustUs.
+        </div>
+
+        <div class="description">
+          Choose a unique username and create your account.
+        </div>
+
+
+        <div class="input-box">
+
+          <input
+            id="signupUsername"
+            type="text"
+            placeholder="Unique username"
+            autocomplete="username"
+          >
+
+        </div>
+
+
+        <div class="input-box">
+
+          <input
+            id="signupEmail"
+            type="email"
+            placeholder="Email"
+            autocomplete="email"
+          >
+
+        </div>
+
+
+        <div class="input-box">
+
+          <input
+            id="signupPassword"
+            type="password"
+            placeholder="Password"
+            autocomplete="new-password"
+          >
+
+        </div>
+
+
+        <button
+          id="signupButton"
+          class="main-button"
+          onclick="signup()"
+        >
+          Create Account
+        </button>
+
+
+        <div class="switch-text">
+
+          Already have an account?
+
+          <span onclick="showLogin()">
+            Login
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer">
+      JustUs • Private by design
+    </div>
+
   </div>
+  <!-- =========================
+       HOME SCREEN
+  ========================== -->
 
-  <div id="messageBox" class="message hidden"></div>
+  <div
+    id="homeScreen"
+    class="card hidden"
+  >
 
-  <!-- AUTH -->
+    <div class="home-header">
 
-  <div class="card" id="authCard">
-
-    <!-- LOGIN -->
-
-    <div id="loginSection">
-
-      <div class="welcome">
-        Welcome back.
+      <div class="home-brand">
+        JustUs
       </div>
 
-      <div class="welcome-text">
-        Login to continue to your private space.
+      <button
+        class="icon-button"
+        onclick="showProfile()"
+      >
+        👤
+      </button>
+
+    </div>
+
+
+    <!-- PROFILE CARD -->
+
+    <div class="profile-card">
+
+      <div class="profile-top">
+
+        <div class="profile-avatar">
+          👤
+        </div>
+
+        <div class="profile-info">
+
+          <div
+            id="homeUsername"
+            class="profile-username"
+          >
+            @username
+          </div>
+
+          <div class="profile-subtitle">
+            Your private space
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="input-group">
-        <input
-          id="loginEmail"
-          type="email"
-          placeholder="Email"
-          autocomplete="email"
-        >
-      </div>
 
-      <div class="input-group">
-        <input
-          id="loginPassword"
-          type="password"
-          placeholder="Password"
-          autocomplete="current-password"
-        >
+      <button
+        class="edit-profile"
+        onclick="showProfile()"
+      >
+        View Profile
+      </button>
+
+    </div>
+
+
+    <!-- MAIN ACTIONS -->
+
+    <div class="home-actions">
+
+      <button
+        class="home-action"
+        onclick="showSearch()"
+      >
+
+        <span class="home-action-icon">
+          🔍
+        </span>
+
+        <span class="home-action-text">
+          Search Users
+        </span>
+
+      </button>
+
+
+      <button
+        class="home-action"
+        onclick="showFriends()"
+      >
+
+        <span class="home-action-icon">
+          👥
+        </span>
+
+        <span class="home-action-text">
+          My Friends
+        </span>
+
+      </button>
+
+    </div>
+
+
+    <!-- FRIENDS PREVIEW -->
+
+    <div class="home-section-header">
+
+      <div class="home-section-title">
+        My Friends
       </div>
 
       <div
-        class="forgot"
-        onclick="forgotPassword()"
+        class="view-all"
+        onclick="showFriends()"
       >
-        Forgot password?
-      </div>
-
-      <button
-        id="loginButton"
-        onclick="login()"
-      >
-        Login
-      </button>
-
-      <div class="auth-switch">
-        Don't have an account?
-        <span onclick="showSignup()">Create one</span>
+        View all ›
       </div>
 
     </div>
 
 
-    <!-- SIGNUP -->
+    <div id="homeFriendsList">
 
-    <div id="signupSection" class="hidden">
-
-      <div class="welcome">
-        Create your JustUs.
+      <div class="empty-state">
+        No friends yet.
       </div>
 
-      <div class="welcome-text">
-        Choose a unique username. Your friend will use it to find you.
-      </div>
+    </div>
 
-      <div class="input-group">
-        <input
-          id="signupUsername"
-          type="text"
-          placeholder="Unique username"
-          autocomplete="username"
-        >
-      </div>
 
-      <div class="input-group">
-        <input
-          id="signupEmail"
-          type="email"
-          placeholder="Email"
-          autocomplete="email"
-        >
-      </div>
+    <!-- LOGOUT -->
 
-      <div class="input-group">
-        <input
-          id="signupPassword"
-          type="password"
-          placeholder="Password (minimum 6 characters)"
-          autocomplete="new-password"
-        >
-      </div>
+    <button
+      class="logout-button"
+      onclick="logout()"
+    >
+      Log Out
+    </button>
+
+
+    <!-- BOTTOM NAV -->
+
+    <div class="bottom-nav">
 
       <button
-        id="signupButton"
-        onclick="signup()"
+        class="nav-item active"
+        onclick="showHome()"
       >
-        Create Account
+
+        <span class="nav-icon">
+          🏠
+        </span>
+
+        Home
+
       </button>
 
-      <div class="auth-switch">
-        Already have an account?
-        <span onclick="showLogin()">Login</span>
-      </div>
+
+      <button
+        class="nav-item"
+        onclick="showSearch()"
+      >
+
+        <span class="nav-icon">
+          🔍
+        </span>
+
+        Search
+
+      </button>
+
+
+      <button
+        class="nav-item"
+        onclick="showFriends()"
+      >
+
+        <span class="nav-icon">
+          💬
+        </span>
+
+        Chats
+
+      </button>
+
+
+      <button
+        class="nav-item"
+        onclick="showGames()"
+      >
+
+        <span class="nav-icon">
+          🎮
+        </span>
+
+        Games
+
+      </button>
 
     </div>
 
   </div>
 
 
-  <!-- MAIN APP -->
+  <!-- =========================
+       PROFILE SCREEN
+  ========================== -->
 
   <div
+    id="profileScreen"
     class="card hidden"
-    id="mainApp"
   >
 
-    <div class="welcome" id="welcomeText">
-      Welcome to JustUs
-    </div>
+    <div class="top-row">
 
-    <div class="welcome-text">
-      Find your friend and start your private space.
-    </div>
-
-    <div class="section-title">
-      👥 Friends
-    </div>
-
-    <div class="section-text">
-      Search someone using their unique username.
-    </div>
-
-    <div class="search-row">
-
-      <input
-        id="friendUsernameInput"
-        type="text"
-        placeholder="Enter username"
+      <button
+        class="back-button"
+        onclick="showHome()"
       >
-
-      <button onclick="searchFriend()">
-        Search
+        ← Back
       </button>
 
-    </div>
-
-    <div id="searchResult"></div>
-
-    <div class="divider"></div>
-
-    <div class="section-title">
-      Friend Requests
-    </div>
-
-    <div id="friendRequests">
-      <div class="empty-state">
-        No pending requests.
+      <div class="screen-title">
+        Profile
       </div>
+
+      <div style="width:55px;"></div>
+
     </div>
+
+
+    <div class="profile-page">
+
+      <div class="profile-avatar large">
+        👤
+      </div>
+
+      <div
+        id="profileUsername"
+        class="profile-page-username"
+      >
+        @username
+      </div>
+
+      <div class="profile-page-subtitle">
+        JustUs member
+      </div>
+
+    </div>
+
 
     <div class="divider"></div>
 
+
     <div class="section-title">
-      Your Friends
+      My Friends
     </div>
 
-    <div id="friendsList">
+    <div
+      id="profileFriendsList"
+      class="profile-friends-list"
+    >
+
       <div class="empty-state">
         No friends yet.
       </div>
+
     </div>
+
 
     <button
       class="logout-button"
@@ -504,25 +620,206 @@
   </div>
 
 
-  <!-- CHAT -->
+  <!-- =========================
+       SEARCH SCREEN
+  ========================== -->
 
   <div
+    id="searchScreen"
     class="card hidden"
-    id="chatScreen"
   >
 
     <div class="top-row">
 
       <button
         class="back-button"
-        onclick="showMainApp()"
+        onclick="showHome()"
+      >
+        ← Back
+      </button>
+
+      <div class="screen-title">
+        Search
+      </div>
+
+      <div style="width:55px;"></div>
+
+    </div>
+
+
+    <div class="description">
+      Find your friend using their unique username.
+    </div>
+
+
+    <div class="search-row">
+
+      <input
+        id="friendUsernameInput"
+        type="text"
+        placeholder="@username"
+      >
+
+      <button
+        onclick="searchFriend()"
+      >
+        Search
+      </button>
+
+    </div>
+
+
+    <div id="searchResult"></div>
+
+
+    <div class="divider"></div>
+
+
+    <div class="section-title">
+      Friend Requests
+    </div>
+
+
+    <div id="friendRequests">
+
+      <div class="empty-state">
+        No pending requests.
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       FRIENDS SCREEN
+  ========================== -->
+
+  <div
+    id="friendsScreen"
+    class="card hidden"
+  >
+
+    <div class="top-row">
+
+      <button
+        class="back-button"
+        onclick="showHome()"
+      >
+        ← Back
+      </button>
+
+      <div class="screen-title">
+        My Friends
+      </div>
+
+      <div style="width:55px;"></div>
+
+    </div>
+
+
+    <div
+      id="friendsList"
+    >
+
+      <div class="empty-state">
+        No friends yet.
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       FRIEND PROFILE
+  ========================== -->
+
+  <div
+    id="friendProfileScreen"
+    class="card hidden"
+  >
+
+    <div class="top-row">
+
+      <button
+        class="back-button"
+        onclick="showFriends()"
+      >
+        ← Back
+      </button>
+
+      <div class="screen-title">
+        Profile
+      </div>
+
+      <div style="width:55px;"></div>
+
+    </div>
+
+
+    <div class="profile-page">
+
+      <div class="profile-avatar large">
+        👤
+      </div>
+
+      <div
+        id="friendProfileUsername"
+        class="profile-page-username"
+      >
+        @username
+      </div>
+
+      <div class="profile-page-subtitle">
+        Your friend
+      </div>
+
+    </div>
+
+
+    <div class="friend-profile-actions">
+
+      <button
+        class="main-button"
+        onclick="openChat()"
+      >
+        💬 Chat
+      </button>
+
+      <button
+        class="secondary-action-button"
+        onclick="openGames()"
+      >
+        🎮 Games
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       CHAT SCREEN
+  ========================== -->
+
+  <div
+    id="chatScreen"
+    class="card hidden"
+  >
+
+    <div class="top-row">
+
+      <button
+        class="back-button"
+        onclick="showFriendProfile()"
       >
         ← Back
       </button>
 
       <div
-        class="screen-title"
         id="chatTitle"
+        class="screen-title"
       >
         Chat
       </div>
@@ -531,40 +828,46 @@
 
     </div>
 
+
     <div class="coming-soon">
 
-      💬 Private Chat
+      💬
 
       <br><br>
 
-      Text messages, photos, videos,
-      reactions, typing indicator and
-      online status will be added here.
+      Private Chat
+
+      <br><br>
+
+      Text, photos, videos and reactions
+      will live here.
 
     </div>
 
   </div>
 
 
-  <!-- GAMES -->
+  <!-- =========================
+       GAMES SCREEN
+  ========================== -->
 
   <div
-    class="card hidden"
     id="gamesScreen"
+    class="card hidden"
   >
 
     <div class="top-row">
 
       <button
         class="back-button"
-        onclick="showMainApp()"
+        onclick="showFriendProfile()"
       >
         ← Back
       </button>
 
       <div
-        class="screen-title"
         id="gamesTitle"
+        class="screen-title"
       >
         Games
       </div>
@@ -573,689 +876,1309 @@
 
     </div>
 
+
     <div class="coming-soon">
 
-      🎮 Games
+      🎮
 
       <br><br>
 
-      Mini-games with chat,
-      photos, videos and reactions
-      will be added here.
+      Games
+
+      <br><br>
+
+      Your games with your friend
+      will appear here.
 
     </div>
 
   </div>
 
+    <!-- =========================
+       JAVASCRIPT START
+  ========================== -->
 
-  <div class="footer">
-    JustUs • Private by design
-  </div>
+  <script>
 
-</div>
+    /* =========================
+       SUPABASE
+    ========================== */
 
+    const SUPABASE_URL =
+      "https://rfcvoeeydeamyytzfxbd.supabase.co";
 
-<script>
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
 
-const SUPABASE_URL =
-  "https://rfcvoeeydeamyytzfxbd.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
-
-const supabaseClient =
-  supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
-
-let currentUser = null;
-
-
-/* MESSAGE */
-
-function showMessage(text) {
-
-  const box =
-    document.getElementById("messageBox");
-
-  box.textContent = text;
-
-  box.classList.remove("hidden");
-
-}
-
-
-function clearMessage() {
-
-  const box =
-    document.getElementById("messageBox");
-
-  box.textContent = "";
-
-  box.classList.add("hidden");
-
-}
-
-
-/* AUTH SWITCH */
-
-function showLogin() {
-
-  clearMessage();
-
-  document
-    .getElementById("loginSection")
-    .classList.remove("hidden");
-
-  document
-    .getElementById("signupSection")
-    .classList.add("hidden");
-
-}
-
-
-function showSignup() {
-
-  clearMessage();
-
-  document
-    .getElementById("loginSection")
-    .classList.add("hidden");
-
-  document
-    .getElementById("signupSection")
-    .classList.remove("hidden");
-
-}
-
-
-/* LOGIN */
-
-async function login() {
-
-  clearMessage();
-
-  const email =
-    document
-      .getElementById("loginEmail")
-      .value
-      .trim();
-
-  const password =
-    document
-      .getElementById("loginPassword")
-      .value;
-
-  if (!email || !password) {
-
-    showMessage(
-      "Please enter email and password."
-    );
-
-    return;
-  }
-
-  const button =
-    document.getElementById("loginButton");
-
-  button.disabled = true;
-
-  button.textContent = "Logging in...";
-
-  try {
-
-    const { error } =
-      await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
-
-    if (error) {
-
-      showMessage(error.message);
-
-      return;
-    }
-
-    await loadUser();
-
-  } catch (error) {
-
-    showMessage(
-      error.message || "Login failed."
-    );
-
-  } finally {
-
-    button.disabled = false;
-
-    button.textContent = "Login";
-
-  }
-
-}
-
-
-/* SIGNUP */
-
-async function signup() {
-
-  clearMessage();
-
-  const username =
-    document
-      .getElementById("signupUsername")
-      .value
-      .trim()
-      .toLowerCase();
-
-  const email =
-    document
-      .getElementById("signupEmail")
-      .value
-      .trim();
-
-  const password =
-    document
-      .getElementById("signupPassword")
-      .value;
-
-  if (username.length < 3) {
-
-    showMessage(
-      "Username must be at least 3 characters."
-    );
-
-    return;
-  }
-
-  if (!email) {
-
-    showMessage(
-      "Please enter your email."
-    );
-
-    return;
-  }
-
-  if (password.length < 6) {
-
-    showMessage(
-      "Password must be at least 6 characters."
-    );
-
-    return;
-  }
-
-  const button =
-    document.getElementById("signupButton");
-
-  button.disabled = true;
-
-  button.textContent = "Creating...";
-
-  try {
-
-    const {
-      data: existingUser,
-      error: usernameError
-    } =
-      await supabaseClient
-        .from("profiles")
-        .select("id")
-        .eq("username", username)
-        .maybeSingle();
-
-    if (usernameError) {
-
-      showMessage(
-        usernameError.message
+    const supabaseClient =
+      supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
       );
 
-      return;
+
+    let currentUser = null;
+
+    let selectedFriend = null;
+
+
+    /* =========================
+       MESSAGE
+    ========================== */
+
+    function showMessage(text) {
+
+      const box =
+        document.getElementById("messageBox");
+
+      box.textContent = text;
+
+      box.classList.remove("hidden");
+
     }
 
-    if (existingUser) {
 
-      showMessage(
-        "That username is already taken."
-      );
+    function clearMessage() {
 
-      return;
+      const box =
+        document.getElementById("messageBox");
+
+      box.textContent = "";
+
+      box.classList.add("hidden");
+
     }
 
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth.signUp({
 
-        email: email,
+    /* =========================
+       AUTH SWITCH
+    ========================== */
 
-        password: password,
+    function showLogin() {
 
-        options: {
-          data: {
-            username: username
-          }
+      clearMessage();
+
+      document
+        .getElementById("loginSection")
+        .classList.remove("hidden");
+
+      document
+        .getElementById("signupSection")
+        .classList.add("hidden");
+
+    }
+
+
+    function showSignup() {
+
+      clearMessage();
+
+      document
+        .getElementById("loginSection")
+        .classList.add("hidden");
+
+      document
+        .getElementById("signupSection")
+        .classList.remove("hidden");
+
+    }
+
+
+    /* =========================
+       LOGIN
+    ========================== */
+
+    async function login() {
+
+      clearMessage();
+
+      const email =
+        document
+          .getElementById("loginEmail")
+          .value
+          .trim();
+
+      const password =
+        document
+          .getElementById("loginPassword")
+          .value;
+
+
+      if (!email || !password) {
+
+        showMessage(
+          "Please enter email and password."
+        );
+
+        return;
+      }
+
+
+      const button =
+        document.getElementById(
+          "loginButton"
+        );
+
+
+      button.disabled = true;
+
+      button.textContent =
+        "Logging in...";
+
+
+      try {
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .auth
+            .signInWithPassword({
+
+              email: email,
+
+              password: password
+
+            });
+
+
+        if (error) {
+
+          showMessage(
+            error.message
+          );
+
+          return;
         }
 
-      });
 
-    if (error) {
+        await loadUser();
 
-      showMessage(error.message);
 
-      return;
-    }
+      } catch (error) {
 
-    if (data.user && !data.session) {
+        showMessage(
+          error.message ||
+          "Login failed."
+        );
 
-      showMessage(
-        "Account created. Please check your email and confirm your account."
-      );
 
-    } else {
+      } finally {
 
-      showMessage(
-        "Account created successfully."
-      );
+        button.disabled = false;
 
-      await loadUser();
+        button.textContent =
+          "Login";
+
+      }
 
     }
 
-    document
-      .getElementById("signupUsername")
-      .value = "";
 
-    document
-      .getElementById("signupEmail")
-      .value = "";
+    /* =========================
+       SIGNUP
+    ========================== */
 
-    document
-      .getElementById("signupPassword")
-      .value = "";
+    async function signup() {
 
-  } catch (error) {
-
-    showMessage(
-      error.message || "Signup failed."
-    );
-
-  } finally {
-
-    button.disabled = false;
-
-    button.textContent = "Create Account";
-
-  }
-
-}
+      clearMessage();
 
 
-/* FORGOT PASSWORD */
+      const username =
+        document
+          .getElementById(
+            "signupUsername"
+          )
+          .value
+          .trim()
+          .toLowerCase();
 
-async function forgotPassword() {
 
-  clearMessage();
+      const email =
+        document
+          .getElementById(
+            "signupEmail"
+          )
+          .value
+          .trim();
 
-  const email =
-    document
-      .getElementById("loginEmail")
-      .value
-      .trim();
 
-  if (!email) {
+      const password =
+        document
+          .getElementById(
+            "signupPassword"
+          )
+          .value;
 
-    showMessage(
-      "Enter your email first."
-    );
 
-    return;
-  }
+      if (username.length < 3) {
 
-  try {
+        showMessage(
+          "Username must be at least 3 characters."
+        );
 
-    const { error } =
-      await supabaseClient.auth.resetPasswordForEmail(
-        email,
-        {
-          redirectTo:
-            "https://hiiipriyanshupandey.github.io/JustUs/"
+        return;
+      }
+
+
+      if (!email) {
+
+        showMessage(
+          "Please enter your email."
+        );
+
+        return;
+      }
+
+
+      if (password.length < 6) {
+
+        showMessage(
+          "Password must be at least 6 characters."
+        );
+
+        return;
+      }
+
+
+      const button =
+        document.getElementById(
+          "signupButton"
+        );
+
+
+      button.disabled = true;
+
+      button.textContent =
+        "Creating...";
+
+
+      try {
+
+        /* Check username */
+
+        const {
+          data: existingUser,
+          error: usernameError
+        } =
+          await supabaseClient
+            .from("profiles")
+            .select("id")
+            .eq(
+              "username",
+              username
+            )
+            .maybeSingle();
+
+
+        if (usernameError) {
+
+          showMessage(
+            usernameError.message
+          );
+
+          return;
         }
-      );
 
-    if (error) {
 
-      showMessage(error.message);
+        if (existingUser) {
 
-      return;
+          showMessage(
+            "That username is already taken."
+          );
+
+          return;
+        }
+
+
+        /* Create account */
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .auth
+            .signUp({
+
+              email: email,
+
+              password: password,
+
+              options: {
+
+                data: {
+
+                  username:
+                    username
+
+                }
+
+              }
+
+            });
+
+
+        if (error) {
+
+          showMessage(
+            error.message
+          );
+
+          return;
+        }
+
+
+        if (
+          data.user &&
+          !data.session
+        ) {
+
+          showMessage(
+            "Account created. Check your email to confirm your account."
+          );
+
+        } else {
+
+          await loadUser();
+
+        }
+
+
+        document
+          .getElementById(
+            "signupUsername"
+          )
+          .value = "";
+
+        document
+          .getElementById(
+            "signupEmail"
+          )
+          .value = "";
+
+        document
+          .getElementById(
+            "signupPassword"
+          )
+          .value = "";
+
+
+      } catch (error) {
+
+        showMessage(
+          error.message ||
+          "Signup failed."
+        );
+
+
+      } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+          "Create Account";
+
+      }
+
     }
 
-    showMessage(
-      "Password reset email sent. Check your inbox."
-    );
 
-  } catch (error) {
+    /* =========================
+       FORGOT PASSWORD
+    ========================== */
 
-    showMessage(
-      error.message ||
-      "Could not send reset email."
-    );
+    async function forgotPassword() {
 
-  }
+      clearMessage();
 
-}
 
-  /* LOAD USER */
+      const email =
+        document
+          .getElementById(
+            "loginEmail"
+          )
+          .value
+          .trim();
 
-  async function loadUser() {
 
-    const {
-      data,
-      error
-    } = await supabaseClient.auth.getUser();
+      if (!email) {
 
-    if (error || !data?.user) {
-      return;
+        showMessage(
+          "Enter your email first."
+        );
+
+        return;
+      }
+
+
+      try {
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .auth
+            .resetPasswordForEmail(
+
+              email,
+
+              {
+
+                redirectTo:
+                  "https://hiiipriyanshupandey.github.io/JustUs/"
+
+              }
+
+            );
+
+
+        if (error) {
+
+          showMessage(
+            error.message
+          );
+
+          return;
+        }
+
+
+        showMessage(
+          "Password reset email sent."
+        );
+
+
+      } catch (error) {
+
+        showMessage(
+          error.message ||
+          "Could not send reset email."
+        );
+
+      }
+
     }
 
-    currentUser = data.user;
 
-    document
-      .getElementById("authCard")
-      .classList.add("hidden");
+    /* =========================
+       LOAD USER
+    ========================== */
 
-    document
-      .getElementById("mainApp")
-      .classList.remove("hidden");
-
-    document
-      .getElementById("chatScreen")
-      .classList.add("hidden");
-
-    document
-      .getElementById("gamesScreen")
-      .classList.add("hidden");
-
-    let username =
-      currentUser.user_metadata?.username;
-
-    if (!username) {
+    async function loadUser() {
 
       const {
-        data: profile
-      } = await supabaseClient
-        .from("profiles")
-        .select("username")
-        .eq("id", currentUser.id)
-        .maybeSingle();
-
-      username = profile?.username;
-    }
-
-    document
-      .getElementById("welcomeText")
-      .textContent =
-      username
-        ? "Welcome, @" + username
-        : "Welcome to JustUs";
-
-    await loadFriendRequests();
-
-    await loadFriends();
-  }
+        data,
+        error
+      } =
+        await supabaseClient
+          .auth
+          .getUser();
 
 
-  /* LOGOUT */
+      if (
+        error ||
+        !data?.user
+      ) {
 
-  async function logout() {
-
-    await supabaseClient.auth.signOut();
-
-    currentUser = null;
-
-    document
-      .getElementById("mainApp")
-      .classList.add("hidden");
-
-    document
-      .getElementById("chatScreen")
-      .classList.add("hidden");
-
-    document
-      .getElementById("gamesScreen")
-      .classList.add("hidden");
-
-    document
-      .getElementById("authCard")
-      .classList.remove("hidden");
-
-    showLogin();
-  }
+        return;
+      }
 
 
-  /* SEARCH FRIEND */
-
-  async function searchFriend() {
-
-    clearMessage();
-
-    if (!currentUser) {
-
-      showMessage(
-        "Please login first."
-      );
-
-      return;
-    }
-
-    const input =
-      document.getElementById(
-        "friendUsernameInput"
-      );
-
-    const username =
-      input.value
-        .trim()
-        .toLowerCase();
-
-    const result =
-      document.getElementById(
-        "searchResult"
-      );
-
-    result.innerHTML = "";
-
-    if (!username) {
-
-      result.innerHTML =
-        '<div class="empty-state">Enter a username.</div>';
-
-      return;
-    }
-
-    if (
-      currentUser.user_metadata?.username?.toLowerCase()
-      === username
-    ) {
-
-      result.innerHTML =
-        '<div class="empty-state">That is your own username.</div>';
-
-      return;
-    }
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("profiles")
-        .select("id, username")
-        .eq("username", username)
-        .maybeSingle();
-
-    if (error) {
-
-      result.innerHTML =
-        '<div class="empty-state">' +
-        escapeHtml(error.message) +
-        '</div>';
-
-      return;
-    }
-
-    if (!data) {
-
-      result.innerHTML =
-        '<div class="empty-state">User not found.</div>';
-
-      return;
-    }
+      currentUser =
+        data.user;
 
 
-    /* CHECK FRIENDSHIP */
+      let username =
+        currentUser
+          .user_metadata
+          ?.username;
 
-    const {
-      data: friendship
-    } =
-      await supabaseClient
-        .from("friendships")
-        .select("id")
-        .or(
-          `and(user_id.eq.${currentUser.id},friend_id.eq.${data.id}),and(user_id.eq.${data.id},friend_id.eq.${currentUser.id})`
+
+      /* Get profile if needed */
+
+      if (!username) {
+
+        const {
+          data: profile
+        } =
+          await supabaseClient
+            .from("profiles")
+            .select("username")
+            .eq(
+              "id",
+              currentUser.id
+            )
+            .maybeSingle();
+
+
+        username =
+          profile?.username;
+
+      }
+
+
+      if (!username) {
+
+        username =
+          "user";
+
+      }
+
+
+      /* Update Home */
+
+      document
+        .getElementById(
+          "homeUsername"
         )
-        .limit(1);
+        .textContent =
+        "@" + username;
 
-    if (
-      friendship &&
-      friendship.length > 0
+
+      /* Update Profile */
+
+      document
+        .getElementById(
+          "profileUsername"
+        )
+        .textContent =
+        "@" + username;
+
+
+      /* Hide auth */
+
+      document
+        .getElementById(
+          "authCard"
+        )
+        .classList.add("hidden");
+
+
+      /* Show Home */
+
+      showHome();
+
+
+      /* Load friends */
+
+      await loadFriends();
+
+
+      /* Load requests */
+
+      await loadFriendRequests();
+
+    }
+
+
+    /* =========================
+       SHOW HOME
+    ========================== */
+
+    function showHome() {
+
+      hideAllScreens();
+
+      document
+        .getElementById(
+          "homeScreen"
+        )
+        .classList.remove("hidden");
+
+      loadFriends();
+
+    }
+
+
+    /* =========================
+       SHOW PROFILE
+    ========================== */
+
+    function showProfile() {
+
+      hideAllScreens();
+
+      document
+        .getElementById(
+          "profileScreen"
+        )
+        .classList.remove("hidden");
+
+      loadFriends();
+
+    }
+
+
+    /* =========================
+       SHOW SEARCH
+    ========================== */
+
+    function showSearch() {
+
+      hideAllScreens();
+
+      document
+        .getElementById(
+          "searchScreen"
+        )
+        .classList.remove("hidden");
+
+      loadFriendRequests();
+
+    }
+
+
+    /* =========================
+       SHOW FRIENDS
+    ========================== */
+
+    function showFriends() {
+
+      hideAllScreens();
+
+      document
+        .getElementById(
+          "friendsScreen"
+        )
+        .classList.remove("hidden");
+
+      loadFriends();
+
+    }
+
+
+    /* =========================
+       SHOW GAMES
+    ========================== */
+
+    function showGames() {
+
+      if (!selectedFriend) {
+
+        showFriends();
+
+        return;
+      }
+
+
+      document
+        .getElementById(
+          "gamesTitle"
+        )
+        .textContent =
+        "Games with @" +
+        selectedFriend.username;
+
+
+      hideAllScreens();
+
+      document
+        .getElementById(
+          "gamesScreen"
+        )
+        .classList.remove("hidden");
+
+    }
+
+
+    /* =========================
+       HIDE ALL SCREENS
+    ========================== */
+
+    function hideAllScreens() {
+
+      const screens = [
+
+        "homeScreen",
+
+        "profileScreen",
+
+        "searchScreen",
+
+        "friendsScreen",
+
+        "friendProfileScreen",
+
+        "chatScreen",
+
+        "gamesScreen"
+
+      ];
+
+
+      screens.forEach(
+        function(id) {
+
+          const element =
+            document.getElementById(id);
+
+          if (element) {
+
+            element
+              .classList
+              .add("hidden");
+
+          }
+
+        }
+      );
+
+    }
+
+
+    /* =========================
+       FRIEND PROFILE
+    ========================== */
+
+    function showFriendProfile(
+      friend
     ) {
 
-      result.innerHTML = `
+      selectedFriend =
+        friend;
 
-        <div class="result-card">
+
+      document
+        .getElementById(
+          "friendProfileUsername"
+        )
+        .textContent =
+        "@" + friend.username;
+
+
+      hideAllScreens();
+
+
+      document
+        .getElementById(
+          "friendProfileScreen"
+        )
+        .classList
+        .remove("hidden");
+
+    }
+
+
+    /* =========================
+       CHAT
+    ========================== */
+
+    function openChat() {
+
+      if (!selectedFriend) {
+
+        return;
+      }
+
+
+      document
+        .getElementById(
+          "chatTitle"
+        )
+        .textContent =
+        "@" +
+        selectedFriend.username;
+
+
+      hideAllScreens();
+
+
+      document
+        .getElementById(
+          "chatScreen"
+        )
+        .classList
+        .remove("hidden");
+
+    }
+
+
+    /* =========================
+       GAMES FROM PROFILE
+    ========================== */
+
+    function openGames() {
+
+      if (!selectedFriend) {
+
+        return;
+      }
+
+
+      document
+        .getElementById(
+          "gamesTitle"
+        )
+        .textContent =
+        "Games with @" +
+        selectedFriend.username;
+
+
+      hideAllScreens();
+
+
+      document
+        .getElementById(
+          "gamesScreen"
+        )
+        .classList
+        .remove("hidden");
+
+    }
+
+
+    /* =========================
+       BACK TO FRIEND PROFILE
+    ========================== */
+
+    function backToFriendProfile() {
+
+      if (!selectedFriend) {
+
+        showFriends();
+
+        return;
+      }
+
+
+      showFriendProfile(
+        selectedFriend
+      );
+
+    }
+
+
+    /* =========================
+       LOGOUT
+    ========================== */
+
+    async function logout() {
+
+      await supabaseClient
+        .auth
+        .signOut();
+
+
+      currentUser = null;
+
+      selectedFriend = null;
+
+
+      hideAllScreens();
+
+
+      document
+        .getElementById(
+          "authCard"
+        )
+        .classList
+        .remove("hidden");
+
+
+      showLogin();
+
+    }
+
+        /* =========================
+       LOAD FRIEND REQUESTS
+    ========================== */
+
+    async function loadFriendRequests() {
+
+      if (!currentUser) {
+        return;
+      }
+
+      const container =
+        document.getElementById(
+          "friendRequests"
+        );
+
+      if (!container) {
+        return;
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("friend_requests")
+          .select(
+            "id, sender_id, receiver_id, status, created_at"
+          )
+          .eq(
+            "receiver_id",
+            currentUser.id
+          )
+          .eq(
+            "status",
+            "pending"
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+
+      if (error) {
+
+        container.innerHTML =
+          `<div class="empty-state">
+            ${escapeHtml(error.message)}
+          </div>`;
+
+        return;
+      }
+
+
+      if (
+        !data ||
+        data.length === 0
+      ) {
+
+        container.innerHTML =
+          `<div class="empty-state">
+            No pending requests.
+          </div>`;
+
+        return;
+      }
+
+
+      let html = "";
+
+
+      for (const request of data) {
+
+        const {
+          data: profile
+        } =
+          await supabaseClient
+            .from("profiles")
+            .select(
+              "id, username"
+            )
+            .eq(
+              "id",
+              request.sender_id
+            )
+            .maybeSingle();
+
+
+        if (!profile) {
+          continue;
+        }
+
+
+        html += `
+
+          <div class="request-card">
+
+            <div class="username">
+              @${escapeHtml(profile.username)}
+            </div>
+
+            <div class="muted">
+              Wants to be your friend.
+            </div>
+
+            <div class="request-actions">
+
+              <button
+                class="small-button"
+                onclick="acceptFriendRequest('${request.id}')"
+              >
+                Accept
+              </button>
+
+              <button
+                class="small-button secondary-button"
+                onclick="declineFriendRequest('${request.id}')"
+              >
+                Decline
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+
+
+      container.innerHTML =
+        html ||
+        `<div class="empty-state">
+          No pending requests.
+        </div>`;
+
+    }
+
+
+    /* =========================
+       SEARCH FRIEND
+    ========================== */
+
+    async function searchFriend() {
+
+      clearMessage();
+
+
+      if (!currentUser) {
+
+        showMessage(
+          "Please login first."
+        );
+
+        return;
+      }
+
+
+      const input =
+        document.getElementById(
+          "friendUsernameInput"
+        );
+
+
+      const result =
+        document.getElementById(
+          "searchResult"
+        );
+
+
+      const username =
+        input.value
+          .trim()
+          .replace(/^@/, "")
+          .toLowerCase();
+
+
+      result.innerHTML = "";
+
+
+      if (!username) {
+
+        result.innerHTML =
+          `<div class="empty-state">
+            Enter a username.
+          </div>`;
+
+        return;
+      }
+
+
+      if (
+        currentUser.user_metadata
+          ?.username
+          ?.toLowerCase() === username
+      ) {
+
+        result.innerHTML =
+          `<div class="empty-state">
+            That's your own username.
+          </div>`;
+
+        return;
+      }
+
+
+      const {
+        data: profile,
+        error
+      } =
+        await supabaseClient
+          .from("profiles")
+          .select(
+            "id, username"
+          )
+          .eq(
+            "username",
+            username
+          )
+          .maybeSingle();
+
+
+      if (error) {
+
+        result.innerHTML =
+          `<div class="empty-state">
+            ${escapeHtml(error.message)}
+          </div>`;
+
+        return;
+      }
+
+
+      if (!profile) {
+
+        result.innerHTML =
+          `<div class="result-card">
+
+            <div class="username">
+              User not found
+            </div>
+
+            <div class="muted">
+              Check the username and try again.
+            </div>
+
+          </div>`;
+
+        return;
+      }
+
+
+      /* CHECK FRIENDSHIP */
+
+      const {
+        data: friendship
+      } =
+        await supabaseClient
+          .from("friendships")
+          .select("id")
+          .or(
+            `and(user_id.eq.${currentUser.id},friend_id.eq.${profile.id}),and(user_id.eq.${profile.id},friend_id.eq.${currentUser.id})`
+          )
+          .limit(1);
+
+
+      if (
+        friendship &&
+        friendship.length > 0
+      ) {
+
+        result.innerHTML =
+          `<div class="result-card">
+
+            <div class="username">
+              @${escapeHtml(profile.username)}
+            </div>
+
+            <div class="muted">
+              Already your friend.
+            </div>
+
+            <div class="request-actions">
+
+              <button
+                class="small-button"
+                onclick='showFriendProfile(${JSON.stringify({
+                  id: profile.id,
+                  username: profile.username
+                })})'
+              >
+                View Profile
+              </button>
+
+            </div>
+
+          </div>`;
+
+        return;
+      }
+
+
+      /* CHECK PENDING REQUEST */
+
+      const {
+        data: pending
+      } =
+        await supabaseClient
+          .from("friend_requests")
+          .select(
+            "id, sender_id, receiver_id"
+          )
+          .or(
+            `and(sender_id.eq.${currentUser.id},receiver_id.eq.${profile.id}),and(sender_id.eq.${profile.id},receiver_id.eq.${currentUser.id})`
+          )
+          .eq(
+            "status",
+            "pending"
+          )
+          .limit(1);
+
+
+      if (
+        pending &&
+        pending.length > 0
+      ) {
+
+        const request =
+          pending[0];
+
+
+        const text =
+          request.sender_id === currentUser.id
+            ? "Friend request already sent."
+            : "This user already sent you a request.";
+
+
+        result.innerHTML =
+          `<div class="result-card">
+
+            <div class="username">
+              @${escapeHtml(profile.username)}
+            </div>
+
+            <div class="muted">
+              ${text}
+            </div>
+
+          </div>`;
+
+        return;
+      }
+
+
+      /* SHOW USER */
+
+      result.innerHTML =
+        `<div class="result-card">
 
           <div class="username">
-            @${escapeHtml(data.username)}
+            @${escapeHtml(profile.username)}
           </div>
 
           <div class="muted">
-            Already your friend.
+            User found.
           </div>
 
-        </div>
+          <div class="request-actions">
 
-      `;
+            <button
+              class="small-button"
+              onclick="sendFriendRequest('${profile.id}')"
+            >
+              Add Friend
+            </button>
 
-      return;
+          </div>
+
+        </div>`;
+
     }
 
 
-    /* CHECK PENDING REQUEST */
+    /* =========================
+       SEND FRIEND REQUEST
+    ========================== */
 
-    const {
-      data: pendingRequest
-    } =
-      await supabaseClient
-        .from("friend_requests")
-        .select(
-          "id, sender_id, receiver_id"
-        )
-        .or(
-          `and(sender_id.eq.${currentUser.id},receiver_id.eq.${data.id}),and(sender_id.eq.${data.id},receiver_id.eq.${currentUser.id})`
-        )
-        .eq(
-          "status",
-          "pending"
-        )
-        .limit(1);
-
-    if (
-      pendingRequest &&
-      pendingRequest.length > 0
+    async function sendFriendRequest(
+      receiverId
     ) {
 
-      const request =
-        pendingRequest[0];
-
-      const text =
-        request.sender_id === currentUser.id
-          ? "Friend request already sent."
-          : "This user has already sent you a request.";
-
-      result.innerHTML = `
-
-        <div class="result-card">
-
-          <div class="username">
-            @${escapeHtml(data.username)}
-          </div>
-
-          <div class="muted">
-            ${text}
-          </div>
-
-        </div>
-
-      `;
-
-      return;
-    }
+      clearMessage();
 
 
-    /* USER FOUND */
+      if (!currentUser) {
+        return;
+      }
 
-    result.innerHTML = `
-
-      <div class="result-card">
-
-        <div class="username">
-          @${escapeHtml(data.username)}
-        </div>
-
-        <div class="muted">
-          User found.
-        </div>
-
-        <div class="request-actions">
-
-          <button
-            class="small-button"
-            onclick="sendFriendRequest('${data.id}')"
-          >
-            Add Friend
-          </button>
-
-        </div>
-
-      </div>
-
-    `;
-  }
-
-
-  /* SEND FRIEND REQUEST */
-
-  async function sendFriendRequest(
-    receiverId
-  ) {
-
-    clearMessage();
-
-    if (!currentUser) {
-
-      showMessage(
-        "Please login first."
-      );
-
-      return;
-    }
-
-    try {
 
       const {
         error
@@ -1275,6 +2198,7 @@ async function forgotPassword() {
 
           });
 
+
       if (error) {
 
         showMessage(
@@ -1284,155 +2208,49 @@ async function forgotPassword() {
         return;
       }
 
+
       showMessage(
         "Friend request sent."
       );
 
-      document
-        .getElementById("searchResult")
-        .innerHTML =
-        '<div class="empty-state">Request sent.</div>';
 
-    } catch (error) {
-
-      showMessage(
-        error.message ||
-        "Could not send request."
-      );
-    }
-  }
-
-
-  /* LOAD FRIEND REQUESTS */
-
-  async function loadFriendRequests() {
-
-    if (!currentUser) {
-      return;
-    }
-
-    const container =
-      document.getElementById(
-        "friendRequests"
-      );
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("friend_requests")
-        .select(
-          "id, sender_id, receiver_id, status, created_at"
-        )
-        .eq(
-          "receiver_id",
-          currentUser.id
-        )
-        .eq(
-          "status",
-          "pending"
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
+      const result =
+        document.getElementById(
+          "searchResult"
         );
 
-    if (error) {
 
-      container.innerHTML =
-        `<div class="empty-state">
-          ${escapeHtml(error.message)}
-        </div>`;
-
-      return;
-    }
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      container.innerHTML =
-        '<div class="empty-state">No pending requests.</div>';
-
-      return;
-    }
-
-    let html = "";
-
-    for (const request of data) {
-
-      const {
-        data: profile
-      } =
-        await supabaseClient
-          .from("profiles")
-          .select("username")
-          .eq(
-            "id",
-            request.sender_id
-          )
-          .maybeSingle();
-
-      const username =
-        profile?.username ||
-        "Unknown";
-
-      html += `
-
-        <div class="request-card">
+      result.innerHTML =
+        `<div class="result-card">
 
           <div class="username">
-            @${escapeHtml(username)}
+            Request sent ✓
           </div>
 
           <div class="muted">
-            Wants to be your friend.
+            Your friend request has been sent.
           </div>
 
-          <div class="request-actions">
+        </div>`;
 
-            <button
-              class="small-button"
-              onclick="acceptFriendRequest('${request.id}')"
-            >
-              Accept
-            </button>
-
-            <button
-              class="small-button secondary-button"
-              onclick="declineFriendRequest('${request.id}')"
-            >
-              Decline
-            </button>
-
-          </div>
-
-        </div>
-
-      `;
     }
 
-    container.innerHTML = html;
-  }
+
+    /* =========================
+       ACCEPT REQUEST
+    ========================== */
+
+    async function acceptFriendRequest(
+      requestId
+    ) {
+
+      clearMessage();
 
 
-  /* ACCEPT FRIEND REQUEST */
+      if (!currentUser) {
+        return;
+      }
 
-  async function acceptFriendRequest(
-    requestId
-  ) {
-
-    clearMessage();
-
-    if (!currentUser) {
-      return;
-    }
-
-    try {
 
       const {
         data: request,
@@ -1457,6 +2275,7 @@ async function forgotPassword() {
           )
           .maybeSingle();
 
+
       if (requestError) {
 
         showMessage(
@@ -1465,6 +2284,7 @@ async function forgotPassword() {
 
         return;
       }
+
 
       if (!request) {
 
@@ -1476,7 +2296,7 @@ async function forgotPassword() {
       }
 
 
-      /* UPDATE REQUEST */
+      /* ACCEPT REQUEST */
 
       const {
         error: updateError
@@ -1484,7 +2304,10 @@ async function forgotPassword() {
         await supabaseClient
           .from("friend_requests")
           .update({
-            status: "accepted"
+
+            status:
+              "accepted"
+
           })
           .eq(
             "id",
@@ -1494,6 +2317,7 @@ async function forgotPassword() {
             "receiver_id",
             currentUser.id
           );
+
 
       if (updateError) {
 
@@ -1508,95 +2332,72 @@ async function forgotPassword() {
       /* CREATE FRIENDSHIP */
 
       const {
-        error: firstError
+        error: friendshipError
       } =
         await supabaseClient
           .from("friendships")
           .upsert(
-            {
-              user_id:
-                currentUser.id,
 
-              friend_id:
-                request.sender_id
-            },
+            [
+
+              {
+                user_id:
+                  currentUser.id,
+
+                friend_id:
+                  request.sender_id
+              },
+
+              {
+                user_id:
+                  request.sender_id,
+
+                friend_id:
+                  currentUser.id
+              }
+
+            ],
+
             {
               onConflict:
                 "user_id,friend_id"
             }
+
           );
 
-      if (firstError) {
+
+      if (friendshipError) {
 
         showMessage(
-          firstError.message
+          friendshipError.message
         );
 
         return;
       }
 
-
-      /* RECIPROCAL FRIENDSHIP */
-
-      const {
-        error: secondError
-      } =
-        await supabaseClient
-          .from("friendships")
-          .upsert(
-            {
-              user_id:
-                request.sender_id,
-
-              friend_id:
-                currentUser.id
-            },
-            {
-              onConflict:
-                "user_id,friend_id"
-            }
-          );
-
-      if (secondError) {
-
-        showMessage(
-          secondError.message
-        );
-
-        return;
-      }
 
       showMessage(
-        "Friend request accepted."
+        "Friend added successfully."
       );
+
 
       await loadFriendRequests();
 
       await loadFriends();
 
-    } catch (error) {
-
-      showMessage(
-        error.message ||
-        "Could not accept request."
-      );
-    }
-  }
-
-
-  /* DECLINE FRIEND REQUEST */
-
-  async function declineFriendRequest(
-    requestId
-  ) {
-
-    clearMessage();
-
-    if (!currentUser) {
-      return;
     }
 
-    try {
+
+    /* =========================
+       DECLINE REQUEST
+    ========================== */
+
+    async function declineFriendRequest(
+      requestId
+    ) {
+
+      clearMessage();
+
 
       const {
         error
@@ -1604,7 +2405,10 @@ async function forgotPassword() {
         await supabaseClient
           .from("friend_requests")
           .update({
-            status: "declined"
+
+            status:
+              "declined"
+
           })
           .eq(
             "id",
@@ -1615,6 +2419,7 @@ async function forgotPassword() {
             currentUser.id
           );
 
+
       if (error) {
 
         showMessage(
@@ -1624,344 +2429,513 @@ async function forgotPassword() {
         return;
       }
 
+
+      await loadFriendRequests();
+
+
       showMessage(
         "Friend request declined."
       );
 
-      await loadFriendRequests();
-
-    } catch (error) {
-
-      showMessage(
-        error.message ||
-        "Could not decline request."
-      );
-    }
-  }
-
-
-  /* LOAD FRIENDS */
-
-  async function loadFriends() {
-
-    if (!currentUser) {
-      return;
     }
 
-    const container =
-      document.getElementById(
-        "friendsList"
-      );
 
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("friendships")
-        .select(
-          "user_id, friend_id, created_at"
-        )
-        .or(
-          `user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
+    /* =========================
+       LOAD FRIENDS
+    ========================== */
+
+    async function loadFriends() {
+
+      if (!currentUser) {
+        return;
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("friendships")
+          .select(
+            "user_id, friend_id, created_at"
+          )
+          .or(
+            `user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+
+      if (error) {
+
+        showMessage(
+          error.message
         );
 
-    if (error) {
+        return;
+      }
 
-      container.innerHTML =
-        `<div class="empty-state">
-          ${escapeHtml(error.message)}
-        </div>`;
-
-      return;
-    }
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      container.innerHTML =
-        '<div class="empty-state">No friends yet.</div>';
-
-      return;
-    }
-
-    const friendIds = [];
-
-    for (const friendship of data) {
-
-      const friendId =
-        friendship.user_id === currentUser.id
-          ? friendship.friend_id
-          : friendship.user_id;
 
       if (
-        !friendIds.includes(friendId)
+        !data ||
+        data.length === 0
       ) {
 
-        friendIds.push(friendId);
-      }
-    }
+        renderEmptyFriends();
 
-    if (friendIds.length === 0) {
-
-      container.innerHTML =
-        '<div class="empty-state">No friends yet.</div>';
-
-      return;
-    }
-
-    const {
-      data: profiles,
-      error: profileError
-    } =
-      await supabaseClient
-        .from("profiles")
-        .select("id, username")
-        .in(
-          "id",
-          friendIds
-        );
-
-    if (profileError) {
-
-      container.innerHTML =
-        `<div class="empty-state">
-          ${escapeHtml(profileError.message)}
-        </div>`;
-
-      return;
-    }
-
-    let html = "";
-
-    for (const friendId of friendIds) {
-
-      const profile =
-        profiles?.find(
-          p => p.id === friendId
-        );
-
-      if (!profile) {
-        continue;
+        return;
       }
 
-      html += `
 
-        <div class="friend-card">
-
-          <div class="username">
-            @${escapeHtml(profile.username)}
-          </div>
-
-          <div class="status">
-            <span class="offline-dot"></span>
-            Offline
-          </div>
-
-          <div class="friend-menu">
-
-            <button
-              onclick="openChat(
-                '${profile.id}',
-                '${escapeHtml(profile.username)}'
-              )"
-            >
-              💬 Chat
-            </button>
-
-            <button
-              onclick="openGames(
-                '${profile.id}',
-                '${escapeHtml(profile.username)}'
-              )"
-            >
-              🎮 Games
-            </button>
-
-          </div>
-
-        </div>
-
-      `;
-    }
-
-    container.innerHTML =
-      html ||
-      '<div class="empty-state">No friends yet.</div>';
-  }
+      const friendIds = [];
 
 
-  /* OPEN CHAT */
+      for (
+        const friendship of data
+      ) {
 
-  function openChat(
-    friendId,
-    friendUsername
-  ) {
-
-    document
-      .getElementById("mainApp")
-      .classList.add("hidden");
-
-    document
-      .getElementById("gamesScreen")
-      .classList.add("hidden");
-
-    document
-      .getElementById("chatScreen")
-      .classList.remove("hidden");
-
-    document
-      .getElementById("chatTitle")
-      .textContent =
-      "@" + friendUsername;
-  }
+        const friendId =
+          friendship.user_id === currentUser.id
+            ? friendship.friend_id
+            : friendship.user_id;
 
 
-  /* OPEN GAMES */
+        if (
+          !friendIds.includes(friendId)
+        ) {
 
-  function openGames(
-    friendId,
-    friendUsername
-  ) {
-
-    document
-      .getElementById("mainApp")
-      .classList.add("hidden");
-
-    document
-      .getElementById("chatScreen")
-      .classList.add("hidden");
-
-    document
-      .getElementById("gamesScreen")
-      .classList.remove("hidden");
-
-    document
-      .getElementById("gamesTitle")
-      .textContent =
-      "Games with @" + friendUsername;
-  }
-
-
-  /* BACK TO MAIN */
-
-  function showMainApp() {
-
-    document
-      .getElementById("chatScreen")
-      .classList.add("hidden");
-
-    document
-      .getElementById("gamesScreen")
-      .classList.add("hidden");
-
-    document
-      .getElementById("mainApp")
-      .classList.remove("hidden");
-
-    clearMessage();
-
-    loadFriendRequests();
-
-    loadFriends();
-  }
-
-
-  /* ESCAPE HTML */
-
-  function escapeHtml(value) {
-
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-
-  /* ENTER KEY SEARCH */
-
-  document
-    .getElementById("friendUsernameInput")
-    .addEventListener(
-      "keydown",
-      function(event) {
-
-        if (event.key === "Enter") {
-
-          searchFriend();
+          friendIds.push(friendId);
 
         }
 
       }
-    );
 
 
-  /* AUTH STATE */
+      const {
+        data: profiles,
+        error: profileError
+      } =
+        await supabaseClient
+          .from("profiles")
+          .select(
+            "id, username"
+          )
+          .in(
+            "id",
+            friendIds
+          );
 
-  supabaseClient.auth.onAuthStateChange(
-    async function(event, session) {
 
-      if (session) {
+      if (profileError) {
 
-        await loadUser();
+        showMessage(
+          profileError.message
+        );
 
-      } else {
+        return;
+      }
 
-        currentUser = null;
 
-        document
-          .getElementById("mainApp")
-          .classList.add("hidden");
+      renderFriends(
+        profiles || []
+      );
 
-        document
-          .getElementById("chatScreen")
-          .classList.add("hidden");
+    }
 
-        document
-          .getElementById("gamesScreen")
-          .classList.add("hidden");
 
-        document
-          .getElementById("authCard")
-          .classList.remove("hidden");
+    /* =========================
+       RENDER FRIENDS
+    ========================== */
+
+    function renderFriends(
+      profiles
+    ) {
+
+      const homeContainer =
+        document.getElementById(
+          "homeFriendsList"
+        );
+
+
+      const friendsContainer =
+        document.getElementById(
+          "friendsList"
+        );
+
+
+      const profileContainer =
+        document.getElementById(
+          "profileFriendsList"
+        );
+
+
+      if (
+        !profiles ||
+        profiles.length === 0
+      ) {
+
+        renderEmptyFriends();
+
+        return;
+      }
+
+
+      let homeHtml = "";
+
+      let friendsHtml = "";
+
+      let profileHtml = "";
+
+
+      profiles.forEach(
+        function(friend) {
+
+
+          const friendData =
+            JSON.stringify({
+
+              id:
+                friend.id,
+
+              username:
+                friend.username
+
+            })
+            .replace(
+              /'/g,
+              "&#39;"
+            );
+
+
+          homeHtml += `
+
+            <div
+              class="home-friend-card"
+              onclick='showFriendProfile(${JSON.stringify({
+                id: friend.id,
+                username: friend.username
+              })})'
+            >
+
+              <div class="home-friend-avatar">
+                👤
+              </div>
+
+              <div class="home-friend-info">
+
+                <div class="home-friend-username">
+                  @${escapeHtml(friend.username)}
+                </div>
+
+                <div class="home-friend-status">
+
+                  <span class="offline-dot"></span>
+
+                  Offline
+
+                </div>
+
+              </div>
+
+              <div class="home-arrow">
+                ›
+              </div>
+
+            </div>
+
+          `;
+
+
+          friendsHtml += `
+
+            <div
+              class="home-friend-card"
+              onclick='showFriendProfile(${JSON.stringify({
+                id: friend.id,
+                username: friend.username
+              })})'
+            >
+
+              <div class="home-friend-avatar">
+                👤
+              </div>
+
+              <div class="home-friend-info">
+
+                <div class="home-friend-username">
+                  @${escapeHtml(friend.username)}
+                </div>
+
+                <div class="home-friend-status">
+                  Friend
+                </div>
+
+              </div>
+
+              <div class="home-arrow">
+                ›
+              </div>
+
+            </div>
+
+          `;
+
+
+          profileHtml += `
+
+            <div
+              class="home-friend-card"
+              onclick='showFriendProfile(${JSON.stringify({
+                id: friend.id,
+                username: friend.username
+              })})'
+            >
+
+              <div class="home-friend-avatar">
+                👤
+              </div>
+
+              <div class="home-friend-info">
+
+                <div class="home-friend-username">
+                  @${escapeHtml(friend.username)}
+                </div>
+
+                <div class="home-friend-status">
+                  Friend
+                </div>
+
+              </div>
+
+              <div class="home-arrow">
+                ›
+              </div>
+
+            </div>
+
+          `;
+
+        }
+      );
+
+
+      if (homeContainer) {
+
+        homeContainer.innerHTML =
+          homeHtml;
+
+      }
+
+
+      if (friendsContainer) {
+
+        friendsContainer.innerHTML =
+          friendsHtml;
+
+      }
+
+
+      if (profileContainer) {
+
+        profileContainer.innerHTML =
+          profileHtml;
 
       }
 
     }
-  );
 
 
-  /* CHECK EXISTING SESSION */
+    /* =========================
+       EMPTY FRIENDS
+    ========================== */
 
-  async function checkSession() {
+    function renderEmptyFriends() {
 
-    const {
-      data
-    } =
-      await supabaseClient.auth.getSession();
+      const empty =
+        `<div class="empty-state">
+          No friends yet.
+        </div>`;
 
-    if (data?.session) {
 
-      await loadUser();
+      const homeContainer =
+        document.getElementById(
+          "homeFriendsList"
+        );
+
+
+      const friendsContainer =
+        document.getElementById(
+          "friendsList"
+        );
+
+
+      const profileContainer =
+        document.getElementById(
+          "profileFriendsList"
+        );
+
+
+      if (homeContainer) {
+
+        homeContainer.innerHTML =
+          empty;
+
+      }
+
+
+      if (friendsContainer) {
+
+        friendsContainer.innerHTML =
+          empty;
+
+      }
+
+
+      if (profileContainer) {
+
+        profileContainer.innerHTML =
+          empty;
+
+      }
 
     }
 
-  }
+
+    /* =========================
+       ESCAPE HTML
+    ========================== */
+
+    function escapeHtml(
+      value
+    ) {
+
+      return String(value)
+
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+
+        .replace(
+          /</g,
+          "&lt;"
+        )
+
+        .replace(
+          />/g,
+          "&gt;"
+        )
+
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+
+        .replace(
+          /'/g,
+          "&#039;"
+        );
+
+    }
 
 
-  checkSession();
+    /* =========================
+       ENTER KEY SEARCH
+    ========================== */
 
-</script>
+    document
+      .getElementById(
+        "friendUsernameInput"
+      )
+      .addEventListener(
+        "keydown",
+        function(event) {
+
+          if (
+            event.key === "Enter"
+          ) {
+
+            searchFriend();
+
+          }
+
+        }
+      );
+
+
+    /* =========================
+       AUTH STATE
+    ========================== */
+
+    supabaseClient
+      .auth
+      .onAuthStateChange(
+        async function(
+          event,
+          session
+        ) {
+
+          if (session) {
+
+            await loadUser();
+
+          } else {
+
+            currentUser = null;
+
+            selectedFriend = null;
+
+
+            document
+              .getElementById(
+                "authCard"
+              )
+              .classList
+              .remove("hidden");
+
+
+            hideAllScreens();
+
+          }
+
+        }
+      );
+
+
+    /* =========================
+       CHECK SESSION
+    ========================== */
+
+    async function checkSession() {
+
+      const {
+        data
+      } =
+        await supabaseClient
+          .auth
+          .getSession();
+
+
+      if (data?.session) {
+
+        await loadUser();
+
+      }
+
+    }
+
+
+    checkSession();
+
+
+  </script>
+
 
 </body>
+
 </html>
