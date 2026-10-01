@@ -1937,26 +1937,172 @@ function showMediaMessage() {
    OPEN MEDIA PICKER
 ========================= */
 
-function openMediaPicker() {
+function setupMediaPicker() {
 
   const mediaInput =
-    document.getElementById(
-      "mediaInput"
-    );
+    document.getElementById("mediaInput");
+
+  if (!mediaInput) return;
+
+  mediaInput.onchange = function () {
+
+    const file = mediaInput.files[0];
+
+    mediaInput.value = "";
+
+    if (!file) return;
+
+    const isImage =
+      file.type.startsWith("image/");
+
+    const isVideo =
+      file.type.startsWith("video/");
+
+    if (!isImage && !isVideo) {
+      alert("Please select an image or video.");
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      alert("File is larger than 50 MB.");
+      return;
+    }
+
+    showMediaPreview(file);
+  };
+}
 
 
-  if (!mediaInput) {
+function showMediaPreview(file) {
 
-    console.error(
-      "mediaInput not found."
-    );
+  const old =
+    document.getElementById("mediaPreviewOverlay");
 
-    return;
+  if (old) old.remove();
+
+  const url =
+    URL.createObjectURL(file);
+
+  const isVideo =
+    file.type.startsWith("video/");
+
+  const overlay =
+    document.createElement("div");
+
+  overlay.id =
+    "mediaPreviewOverlay";
+
+  overlay.style.cssText = `
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    background:rgba(0,0,0,.88);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  `;
+
+  const card =
+    document.createElement("div");
+
+  card.style.cssText = `
+    width:100%;
+    max-width:420px;
+    background:#19181f;
+    border-radius:20px;
+    overflow:hidden;
+  `;
+
+  const media =
+    isVideo
+      ? document.createElement("video")
+      : document.createElement("img");
+
+  media.src = url;
+
+  media.style.cssText = `
+    width:100%;
+    max-height:65vh;
+    display:block;
+    object-fit:contain;
+    background:#000;
+  `;
+
+  if (isVideo) {
+    media.controls = true;
+    media.playsInline = true;
   }
 
+  const bottom =
+    document.createElement("div");
 
-  mediaInput.click();
+  bottom.style.cssText = `
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px;
+  `;
 
+  const cancel =
+    document.createElement("button");
+
+  cancel.textContent = "✕";
+
+  cancel.style.cssText = `
+    width:44px;
+    height:44px;
+    border:0;
+    border-radius:50%;
+    background:#292830;
+    color:white;
+    font-size:20px;
+  `;
+
+  const send =
+    document.createElement("button");
+
+  send.textContent = "➤ Send";
+
+  send.style.cssText = `
+    margin-left:auto;
+    border:0;
+    border-radius:12px;
+    padding:12px 18px;
+    background:white;
+    color:#111;
+    font-weight:700;
+    font-size:15px;
+  `;
+
+  cancel.onclick = function () {
+
+    URL.revokeObjectURL(url);
+
+    overlay.remove();
+  };
+
+  send.onclick = async function () {
+
+    send.disabled = true;
+    send.textContent = "Sending...";
+
+    await uploadMedia(file);
+
+    URL.revokeObjectURL(url);
+
+    overlay.remove();
+  };
+
+  bottom.appendChild(cancel);
+  bottom.appendChild(send);
+
+  card.appendChild(media);
+  card.appendChild(bottom);
+
+  overlay.appendChild(card);
+
+  document.body.appendChild(overlay);
 }
 
 
