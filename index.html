@@ -1,2327 +1,1798 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<meta charset="UTF-8">
 
-  <title>JustUs</title>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>JustUs</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    body {
-      min-height: 100vh;
-      background: #090909;
-      color: #f5f5f5;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-      padding: 20px;
-    }
+<style>
 
-    .app {
-      width: 100%;
-      max-width: 520px;
-      margin: 0 auto;
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    .logo {
-      text-align: center;
-      font-size: 30px;
-      font-weight: 700;
-      letter-spacing: -1px;
-      margin-top: 30px;
-      margin-bottom: 8px;
-    }
+body {
+  min-height: 100vh;
+  background: #090909;
+  color: #f5f5f5;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  padding: 20px;
+}
 
-    .tagline {
-      text-align: center;
-      color: #888;
-      font-size: 14px;
-      margin-bottom: 30px;
-    }
+.app {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
 
-    .card {
-      background: #111;
-      border: 1px solid #242424;
-      border-radius: 20px;
-      padding: 22px;
-    }
+.logo {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  margin-top: 30px;
+  margin-bottom: 8px;
+}
 
-    .hidden {
-      display: none !important;
-    }
+.tagline {
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 30px;
+}
 
-    .welcome {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
+.card {
+  background: #111;
+  border: 1px solid #242424;
+  border-radius: 20px;
+  padding: 22px;
+}
 
-    .welcome-text {
-      color: #888;
-      font-size: 14px;
-      margin-bottom: 26px;
-    }
+.hidden {
+  display: none !important;
+}
 
-    .section-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
+.welcome {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
 
-    .section-text {
-      color: #888;
-      font-size: 13px;
-      line-height: 1.5;
-      margin-bottom: 14px;
-    }
+.welcome-text {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
 
-    input {
-      width: 100%;
-      background: #0b0b0b;
-      color: #fff;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 13px 14px;
-      outline: none;
-      font-size: 15px;
-      margin-bottom: 12px;
-    }
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
 
-    input:focus {
-      border-color: #555;
-    }
+.section-text {
+  color: #888;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
 
-    .button {
-      width: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 13px;
-      background: #fff;
-      color: #000;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+input {
+  width: 100%;
+  background: #0b0b0b;
+  color: #fff;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 13px;
+  outline: none;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
 
-    .button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+input:focus {
+  border-color: #555;
+}
 
-    .secondary-button {
-      width: 100%;
-      border: 1px solid #303030;
-      border-radius: 12px;
-      padding: 11px;
-      background: #161616;
-      color: #fff;
-      font-size: 14px;
-      cursor: pointer;
-    }
+.button {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 13px;
+  background: #fff;
+  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
 
-    .danger-button {
-      border: 1px solid #452020;
-      background: #1b0d0d;
-      color: #ffb4b4;
-    }
+.button:disabled {
+  opacity: 0.5;
+}
 
-    .auth-switch {
-      text-align: center;
-      color: #888;
-      font-size: 13px;
-      margin-top: 18px;
-    }
+.auth-switch {
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  margin-top: 18px;
+}
 
-    .auth-switch span {
-      color: #fff;
-      cursor: pointer;
-      font-weight: 600;
-    }
+.auth-switch span {
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
 
-    .forgot {
-      text-align: right;
-      color: #999;
-      font-size: 12px;
-      margin-top: -4px;
-      margin-bottom: 15px;
-      cursor: pointer;
-    }
+.forgot {
+  text-align: right;
+  color: #999;
+  font-size: 12px;
+  margin-top: -4px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
 
-    .message {
-      display: none;
-      margin-bottom: 15px;
-      padding: 11px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      line-height: 1.4;
-      background: #191919;
-      border: 1px solid #2b2b2b;
-      color: #ddd;
-    }
+.message {
+  display: none;
+  margin-bottom: 15px;
+  padding: 11px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  background: #191919;
+  border: 1px solid #2b2b2b;
+}
 
-    .message.show {
-      display: block;
-    }
+.message.show {
+  display: block;
+}
 
-    .message.success {
-      border-color: #25452f;
-      color: #a8e6b8;
-    }
+.message.success {
+  color: #a8e6b8;
+  border-color: #25452f;
+}
 
-    .message.error {
-      border-color: #4a2525;
-      color: #ffb1b1;
-    }
+.message.error {
+  color: #ffb1b1;
+  border-color: #4a2525;
+}
 
-    .divider {
-      height: 1px;
-      background: #222;
-      margin: 25px 0;
-    }
+.divider {
+  height: 1px;
+  background: #222;
+  margin: 25px 0;
+}
 
-    .search-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 15px;
-    }
+.search-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
 
-    .search-row input {
-      margin: 0;
-      flex: 1;
-      min-width: 0;
-    }
+.search-row input {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
 
-    .search-row .button {
-      width: 105px;
-      flex-shrink: 0;
-    }
+.search-row .button {
+  width: 105px;
+  flex-shrink: 0;
+}
 
-    .result-card,
-    .request-card,
-    .friend-card {
-      background: #0d0d0d;
-      border: 1px solid #252525;
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 10px;
-    }
+.result-card,
+.request-card,
+.friend-card {
+  background: #0d0d0d;
+  border: 1px solid #252525;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
 
-    .username {
-      font-size: 15px;
-      font-weight: 700;
-    }
+.username {
+  font-size: 15px;
+  font-weight: 700;
+}
 
-    .muted {
-      color: #777;
-      font-size: 12px;
-      margin-top: 4px;
-    }
+.muted {
+  color: #777;
+  font-size: 12px;
+  margin-top: 4px;
+}
 
-    .request-actions,
-    .friend-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
+.request-actions,
+.friend-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
 
-    .request-actions button,
-    .friend-actions button {
-      flex: 1;
-    }
+.request-actions button,
+.friend-actions button {
+  flex: 1;
+}
 
-    .small-button {
-      border: 1px solid #303030;
-      border-radius: 10px;
-      padding: 9px 10px;
-      background: #151515;
-      color: #fff;
-      font-size: 13px;
-      cursor: pointer;
-    }
+.small-button {
+  border: 1px solid #303030;
+  border-radius: 10px;
+  padding: 9px 10px;
+  background: #151515;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
 
-    .small-button.primary {
-      background: #fff;
-      color: #000;
-      border-color: #fff;
-      font-weight: 700;
-    }
+.small-button.primary {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+  font-weight: 700;
+}
 
-    .empty-state {
-      background: #0d0d0d;
-      border: 1px dashed #292929;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      color: #666;
-      font-size: 13px;
-    }
+.empty-state {
+  background: #0d0d0d;
+  border: 1px dashed #292929;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+}
 
-    .online-dot {
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      background: #5dd879;
-      border-radius: 50%;
-      margin-right: 5px;
-    }
+.offline-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: #666;
+  border-radius: 50%;
+  margin-right: 5px;
+}
 
-    .offline-dot {
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      background: #666;
-      border-radius: 50%;
-      margin-right: 5px;
-    }
+.logout-button {
+  width: 100%;
+  margin-top: 25px;
+  border: 1px solid #292929;
+  border-radius: 12px;
+  padding: 12px;
+  background: transparent;
+  color: #aaa;
+  font-size: 14px;
+  cursor: pointer;
+}
 
-    .logout-button {
-      width: 100%;
-      margin-top: 25px;
-      border: 1px solid #292929;
-      border-radius: 12px;
-      padding: 12px;
-      background: transparent;
-      color: #aaa;
-      font-size: 14px;
-      cursor: pointer;
-    }
+.footer {
+  text-align: center;
+  color: #555;
+  font-size: 11px;
+  margin-top: 20px;
+}
 
-    .loading {
-      text-align: center;
-      color: #777;
-      padding: 12px;
-      font-size: 13px;
-    }
+</style>
 
-    .footer {
-      text-align: center;
-      color: #555;
-      font-size: 11px;
-      margin-top: 20px;
-    }
-  </style>
 </head>
 
 <body>
 
-  <div class="app">
-
-    <div class="logo">JustUs</div>
-
-    <div class="tagline">
-      A private space for two.
-    </div>
-
-    <!-- MESSAGE -->
-    <div
-      class="message"
-      id="message"
-    ></div>
-
-
-    <!-- ========================= -->
-    <!-- AUTH CARD -->
-    <!-- ========================= -->
-
-    <div
-      class="card"
-      id="authCard"
-    >
-
-      <!-- LOGIN -->
-
-      <div id="loginSection">
-
-        <div class="welcome">
-          Welcome back
-        </div>
-
-        <div class="welcome-text">
-          Log in to your private space.
-        </div>
-
-        <input
-          id="loginEmail"
-          type="email"
-          placeholder="Email"
-          autocomplete="email"
-        >
-
-        <input
-          id="loginPassword"
-          type="password"
-          placeholder="Password"
-          autocomplete="current-password"
-        >
-
-        <div
-          class="forgot"
-          onclick="forgotPassword()"
-        >
-          Forgot password?
-        </div>
-
-        <button
-          class="button"
-          id="loginButton"
-          onclick="login()"
-        >
-          Log In
-        </button>
-
-        <div class="auth-switch">
-          Don't have an account?
-          <span onclick="showSignup()">
-            Sign up
-          </span>
-        </div>
-
-      </div>
-
-
-      <!-- SIGNUP -->
-
-      <div
-        id="signupSection"
-        class="hidden"
-      >
-
-        <div class="welcome">
-          Create account
-        </div>
-
-        <div class="welcome-text">
-          Choose your unique JustUs username.
-        </div>
-
-        <input
-          id="signupUsername"
-          type="text"
-          placeholder="Username"
-          autocomplete="username"
-        >
+<div class="app">
+
+<div class="logo">
+JustUs
+</div>
+
+<div class="tagline">
+A private space for two.
+</div>
+
+<div
+  class="message"
+  id="message"
+></div>
+
+<div
+  class="card"
+  id="authCard"
+>
+
+<div id="loginSection">
+
+<div class="welcome">
+Welcome back
+</div>
+
+<div class="welcome-text">
+Log in to your private space.
+</div>
+
+<input
+  id="loginEmail"
+  type="email"
+  placeholder="Email"
+  autocomplete="email"
+>
+
+<input
+  id="loginPassword"
+  type="password"
+  placeholder="Password"
+  autocomplete="current-password"
+>
+
+<div
+  class="forgot"
+  onclick="forgotPassword()"
+>
+Forgot password?
+</div>
+
+<button
+  class="button"
+  id="loginButton"
+  onclick="login()"
+>
+Log In
+</button>
+
+<div class="auth-switch">
+
+Don't have an account?
+
+<span onclick="showSignup()">
+Sign up
+</span>
+
+</div>
+
+</div>
+
+<div
+  id="signupSection"
+  class="hidden"
+>
+
+<div class="welcome">
+Create account
+</div>
+
+<div class="welcome-text">
+Choose your unique JustUs username.
+</div>
+
+<input
+  id="signupUsername"
+  type="text"
+  placeholder="Username"
+  autocomplete="username"
+>
+
+<input
+  id="signupEmail"
+  type="email"
+  placeholder="Email"
+  autocomplete="email"
+>
+
+<input
+  id="signupPassword"
+  type="password"
+  placeholder="Password"
+  autocomplete="new-password"
+>
 
-        <input
-          id="signupEmail"
-          type="email"
-          placeholder="Email"
-          autocomplete="email"
-        >
+<button
+  class="button"
+  id="signupButton"
+  onclick="signup()"
+>
+Create Account
+</button>
 
-        <input
-          id="signupPassword"
-          type="password"
-          placeholder="Password"
-          autocomplete="new-password"
-        >
+<div class="auth-switch">
 
-        <button
-          class="button"
-          id="signupButton"
-          onclick="signup()"
-        >
-          Create Account
-        </button>
+Already have an account?
 
-        <div class="auth-switch">
-          Already have an account?
-          <span onclick="showLogin()">
-            Log in
-          </span>
-        </div>
+<span onclick="showLogin()">
+Log in
+</span>
 
-      </div>
+</div>
 
-    </div>
+</div>
 
+</div>
 
-    <!-- ========================= -->
-    <!-- MAIN APP -->
-    <!-- ========================= -->
+  <div
+  class="card hidden"
+  id="mainApp"
+>
 
-    <div
-      class="card hidden"
-      id="loggedInCard"
-    >
+<div
+  class="welcome"
+  id="welcomeText"
+>
+Welcome to JustUs
+</div>
 
-      <div
-        class="welcome"
-        id="welcomeText"
-      >
-        Welcome to JustUs
-      </div>
+<div class="welcome-text">
+Find your friend and start your private space.
+</div>
 
-      <div class="welcome-text">
-        Find your friend and start your private space.
-      </div>
+<div class="section-title">
+👥 Friends
+</div>
 
+<div class="section-text">
+Search someone using their unique username.
+</div>
 
-      <!-- SEARCH FRIEND -->
+<div class="search-row">
 
-      <div class="section-title">
-        👥 Friends
-      </div>
+<input
+  id="friendUsernameInput"
+  type="text"
+  placeholder="Search username..."
+  autocomplete="off"
+>
 
-      <div class="section-text">
-        Search someone using their unique username.
-      </div>
+<button
+  class="button"
+  id="searchFriendButton"
+  onclick="searchFriend()"
+>
+Search
+</button>
 
-      <div class="search-row">
+</div>
 
-        <input
-          id="friendUsernameInput"
-          type="text"
-          placeholder="Search username..."
-          autocomplete="off"
-        >
+<div id="searchResult"></div>
 
-        <button
-          class="button"
-          id="searchFriendButton"
-          onclick="searchFriend()"
-        >
-          Search
-        </button>
+<div class="divider"></div>
 
-      </div>
+<div class="section-title">
+Friend Requests
+</div>
 
-      <div id="searchResult"></div>
+<div id="friendRequests">
 
+<div class="empty-state">
+No pending requests.
+</div>
 
-      <div class="divider"></div>
+</div>
 
+<div class="divider"></div>
 
-      <!-- FRIEND REQUESTS -->
+<div class="section-title">
+Your Friends
+</div>
 
-      <div class="section-title">
-        Friend Requests
-      </div>
+<div id="friendsList">
 
-      <div id="friendRequests">
+<div class="empty-state">
+No friends yet.
+</div>
 
-        <div class="empty-state">
-          No pending requests.
-        </div>
+</div>
 
-      </div>
+<button
+  class="logout-button"
+  onclick="logout()"
+>
+Log Out
+</button>
 
+</div>
 
-      <div class="divider"></div>
+<div class="footer">
+JustUs • Private by design
+</div>
 
-
-      <!-- FRIENDS -->
-
-      <div class="section-title">
-        Your Friends
-      </div>
-
-      <div id="friendsList">
-
-        <div class="empty-state">
-          No friends yet.
-        </div>
-
-      </div>
-
-
-      <button
-        class="logout-button"
-        onclick="logout()"
-      >
-        Log Out
-      </button>
-
-    </div>
-
-
-    <div class="footer">
-      JustUs • Private by design
-    </div>
-
-  </div>
-
+</div>
 
   <script>
 
-    /* =========================================
-       SUPABASE
-    ========================================= */
+const SUPABASE_URL =
+"https://rfcvoeeydeamyytzfxbd.supabase.co";
 
-    const SUPABASE_URL =
-      "https://rfcvoeeydeamyytzfxbd.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
 
-    const SUPABASE_PUBLISHABLE_KEY =
-      "sb_publishable_EB3sMbpOK9EIIUtgl4eQHQ_Vr-Tvs8b";
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
-    const supabaseClient =
-      supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-      );
 
+/* MESSAGE */
 
-    /* =========================================
-       HELPERS
-    ========================================= */
-
-    function showMessage(
-      text,
-      type = "error"
-    ) {
-
-      const message =
-        document.getElementById("message");
-
-      message.textContent = text;
-
-      message.className =
-        "message show " + type;
-
-    }
-
-
-    function clearMessage() {
-
-      const message =
-        document.getElementById("message");
-
-      message.textContent = "";
-
-      message.className =
-        "message";
-
-    }
-
-
-    function showLogin() {
-
-      document
-        .getElementById("loginSection")
-        .classList.remove("hidden");
-
-      document
-        .getElementById("signupSection")
-        .classList.add("hidden");
-
-      clearMessage();
-
-    }
-
-
-    function showSignup() {
-
-      document
-        .getElementById("loginSection")
-        .classList.add("hidden");
-
-      document
-        .getElementById("signupSection")
-        .classList.remove("hidden");
-
-      clearMessage();
-
-    }
-
-
-    /* =========================================
-       AUTH
-    ========================================= */
-
-    async function login() {
-
-      clearMessage();
-
-      const email =
-        document
-          .getElementById("loginEmail")
-          .value
-          .trim();
-
-      const password =
-        document
-          .getElementById("loginPassword")
-          .value;
-
-      if (!email || !password) {
-
-        showMessage(
-          "Enter your email and password."
-        );
-
-        return;
-      }
-
-
-      const button =
-        document.getElementById(
-          "loginButton"
-        );
-
-      button.disabled = true;
-      button.textContent = "Logging in...";
-
-
-      try {
-
-        const {
-          error
-        } =
-          await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-          });
-
-
-        if (error) {
-
-          showMessage(error.message);
-
-          return;
-        }
-
-
-        showMessage(
-          "Logged in successfully.",
-          "success"
-        );
-
-
-      } catch (error) {
-
-        showMessage(
-          "Unable to log in."
-        );
-
-      } finally {
-
-        button.disabled = false;
-        button.textContent = "Log In";
-
-      }
-
-    }
-
-
-    async function signup() {
-
-      clearMessage();
-
-      const username =
-        document
-          .getElementById("signupUsername")
-          .value
-          .trim()
-          .toLowerCase();
-
-      const email =
-        document
-          .getElementById("signupEmail")
-          .value
-          .trim();
-
-      const password =
-        document
-          .getElementById("signupPassword")
-          .value;
-
-
-      if (username.length < 3) {
-
-        showMessage(
-          "Username must be at least 3 characters."
-        );
-
-        return;
-      }
-
-
-      if (!email) {
-
-        showMessage(
-          "Enter your email."
-        );
-
-        return;
-      }
-
-
-      if (password.length < 6) {
-
-        showMessage(
-          "Password must be at least 6 characters."
-        );
-
-        return;
-      }
-
-
-      const button =
-        document.getElementById(
-          "signupButton"
-        );
-
-      button.disabled = true;
-      button.textContent = "Creating...";
-
-
-      try {
-
-        /* Check username */
-
-        const {
-          data: existingUser,
-          error: usernameError
-        } =
-          await supabaseClient
-            .from("profiles")
-            .select("id")
-            .eq("username", username)
-            .maybeSingle();
-
-
-        if (usernameError) {
-
-          showMessage(
-            usernameError.message
-          );
-
-          return;
-        }
-
-
-        if (existingUser) {
-
-          showMessage(
-            "This username is already taken."
-          );
-
-          return;
-        }
-
-
-        /* Create account */
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient.auth.signUp({
-
-            email,
-
-            password,
-
-            options: {
-              data: {
-                username
-              }
-            }
-
-          });
-
-
-        if (error) {
-
-          showMessage(error.message);
-
-          return;
-        }
-
-
-        if (
-          data.user &&
-          !data.session
-        ) {
-
-          showMessage(
-            "Account created. Check your email to confirm your account.",
-            "success"
-          );
-
-        } else {
-
-          showMessage(
-            "Account created successfully.",
-            "success"
-          );
-
-        }
-
-
-        document
-          .getElementById("signupUsername")
-          .value = "";
-
-        document
-          .getElementById("signupEmail")
-          .value = "";
-
-        document
-          .getElementById("signupPassword")
-          .value = "";
-
-
-      } catch (error) {
-
-        showMessage(
-          "Unable to create account."
-        );
-
-      } finally {
-
-        button.disabled = false;
-        button.textContent = "Create Account";
-
-      }
-
-    }
-
-
-    async function forgotPassword() {
-
-      clearMessage();
-
-      const email =
-        document
-          .getElementById("loginEmail")
-          .value
-          .trim();
-
-
-      if (!email) {
-
-        showMessage(
-          "Enter your email first."
-        );
-
-        return;
-      }
-
-
-      try {
-
-        const {
-          error
-        } =
-          await supabaseClient.auth
-            .resetPasswordForEmail(
-              email,
-              {
-                redirectTo:
-                  "https://hiiipriyanshupandey.github.io/JustUs/"
-              }
-            );
-
-
-        if (error) {
-
-          showMessage(error.message);
-
-          return;
-        }
-
-
-        showMessage(
-          "Password reset email sent.",
-          "success"
-        );
-
-
-      } catch (error) {
-
-        showMessage(
-          "Unable to send reset email."
-        );
-
-      }
-
-    }
-
-
-    async function logout() {
-
-      await supabaseClient.auth.signOut();
-
-      document
-        .getElementById("loggedInCard")
-        .classList.add("hidden");
-
-      document
-        .getElementById("authCard")
-        .classList.remove("hidden");
-
-      showLogin();
-
-      clearMessage();
-
-    }
-
-
-    /* =========================================
-       LOAD USER
-    ========================================= */
-
-    async function loadUser() {
-
-      const {
-        data
-      } =
-        await supabaseClient.auth.getUser();
-
-      const user = data?.user;
-
-      if (!user) {
-
-        document
-          .getElementById("loggedInCard")
-          .classList.add("hidden");
-
-        document
-          .getElementById("authCard")
-          .classList.remove("hidden");
-
-        return;
-      }
-
-
-      document
-        .getElementById("authCard")
-        .classList.add("hidden");
-
-      document
-        .getElementById("loggedInCard")
-        .classList.remove("hidden");
-
-
-      let username =
-        user.user_metadata?.username;
-
-
-      if (!username) {
-
-        const {
-          data: profile
-        } =
-          await supabaseClient
-            .from("profiles")
-            .select("username")
-            .eq("id", user.id)
-            .maybeSingle();
-
-        username =
-          profile?.username;
-
-      }
-
-
-      document
-        .getElementById("welcomeText")
-        .textContent =
-          username
-            ? "Welcome, @" + username
-            : "Welcome to JustUs";
-
-
-      await loadFriendRequests();
-
-      await loadFriends();
-
-    }
-
-
-    /* =========================================
-       SEARCH USER
-    ========================================= */
-
-    async function searchFriend() {
-
-      clearMessage();
-
-      const input =
-        document.getElementById(
-          "friendUsernameInput"
-        );
-
-      const username =
-        input.value
-          .trim()
-          .toLowerCase();
-
-
-      const result =
-        document.getElementById(
-          "searchResult"
-        );
-
-
-      if (username.length < 3) {
-
-        result.innerHTML = `
-          <div class="empty-state">
-            Enter at least 3 characters.
-          </div>
-        `;
-
-        return;
-      }
-
-
-      const button =
-        document.getElementById(
-          "searchFriendButton"
-        );
-
-      button.disabled = true;
-      button.textContent = "Searching...";
-
-
-      try {
-
-        const {
-          data: userData
-        } =
-          await supabaseClient.auth.getUser();
-
-        const currentUser =
-          userData?.user;
-
-
-        if (!currentUser) {
-
-          showMessage(
-            "Please log in again."
-          );
-
-          return;
-        }
-
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("profiles")
-            .select("id, username")
-            .eq("username", username)
-            .maybeSingle();
-
-
-        if (error) {
-
-          result.innerHTML = `
-            <div class="empty-state">
-              ${escapeHtml(error.message)}
-            </div>
-          `;
-
-          return;
-        }
-
-
-        if (!data) {
-
-          result.innerHTML = `
-            <div class="empty-state">
-              No user found with @${escapeHtml(username)}
-            </div>
-          `;
-
-          return;
-        }
-
-
-        if (data.id === currentUser.id) {
-
-          result.innerHTML = `
-            <div class="empty-state">
-              That's your own username.
-            </div>
-          `;
-
-          return;
-        }
-
-
-        /* Check existing friendship */
-
-const {
-  data: friendship,
-  error: friendshipError
-} =
-  await supabaseClient
-    .from("friendships")
-    .select("id")
-    .or(
-      `and(user_id.eq.${currentUser.id},friend_id.eq.${data.id}),and(user_id.eq.${data.id},friend_id.eq.${currentUser.id})`
-    )
-    .limit(1);
-
-
-if (friendshipError) {
-
-  console.log(
-    "Friendship check error:",
-    friendshipError
-  );
-
-  result.innerHTML = `
-    <div class="empty-state">
-      Unable to check friendship status.
-    </div>
-  `;
-
-  return;
-}
-
-
-if (
-  friendship &&
-  friendship.length > 0
+function showMessage(
+  text,
+  type = "error"
 ) {
 
-  result.innerHTML = `
-    <div class="result-card">
+const message =
+document.getElementById("message");
 
-      <div class="username">
-        @${escapeHtml(data.username)}
-      </div>
+message.textContent = text;
 
-      <div class="muted">
-        ✓ Already your friend
-      </div>
+message.className =
+"message show " + type;
 
-    </div>
-  `;
-
-  return;
 }
 
 
-    /* Check existing friendship */
+function clearMessage() {
+
+const message =
+document.getElementById("message");
+
+message.textContent = "";
+
+message.className =
+"message";
+
+}
+
+
+/* LOGIN / SIGNUP */
+
+function showLogin() {
+
+document
+.getElementById("loginSection")
+.classList.remove("hidden");
+
+document
+.getElementById("signupSection")
+.classList.add("hidden");
+
+clearMessage();
+
+}
+
+
+function showSignup() {
+
+document
+.getElementById("loginSection")
+.classList.add("hidden");
+
+document
+.getElementById("signupSection")
+.classList.remove("hidden");
+
+clearMessage();
+
+}
+
+
+/* LOGIN */
+
+async function login() {
+
+clearMessage();
+
+const email =
+document
+.getElementById("loginEmail")
+.value
+.trim();
+
+const password =
+document
+.getElementById("loginPassword")
+.value;
+
+if (!email || !password) {
+
+showMessage(
+"Enter your email and password."
+);
+
+return;
+
+}
+
+const button =
+document.getElementById(
+"loginButton"
+);
+
+button.disabled = true;
+
+button.textContent =
+"Logging in...";
+
+try {
 
 const {
-  data: friendship,
-  error: friendshipError
+error
 } =
-  await supabaseClient
-    .from("friendships")
-    .select("id")
-    .or(
-      `and(user_id.eq.${currentUser.id},friend_id.eq.${data.id}),and(user_id.eq.${data.id},friend_id.eq.${currentUser.id})`
-    )
-    .limit(1);
+await supabaseClient.auth
+.signInWithPassword({
 
+email: email,
 
-if (friendshipError) {
+password: password
 
-  console.log(
-    "Friendship check error:",
-    friendshipError
-  );
+});
 
-  result.innerHTML = `
-    <div class="empty-state">
-      Unable to check friendship status.
-    </div>
-  `;
+if (error) {
 
-  return;
+showMessage(
+error.message
+);
+
+return;
+
 }
 
-
-if (
-  friendship &&
-  friendship.length > 0
-) {
-
-  result.innerHTML = `
-    <div class="result-card">
-
-      <div class="username">
-        @${escapeHtml(data.username)}
-      </div>
-
-      <div class="muted">
-        ✓ Already your friend
-      </div>
-
-    </div>
-  `;
-
-  return;
-}
-
-
-/* =========================================
-   CHECK EXISTING REQUEST
-========================================= */
-
-const {
-  data: requests,
-  error: requestCheckError
-} =
-  await supabaseClient
-    .from("friend_requests")
-    .select(
-      "id, sender_id, receiver_id, status"
-    )
-    .or(
-      `and(sender_id.eq.${currentUser.id},receiver_id.eq.${data.id}),and(sender_id.eq.${data.id},receiver_id.eq.${currentUser.id})`
-    )
-    .eq(
-      "status",
-      "pending"
-    );
-
-
-if (requestCheckError) {
-
-  console.log(
-    "Request check error:",
-    requestCheckError
-  );
-
-  result.innerHTML = `
-    <div class="empty-state">
-      Unable to check request status.
-    </div>
-  `;
-
-  return;
-}
-
-
-/* =========================================
-   REQUEST ALREADY EXISTS
-========================================= */
-
-if (
-  requests &&
-  requests.length > 0
-) {
-
-  const request =
-    requests[0];
-
-
-  if (
-    request.sender_id ===
-    currentUser.id
-  ) {
-
-    result.innerHTML = `
-      <div class="result-card">
-
-        <div class="username">
-          @${escapeHtml(data.username)}
-        </div>
-
-        <div class="muted">
-          ⏳ Friend request already sent.
-        </div>
-
-      </div>
-    `;
-
-  } else {
-
-    result.innerHTML = `
-      <div class="result-card">
-
-        <div class="username">
-          @${escapeHtml(data.username)}
-        </div>
-
-        <div class="muted">
-          This user has already sent you a request.
-        </div>
-
-        <div class="friend-actions">
-
-          <button
-            class="small-button primary"
-            onclick="acceptFriendRequest('${request.id}')"
-          >
-            Accept
-          </button>
-
-          <button
-            class="small-button"
-            onclick="declineFriendRequest('${request.id}')"
-          >
-            Decline
-          </button>
-
-        </div>
-
-      </div>
-    `;
-
-  }
-
-  return;
-}
-
-
-/* =========================================
-   SHOW SEND REQUEST
-========================================= */
-
-result.innerHTML = `
-  <div class="result-card">
-
-    <div class="username">
-      @${escapeHtml(data.username)}
-    </div>
-
-    <div class="muted">
-      User found
-    </div>
-
-    <div class="friend-actions">
-
-      <button
-        class="small-button primary"
-        onclick="sendFriendRequest('${data.id}')"
-      >
-        Send Friend Request
-      </button>
-
-    </div>
-
-  </div>
-`;
-
+await loadUser();
 
 } catch (error) {
 
-  console.log(
-    "Search error:",
-    error
-  );
+console.log(error);
 
-  result.innerHTML = `
-    <div class="empty-state">
-      Something went wrong while searching.
-    </div>
-  `;
+showMessage(
+"Unable to log in."
+);
 
 } finally {
 
-  button.disabled = false;
-  button.textContent = "Search";
+button.disabled = false;
+
+button.textContent =
+"Log In";
+
+}
 
 }
 
 
+/* SIGNUP */
+
+async function signup() {
+
+clearMessage();
+
+const username =
+document
+.getElementById("signupUsername")
+.value
+.trim()
+.toLowerCase();
+
+const email =
+document
+.getElementById("signupEmail")
+.value
+.trim();
+
+const password =
+document
+.getElementById("signupPassword")
+.value;
+
+if (username.length < 3) {
+
+showMessage(
+"Username must be at least 3 characters."
+);
+
+return;
+
 }
 
+if (!email) {
 
-/* =========================================
-   SEND FRIEND REQUEST
-========================================= */
+showMessage(
+"Enter your email."
+);
 
-async function sendFriendRequest(
-  receiverId
+return;
+
+}
+
+if (password.length < 6) {
+
+showMessage(
+"Password must be at least 6 characters."
+);
+
+return;
+
+}
+
+const button =
+document.getElementById(
+"signupButton"
+);
+
+button.disabled = true;
+
+button.textContent =
+"Creating...";
+
+try {
+
+const {
+data: existingUser,
+error: usernameError
+} =
+await supabaseClient
+.from("profiles")
+.select("id")
+.eq("username", username)
+.maybeSingle();
+
+if (usernameError) {
+
+showMessage(
+usernameError.message
+);
+
+return;
+
+}
+
+if (existingUser) {
+
+showMessage(
+"This username is already taken."
+);
+
+return;
+
+}
+
+const {
+data,
+error
+} =
+await supabaseClient.auth
+.signUp({
+
+email: email,
+
+password: password,
+
+options: {
+
+data: {
+username: username
+}
+
+}
+
+});
+
+if (error) {
+
+showMessage(
+error.message
+);
+
+return;
+
+}
+
+if (
+data.user &&
+!data.session
 ) {
 
-  clearMessage();
+showMessage(
+"Account created. Check your email to confirm your account.",
+"success"
+);
 
-  try {
+} else {
 
-    const {
-      data
-    } =
-      await supabaseClient.auth.getUser();
+showMessage(
+"Account created successfully.",
+"success"
+);
 
-    const currentUser =
-      data?.user;
+}
 
-    if (!currentUser) {
+document
+.getElementById(
+"signupUsername"
+)
+.value = "";
 
-      showMessage(
-        "Please log in again."
-      );
+document
+.getElementById(
+"signupEmail"
+)
+.value = "";
 
-      return;
-    }
+document
+.getElementById(
+"signupPassword"
+)
+.value = "";
 
+} catch (error) {
 
-    if (
-      currentUser.id ===
-      receiverId
-    ) {
+console.log(error);
 
-      showMessage(
-        "You cannot add yourself."
-      );
+showMessage(
+"Unable to create account."
+);
 
-      return;
-    }
+} finally {
 
+button.disabled = false;
 
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("friend_requests")
-        .insert({
+button.textContent =
+"Create Account";
 
-          sender_id:
-            currentUser.id,
-
-          receiver_id:
-            receiverId,
-
-          status:
-            "pending"
-
-        });
-
-
-    if (error) {
-
-      showMessage(
-        error.message
-      );
-
-      return;
-    }
-
-
-    document
-      .getElementById("searchResult")
-      .innerHTML = `
-        <div class="result-card">
-
-          <div class="username">
-            Request Sent ✓
-          </div>
-
-          <div class="muted">
-            Your friend request has been sent.
-          </div>
-
-        </div>
-      `;
-
-
-    document
-      .getElementById(
-        "friendUsernameInput"
-      )
-      .value = "";
-
-
-    showMessage(
-      "Friend request sent.",
-      "success"
-    );
-
-
-  } catch (error) {
-
-    console.log(
-      "Send request error:",
-      error
-    );
-
-    showMessage(
-      "Unable to send friend request."
-    );
-
-  }
+}
 
 }
 
 
-/* =========================================
-   LOAD FRIEND REQUESTS
-========================================= */
+/* FORGOT PASSWORD */
+
+async function forgotPassword() {
+
+clearMessage();
+
+const email =
+document
+.getElementById(
+"loginEmail"
+)
+.value
+.trim();
+
+if (!email) {
+
+showMessage(
+"Enter your email first."
+);
+
+return;
+
+}
+
+try {
+
+const {
+error
+} =
+await supabaseClient.auth
+.resetPasswordForEmail(
+email,
+{
+redirectTo:
+"https://hiiipriyanshupandey.github.io/JustUs/"
+}
+);
+
+if (error) {
+
+showMessage(
+error.message
+);
+
+return;
+
+}
+
+showMessage(
+"Password reset email sent.",
+"success"
+);
+
+} catch (error) {
+
+console.log(error);
+
+showMessage(
+"Unable to send reset email."
+);
+
+}
+
+}
+
+    /* LOAD USER */
+
+async function loadUser() {
+
+const {
+data
+} =
+await supabaseClient.auth.getUser();
+
+const user =
+data?.user;
+
+if (!user) {
+
+return;
+
+}
+
+document
+.getElementById("authCard")
+.classList.add("hidden");
+
+document
+.getElementById("mainApp")
+.classList.remove("hidden");
+
+
+let username =
+user.user_metadata?.username;
+
+
+if (!username) {
+
+const {
+data: profile
+} =
+await supabaseClient
+.from("profiles")
+.select("username")
+.eq("id", user.id)
+.maybeSingle();
+
+username =
+profile?.username;
+
+}
+
+
+document
+.getElementById("welcomeText")
+.textContent =
+username
+? "Welcome, @" + username
+: "Welcome to JustUs";
+
+
+await loadFriendRequests();
+
+await loadFriends();
+
+}
+
+
+/* LOGOUT */
+
+async function logout() {
+
+clearMessage();
+
+try {
+
+const {
+error
+} =
+await supabaseClient.auth
+.signOut();
+
+if (error) {
+
+showMessage(
+error.message
+);
+
+return;
+
+}
+
+document
+.getElementById("authCard")
+.classList.remove("hidden");
+
+document
+.getElementById("mainApp")
+.classList.add("hidden");
+
+showLogin();
+
+} catch (error) {
+
+console.log(error);
+
+}
+
+}
+
+
+/* SEARCH FRIEND */
+
+async function searchFriend() {
+
+clearMessage();
+
+const input =
+document.getElementById(
+"friendUsernameInput"
+);
+
+const username =
+input.value
+.trim()
+.toLowerCase();
+
+const result =
+document.getElementById(
+"searchResult"
+);
+
+if (username.length < 3) {
+
+result.innerHTML = `
+<div class="empty-state">
+Enter at least 3 characters.
+</div>
+`;
+
+return;
+
+}
+
+const button =
+document.getElementById(
+"searchFriendButton"
+);
+
+button.disabled = true;
+
+button.textContent =
+"Searching...";
+
+try {
+
+const {
+data: userData
+} =
+await supabaseClient.auth
+.getUser();
+
+const currentUser =
+userData?.user;
+
+if (!currentUser) {
+
+showMessage(
+"Please log in again."
+);
+
+return;
+
+}
+
+const {
+data,
+error
+} =
+await supabaseClient
+.from("profiles")
+.select("id, username")
+.eq("username", username)
+.maybeSingle();
+
+if (error) {
+
+result.innerHTML = `
+<div class="empty-state">
+Unable to search user.
+</div>
+`;
+
+return;
+
+}
+
+if (!data) {
+
+result.innerHTML = `
+<div class="empty-state">
+No user found with @${username}
+</div>
+`;
+
+return;
+
+}
+
+if (
+data.id === currentUser.id
+) {
+
+result.innerHTML = `
+<div class="empty-state">
+That's your own username.
+</div>
+`;
+
+return;
+
+}
+
+
+/* CHECK FRIENDSHIP */
+
+const {
+data: friendship,
+error: friendshipError
+} =
+await supabaseClient
+.from("friendships")
+.select("id")
+.or(
+`and(user_id.eq.${currentUser.id},friend_id.eq.${data.id}),and(user_id.eq.${data.id},friend_id.eq.${currentUser.id})`
+)
+.limit(1);
+
+if (friendshipError) {
+
+console.log(
+friendshipError
+);
+
+result.innerHTML = `
+<div class="empty-state">
+Unable to check friendship.
+</div>
+`;
+
+return;
+
+}
+
+if (
+friendship &&
+friendship.length > 0
+) {
+
+result.innerHTML = `
+<div class="result-card">
+
+<div class="username">
+@${escapeHtml(data.username)}
+</div>
+
+<div class="muted">
+✓ Already your friend
+</div>
+
+</div>
+`;
+
+return;
+
+}
+
+
+/* CHECK REQUEST */
+
+const {
+data: requests,
+error: requestError
+} =
+await supabaseClient
+.from("friend_requests")
+.select(
+"id,sender_id,receiver_id,status"
+)
+.or(
+`and(sender_id.eq.${currentUser.id},receiver_id.eq.${data.id}),and(sender_id.eq.${data.id},receiver_id.eq.${currentUser.id})`
+)
+.eq(
+"status",
+"pending"
+);
+
+if (requestError) {
+
+console.log(
+requestError
+);
+
+result.innerHTML = `
+<div class="empty-state">
+Unable to check request.
+</div>
+`;
+
+return;
+
+}
+
+if (
+requests &&
+requests.length > 0
+) {
+
+const request =
+requests[0];
+
+if (
+request.sender_id ===
+currentUser.id
+) {
+
+result.innerHTML = `
+<div class="result-card">
+
+<div class="username">
+@${escapeHtml(data.username)}
+</div>
+
+<div class="muted">
+⏳ Friend request already sent.
+</div>
+
+</div>
+`;
+
+} else {
+
+result.innerHTML = `
+<div class="result-card">
+
+<div class="username">
+@${escapeHtml(data.username)}
+</div>
+
+<div class="muted">
+This user sent you a request.
+</div>
+
+<div class="friend-actions">
+
+<button
+class="small-button primary"
+onclick="acceptFriendRequest('${request.id}')"
+>
+Accept
+</button>
+
+<button
+class="small-button"
+onclick="declineFriendRequest('${request.id}')"
+>
+Decline
+</button>
+
+</div>
+
+</div>
+`;
+
+}
+
+return;
+
+}
+
+
+/* SEND BUTTON */
+
+result.innerHTML = `
+<div class="result-card">
+
+<div class="username">
+@${escapeHtml(data.username)}
+</div>
+
+<div class="muted">
+User found
+</div>
+
+<div class="friend-actions">
+
+<button
+class="small-button primary"
+onclick="sendFriendRequest('${data.id}')"
+>
+Send Friend Request
+</button>
+
+</div>
+
+</div>
+`;
+
+} catch (error) {
+
+console.log(error);
+
+result.innerHTML = `
+<div class="empty-state">
+Something went wrong.
+</div>
+`;
+
+} finally {
+
+button.disabled = false;
+
+button.textContent =
+"Search";
+
+}
+
+}
+
+
+/* SEND REQUEST */
+
+async function sendFriendRequest(
+receiverId
+) {
+
+clearMessage();
+
+try {
+
+const {
+data
+} =
+await supabaseClient.auth
+.getUser();
+
+const currentUser =
+data?.user;
+
+if (!currentUser) {
+
+showMessage(
+"Please log in again."
+);
+
+return;
+
+}
+
+const {
+error
+} =
+await supabaseClient
+.from("friend_requests")
+.insert({
+
+sender_id:
+currentUser.id,
+
+receiver_id:
+receiverId,
+
+status:
+"pending"
+
+});
+
+if (error) {
+
+showMessage(
+error.message
+);
+
+return;
+
+}
+
+document
+.getElementById(
+"searchResult"
+)
+.innerHTML = `
+<div class="result-card">
+
+<div class="username">
+Request Sent ✓
+</div>
+
+<div class="muted">
+Your friend request has been sent.
+</div>
+
+</div>
+`;
+
+document
+.getElementById(
+"friendUsernameInput"
+)
+.value = "";
+
+showMessage(
+"Friend request sent.",
+"success"
+);
+
+} catch (error) {
+
+console.log(error);
+
+showMessage(
+"Unable to send friend request."
+);
+
+}
+
+}
+
+
+/* LOAD REQUESTS */
 
 async function loadFriendRequests() {
 
-  const container =
-    document.getElementById(
-      "friendRequests"
-    );
+const container =
+document.getElementById(
+"friendRequests"
+);
+
+try {
+
+const {
+data
+} =
+await supabaseClient.auth
+.getUser();
+
+const currentUser =
+data?.user;
+
+if (!currentUser) return;
+
+const {
+data: requests,
+error
+} =
+await supabaseClient
+.from("friend_requests")
+.select(
+"id,sender_id,receiver_id,status,created_at"
+)
+.eq(
+"receiver_id",
+currentUser.id
+)
+.eq(
+"status",
+"pending"
+)
+.order(
+"created_at",
+{
+ascending: false
+}
+);
+
+if (error) {
+
+console.log(error);
+
+return;
+
+}
+
+if (
+!requests ||
+requests.length === 0
+) {
+
+container.innerHTML = `
+<div class="empty-state">
+No pending requests.
+</div>
+`;
+
+return;
+
+}
+
+const ids =
+requests.map(
+r => r.sender_id
+);
+
+const {
+data: profiles
+} =
+await supabaseClient
+.from("profiles")
+.select(
+"id,username"
+)
+.in(
+"id",
+ids
+);
+
+const profileMap = {};
+
+(profiles || [])
+.forEach(
+profile => {
+
+profileMap[
+profile.id
+] =
+profile.username;
+
+});
 
 
-  try {
+container.innerHTML =
+requests
+.map(
+request => {
 
-    const {
-      data
-    } =
-      await supabaseClient.auth.getUser();
+const username =
+profileMap[
+request.sender_id
+] ||
+"Unknown user";
 
-    const currentUser =
-      data?.user;
+return `
+<div class="request-card">
 
-    if (!currentUser) return;
+<div class="username">
+@${escapeHtml(username)}
+</div>
 
+<div class="muted">
+Wants to be your friend
+</div>
 
-    const {
-      data: requests,
-      error
-    } =
-      await supabaseClient
-        .from("friend_requests")
-        .select(
-          "id, sender_id, receiver_id, status, created_at"
-        )
-        .eq(
-          "receiver_id",
-          currentUser.id
-        )
-        .eq(
-          "status",
-          "pending"
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
+<div class="request-actions">
 
+<button
+class="small-button primary"
+onclick="acceptFriendRequest('${request.id}')"
+>
+Accept
+</button>
 
-    if (error) {
+<button
+class="small-button"
+onclick="declineFriendRequest('${request.id}')"
+>
+Decline
+</button>
 
-      console.log(
-        "Load requests error:",
-        error
-      );
+</div>
 
-      container.innerHTML = `
-        <div class="empty-state">
-          Unable to load requests.
-        </div>
-      `;
+</div>
+`;
 
-      return;
-    }
+}
+)
+.join("");
 
+} catch (error) {
 
-    if (
-      !requests ||
-      requests.length === 0
-    ) {
+console.log(error);
 
-      container.innerHTML = `
-        <div class="empty-state">
-          No pending requests.
-        </div>
-      `;
-
-      return;
-    }
-
-
-    const senderIds =
-      requests.map(
-        request =>
-          request.sender_id
-      );
-
-
-    const {
-      data: profiles
-    } =
-      await supabaseClient
-        .from("profiles")
-        .select(
-          "id, username"
-        )
-        .in(
-          "id",
-          senderIds
-        );
-
-
-    const profileMap = {};
-
-
-    (profiles || []).forEach(
-      profile => {
-
-        profileMap[
-          profile.id
-        ] =
-          profile.username;
-
-      }
-    );
-
-
-    container.innerHTML =
-      requests
-        .map(
-          request => {
-
-            const username =
-              profileMap[
-                request.sender_id
-              ] ||
-              "Unknown user";
-
-
-            return `
-              <div class="request-card">
-
-                <div class="username">
-                  @${escapeHtml(username)}
-                </div>
-
-                <div class="muted">
-                  Wants to be your friend
-                </div>
-
-                <div class="request-actions">
-
-                  <button
-                    class="small-button primary"
-                    onclick="acceptFriendRequest('${request.id}')"
-                  >
-                    Accept
-                  </button>
-
-                  <button
-                    class="small-button"
-                    onclick="declineFriendRequest('${request.id}')"
-                  >
-                    Decline
-                  </button>
-
-                </div>
-
-              </div>
-            `;
-
-          }
-        )
-        .join("");
-
-
-  } catch (error) {
-
-    console.log(
-      "Request loading error:",
-      error
-    );
-
-  }
+}
 
 }
 
 
-/* =========================================
-   ACCEPT FRIEND REQUEST
-========================================= */
+/* ACCEPT REQUEST */
 
 async function acceptFriendRequest(
-  requestId
+requestId
 ) {
 
-  clearMessage();
+clearMessage();
 
-  try {
+try {
 
-    const {
-      data
-    } =
-      await supabaseClient.auth.getUser();
+const {
+data
+} =
+await supabaseClient.auth
+.getUser();
 
-    const currentUser =
-      data?.user;
+const currentUser =
+data?.user;
 
+if (!currentUser) return;
 
-    if (!currentUser) {
+const {
+data: request,
+error
+} =
+await supabaseClient
+.from("friend_requests")
+.select(
+"id,sender_id,receiver_id,status"
+)
+.eq(
+"id",
+requestId
+)
+.eq(
+"receiver_id",
+currentUser.id
+)
+.eq(
+"status",
+"pending"
+)
+.maybeSingle();
 
-      showMessage(
-        "Please log in again."
-      );
+if (error || !request) {
 
-      return;
-    }
+showMessage(
+"Friend request not found."
+);
 
+return;
 
-    const {
-      data: request,
-      error: requestError
-    } =
-      await supabaseClient
-        .from("friend_requests")
-        .select(
-          "id, sender_id, receiver_id, status"
-        )
-        .eq(
-          "id",
-          requestId
-        )
-        .eq(
-          "receiver_id",
-          currentUser.id
-        )
-        .eq(
-          "status",
-          "pending"
-        )
-        .maybeSingle();
+}
 
+const {
+error: updateError
+} =
+await supabaseClient
+.from("friend_requests")
+.update({
+status: "accepted"
+})
+.eq(
+"id",
+requestId
+)
+.eq(
+"receiver_id",
+currentUser.id
+);
 
-    if (requestError) {
+if (updateError) {
 
-      showMessage(
-        requestError.message
-      );
+showMessage(
+updateError.message
+);
 
-      return;
-    }
-
-
-    if (!request) {
-
-      showMessage(
-        "Friend request is no longer available."
-      );
-
-      await loadFriendRequests();
-
-      return;
-    }
-
-
-    const {
-      error: updateError
-    } =
-      await supabaseClient
-        .from("friend_requests")
-        .update({
-          status: "accepted"
-        })
-        .eq(
-          "id",
-          requestId
-        )
-        .eq(
-          "receiver_id",
-          currentUser.id
-        );
-
-
-    if (updateError) {
-
-      showMessage(
-        updateError.message
-      );
-
-      return;
-    }
-
-
-    /* A → B */
-
-    await supabaseClient
-      .from("friendships")
-      .upsert(
-        {
-          user_id:
-            request.sender_id,
-
-          friend_id:
-            request.receiver_id
-        },
-        {
-          onConflict:
-            "user_id,friend_id"
-        }
-      );
-
-
-    /* B → A */
-
-    await supabaseClient
-      .from("friendships")
-      .upsert(
-        {
-          user_id:
-            request.receiver_id,
-
-          friend_id:
-            request.sender_id
-        },
-        {
-          onConflict:
-            "user_id,friend_id"
-        }
-      );
-
-
-    showMessage(
-      "Friend request accepted.",
-      "success"
-    );
-
-
-    await loadFriendRequests();
-
-    await loadFriends();
-
-
-  } catch (error) {
-
-    console.log(
-      "Accept request error:",
-      error
-    );
-
-    showMessage(
-      "Unable to accept friend request."
-    );
-
-  }
+return;
 
 }
 
 
-/* =========================================
-   DECLINE FRIEND REQUEST
-========================================= */
+/* A -> B */
+
+await supabaseClient
+.from("friendships")
+.upsert(
+{
+user_id:
+request.sender_id,
+
+friend_id:
+request.receiver_id
+},
+{
+onConflict:
+"user_id,friend_id"
+}
+);
+
+
+/* B -> A */
+
+await supabaseClient
+.from("friendships")
+.upsert(
+{
+user_id:
+request.receiver_id,
+
+friend_id:
+request.sender_id
+},
+{
+onConflict:
+"user_id,friend_id"
+}
+);
+
+showMessage(
+"Friend request accepted.",
+"success"
+);
+
+await loadFriendRequests();
+
+await loadFriends();
+
+} catch (error) {
+
+console.log(error);
+
+showMessage(
+"Unable to accept request."
+);
+
+}
+
+}
+
+
+/* DECLINE REQUEST */
 
 async function declineFriendRequest(
-  requestId
+requestId
 ) {
 
-  clearMessage();
-
-  try {
-
-    const {
-      data
-    } =
-      await supabaseClient.auth.getUser();
-
-    const currentUser =
-      data?.user;
-
-
-    if (!currentUser) return;
-
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("friend_requests")
-        .update({
-          status: "declined"
-        })
-        .eq(
-          "id",
-          requestId
-        )
-        .eq(
-          "receiver_id",
-          currentUser.id
-        );
-
-
-    if (error) {
-
-      showMessage(
-        error.message
-      );
-
-      return;
-    }
-
-
-    showMessage(
-      "Friend request declined.",
-      "success"
-    );
-
-
-    await loadFriendRequests();
-
-
-  } catch (error) {
-
-    console.log(
-      "Decline request error:",
-      error
-    );
-
-    showMessage(
-      "Unable to decline request."
-    );
-
-  }
-
-}
-
-
-/* =========================================
-   LOAD FRIENDS
-========================================= */
-
-async function loadFriends() {
-
-  const container =
-    document.getElementById(
-      "friendsList"
-    );
-
-
-  try {
-
-    const {
-      data
-    } =
-      await supabaseClient.auth.getUser();
-
-    const currentUser =
-      data?.user;
-
-
-    if (!currentUser) return;
-
-
-    const {
-      data: friendships,
-      error
-    } =
-      await supabaseClient
-        .from("friendships")
-        .select(
-          "user_id, friend_id, created_at"
-        )
-        .or(
-          `user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
-
-
-    if (error) {
-
-      console.log(
-        "Load friends error:",
-        error
-      );
-
-      container.innerHTML = `
-        <div class="empty-state">
-          Unable to load friends.
-        </div>
-      `;
-
-      return;
-    }
-
-
-    if (
-      !friendships ||
-      friendships.length === 0
-    ) {
-
-      container.innerHTML = `
-        <div class="empty-state">
-          No friends yet.
-        </div>
-      `;
-
-      return;
-    }
-
-
-    const friendIds =
-      friendships.map(
-        friendship => {
-
-          return friendship.user_id ===
-            currentUser.id
-
-            ? friendship.friend_id
-
-            : friendship.user_id;
-
-        }
-      );
-
-
-    const uniqueFriendIds =
-      [...new Set(friendIds)];
-
-
-    const {
-      data: profiles
-    } =
-      await supabaseClient
-        .from("profiles")
-        .select(
-          "id, username"
-        )
-        .in(
-          "id",
-          uniqueFriendIds
-        );
-
-
-    const profileMap = {};
-
-
-    (profiles || []).forEach(
-      profile => {
-
-        profileMap[
-          profile.id
-        ] =
-          profile.username;
-
-      }
-    );
-
-
-    container.innerHTML =
-      uniqueFriendIds
-        .map(
-          friendId => {
-
-            const username =
-              profileMap[
-                friendId
-              ] ||
-              "Unknown user";
-
-
-            return `
-              <div class="friend-card">
-
-                <div class="username">
-                  @${escapeHtml(username)}
-                </div>
-
-                <div class="muted">
-                  <span class="offline-dot"></span>
-                  Offline
-                </div>
-
-                <div class="friend-actions">
-
-                  <button
-                    class="small-button primary"
-                    onclick="openChat('${friendId}')"
-                  >
-                    💬 Chat
-                  </button>
-
-                  <button
-                    class="small-button"
-                    onclick="openGames('${friendId}')"
-                  >
-                    🎮 Games
-                  </button>
-
-                </div>
-
-              </div>
-            `;
-
-          }
-        )
-        .join("");
-
-
-  } catch (error) {
-
-    console.log(
-      "Friends loading error:",
-      error
-    );
-
-    container.innerHTML = `
-      <div class="empty-state">
-        Unable to load friends.
-      </div>
-    `;
-
-  }
-
-}
-
-
-/* =========================================
-   CHAT
-========================================= */
-
-function openChat(
-  friendId
-) {
-
-  showMessage(
-    "Chat feature is coming next.",
-    "success"
-  );
-
-  console.log(
-    "Open chat with:",
-    friendId
-  );
-
-}
-
-
-/* =========================================
-   GAMES
-========================================= */
-
-function openGames(
-  friendId
-) {
-
-  showMessage(
-    "Games feature is coming next.",
-    "success"
-  );
-
-  console.log(
-    "Open games with:",
-    friendId
-  );
-
-}
-
-
-/* =========================================
-   ESCAPE HTML
-========================================= */
-
-function escapeHtml(
-  text
-) {
-
-  return String(text)
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
-
-}
-
-
-/* =========================================
-   AUTH STATE
-========================================= */
-
-supabaseClient.auth
-  .onAuthStateChange(
-    async (
-      event,
-      session
-    ) => {
-
-      if (session) {
-
-        await loadUser();
-
-      } else {
-
-        document
-          .getElementById(
-            "authCard"
-          )
-          .classList.remove(
-            "hidden"
-          );
-
-        document
-          .getElementById(
-            "loggedInCard"
-          )
-          .classList.add(
-            "hidden"
-          );
-
-      }
-
-    }
-  );
-
-
-/* =========================================
-   INITIAL LOAD
-========================================= */
-
-loadUser();
-
-
-/* =========================================
-   ENTER KEY SEARCH
-========================================= */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    const input =
-      document.getElementById(
-        "friendUsernameInput"
-      );
-
-    if (input) {
-
-      input.addEventListener(
-        "keydown",
-        event => {
-
-          if (
-            event.key === "Enter"
-          ) {
-
-            searchFriend();
-
-          }
-
-        }
-      );
-
-    }
-
-  }
+clearMessage();
+
+try {
+
+const {
+data
+} =
+await supabaseClient.auth
+.getUser();
+
+const currentUser =
+data?.user;
+
+if (!currentUser) return;
+
+const {
+error
+} =
+await supabaseClient
+.from("friend_requests")
+.update({
+status: "declined"
+})
+.eq(
+"id",
+requestId
+)
+.eq(
+"receiver_id",
+currentUser.id
 );
+
+if (error) {
+
+showMessage(
+error.message
+);
+
+return;
+
+}
+
+showMessage(
+"Friend request declined.",
+"success"
+);
+
+await loadFriendRequests();
+
+} catch (error) {
+
+console.log(error);
+
+}
+
+    }
